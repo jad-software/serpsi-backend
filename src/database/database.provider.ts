@@ -10,8 +10,9 @@ export const databaseProviders = [
                 migrations: [__dirname + '/migrations/**/*{.ts}'],
                 entities: [__dirname + '/../**/*.entity{.ts}'],
             });
-
-            return dataSource.initialize();
+            await dataSource.initialize(); // initialize the data source
+            console.log('Database connected successfully');
+            return dataSource;
         },
     },
 ];
