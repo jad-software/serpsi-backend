@@ -20,7 +20,7 @@ export class Email {
   }
 
   private validate(email: string): boolean {
-    let emailRegex = new RegExp('^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$')
+    let emailRegex = new RegExp('^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+[.]+[a-zA-Z]{2,}$')
     return emailRegex.test(email);
   }
 }
