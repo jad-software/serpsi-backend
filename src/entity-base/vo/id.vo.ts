@@ -2,13 +2,9 @@ import { PrimaryGeneratedColumn } from "typeorm";
 
 export class Id {
     @PrimaryGeneratedColumn('uuid')
-    private id: string;
-
-    public getId(): string {
-        return this.id;
-    }
+    public id: string;
 
     public equals(id: Id): boolean {
-        return this.id === id.getId();
+        return this.id === id.id;
     }
 }

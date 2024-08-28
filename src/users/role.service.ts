@@ -2,6 +2,7 @@ import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common
 import { CreateRoleDto } from './dto/create-role.dto';
 import { Repository } from 'typeorm';
 import { Role } from './entities/role.entity';
+import { UpdateRoleDto } from './dto/upate-role.dto';
 
 @Injectable()
 export class RoleService {
@@ -20,19 +21,26 @@ export class RoleService {
     }
   }
 
-  findAll() {
-   
+  async findAll(): Promise<Role[]> {
+    return await this.roleRepository.find();
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} user`;
+  async findOneById(id: string): Promise<Role> {
+    return await this.roleRepository.findOneByOrFail({id: {id}});
   }
 
-  update(id: string, updateUserDto: any) {
-    return `This action updates a #${id} user`;
+  async findOneByName(name: string): Promise<Role>{
+    const role = new Role(name);
+    return this.roleRepository.findOneOrFail({where: {...role}})
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async update(id: string, updateRoleDto: UpdateRoleDto): Promise<Role> {
+    const role = await this.findOneById(id);
+    await this.roleRepository.update(id, {...role, ...updateRoleDto});
+    return role;
+  }
+
+  async remove(id: string): Promise<any> {
+   return this.roleRepository.delete(id)
   }
 }

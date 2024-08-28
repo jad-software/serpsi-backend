@@ -12,9 +12,9 @@ export class UsersService {
   }
 
   async findAll() {
-   const role = await this.roleService.create({name: 'Psi'})
-    
-    return role;
+   const roleNAme = await this.roleService.findOneByName('Psicose');
+   const updateRole = await this.roleService.update(roleNAme.id.id, {name:'Secretário'});
+    return updateRole;
   }
 
   findOne(id: number) {
@@ -25,7 +25,7 @@ export class UsersService {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+   return await this.roleService.remove(id);
   }
 }
