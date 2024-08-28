@@ -28,8 +28,3 @@ export abstract class EntityBase {
         return this.updateDate;
     }
 }
-function TypeormType(
-    arg0: () => typeof Id
-): (target: EntityBase, propertyKey: 'id') => void {
-    throw new Error('Function not implemented.');
-}
