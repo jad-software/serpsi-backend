@@ -7,5 +7,5 @@ export const postgresDataSource = new DataSource({
     url: process.env.POSTGRES_URL,
     migrations: ["./dist/database/migrations/*.{ts,js}"],
     entities: ["./dist/**/entities/*.{ts,js}"],
-    logging: false,
+    logging: true,
 });

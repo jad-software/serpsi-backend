@@ -1,7 +1,7 @@
-import { EntityBase } from "src/entity-base/entities/entity-base";
 import { Email } from "../vo/email.vo";
 import { Role } from "./role.entity";
 import { Column, Entity, ManyToOne } from "typeorm";
+import { EntityBase } from "src/entity-base/entities/entity-base";
 
 @Entity()
 export class User extends EntityBase{

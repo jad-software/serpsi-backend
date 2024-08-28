@@ -7,13 +7,13 @@ import {
 import { Id } from '../vo/id.vo';
 
 export abstract class EntityBase {
-    @Column(() => Id)
+    @Column(() => Id, {prefix: false})
     private id: Id;
 
-    @CreateDateColumn()
+    @CreateDateColumn({type: "timestamptz" })
     private createDate: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({type: "timestamptz" })
     private updateDate: Date;
 
     public getId(): string {
