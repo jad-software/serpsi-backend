@@ -6,26 +6,25 @@ import { Email } from './vo/email.vo';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly roleService: RoleService) {}
+  constructor(
+    private readonly roleService: RoleService) {}
   create(createUserDto: CreateUserDto) {
     return 'This action adds a new user';
   }
 
   async findAll() {
-   const roleNAme = await this.roleService.findOneByName('Psicose');
-   const updateRole = await this.roleService.update(roleNAme.id.id, {name:'Secretário'});
-    return updateRole;
+    return `This action returns all users`;
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  update(id: string, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 
   async remove(id: string) {
-   return await this.roleService.remove(id);
+    return `This action deletes a #${id} user`;
   }
 }
