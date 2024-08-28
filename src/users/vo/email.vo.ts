@@ -3,11 +3,13 @@ import { Column } from "typeorm";
 
 
 export class Email {
-  @Column()
+  @Column({
+    unique: true,
+  })
   private email: string;
-  
-  constructor(email: string){
-    if(!this.validate(email)){
+
+  constructor(email: string) {
+    if (!this.validate(email)) {
       throw new BadRequestException('Email não validado');
     }
     this.email = email;
@@ -17,7 +19,7 @@ export class Email {
     return this.email;
   }
 
-  private validate(email: string) :boolean{
+  private validate(email: string): boolean {
     let emailRegex = new RegExp('^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$')
     return emailRegex.test(email);
   }

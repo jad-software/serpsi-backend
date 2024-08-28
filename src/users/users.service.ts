@@ -10,7 +10,7 @@ export class UsersService {
   }
 
   findAll() {
-    const email = new Email('teste');
+    const email = new Email('teste@gmail.com');
     return email;
   }
 
