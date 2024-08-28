@@ -1,7 +1,7 @@
-import { PrimaryColumn } from "typeorm";
+import { PrimaryGeneratedColumn } from "typeorm";
 
 export class Id {
-    @PrimaryColumn('uuid')
+    @PrimaryGeneratedColumn('uuid')
     private id: string;
 
     public getId(): string {

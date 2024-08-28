@@ -1,16 +1,11 @@
-import { DataSource } from 'typeorm';
+import { postgresDataSource } from 'src/data-source';
 
 export const databaseProviders = [
     {
-        provide: DataSource,
+        provide: 'DATA_SOURCE',
         useFactory: async () => {
-            const dataSource = new DataSource({
-                type: 'postgres',
-                url: process.env.POSTGRES_URL,
-                migrations: [__dirname + '/migrations/**/*{.ts}'],
-                entities: [__dirname + '/../**/*.entity{.ts}'],
-            });
-            await dataSource.initialize(); // initialize the data source
+            const dataSource = postgresDataSource;
+            await dataSource.initialize();
             console.log('Database connected successfully');
             return dataSource;
         },

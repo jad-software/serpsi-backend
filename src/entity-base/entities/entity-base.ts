@@ -1,12 +1,13 @@
 import {
+    Column,
     CreateDateColumn,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { Id } from './id.vo';
+import { Id } from '../vo/id.vo';
 
 export abstract class EntityBase {
-    @PrimaryGeneratedColumn('uuid')
+    @Column(() => Id)
     private id: Id;
 
     @CreateDateColumn()
@@ -14,7 +15,7 @@ export abstract class EntityBase {
 
     @UpdateDateColumn()
     private updateDate: Date;
-    
+
     public getId(): string {
         return this.id.getId();
     }
@@ -27,7 +28,8 @@ export abstract class EntityBase {
         return this.updateDate;
     }
 }
-function TypeormType(arg0: () => typeof Id): (target: EntityBase, propertyKey: "id") => void {
+function TypeormType(
+    arg0: () => typeof Id
+): (target: EntityBase, propertyKey: 'id') => void {
     throw new Error('Function not implemented.');
 }
-
