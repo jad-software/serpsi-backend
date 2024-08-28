@@ -8,13 +8,18 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    return await this.usersService.create(createUserDto);
   }
 
   @Get()
   async findAll() {
     return await this.usersService.findAll();
+  }
+
+  @Get('roles')
+  async findAllRoles() {
+    return await this.usersService.findAllRoles();
   }
 
   @Get(':id')

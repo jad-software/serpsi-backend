@@ -2,6 +2,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { Repository } from 'typeorm';
@@ -32,12 +33,20 @@ export class RoleService {
 
   async findOneById(id: string): Promise<Role> {
     const roleId = new Id(id);
-    return await this.roleRepository.findOneByOrFail({ id: roleId });
+    try {
+      return await this.roleRepository.findOneByOrFail({ id: roleId });
+    } catch (err) {
+      throw new NotFoundException('Role not found');
+    }
   }
 
   async findOneByName(name: string): Promise<Role> {
     const role = new Role(name);
-    return this.roleRepository.findOneOrFail({ where: { ...role } });
+    try {
+      return this.roleRepository.findOneOrFail({ where: { ...role } });
+    } catch (err) {
+      throw new NotFoundException('Role not found');
+    }
   }
 
   async update(id: string, updateRoleDto: UpdateRoleDto): Promise<Role> {
