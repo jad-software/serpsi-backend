@@ -2,7 +2,6 @@ import { Email } from '../vo/email.vo';
 import { Role } from './role.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { EntityBase } from 'src/entity-base/entities/entity-base';
-import { Exclude, Transform } from 'class-transformer';
 import { CreateUserDto } from '../dto/create-user.dto';
 
 @Entity()
@@ -15,20 +14,30 @@ export class User extends EntityBase {
   @Column(() => Email, {
     prefix: false,
   })
-  public email: Email;
+  private email: Email;
 
   @Column()
-  @Exclude({ toPlainOnly: true })
-  public password: string;
+  private password: string;
 
-  @Transform(({ value }) => value.name)
   @ManyToOne(() => Role)
   public role: Role;
 
   public getEmail(): Email {
     return this.email;
   }
+  public setEmail(email: Email): void {
+    this.email = email;
+  }
   public getRole(): Role {
     return this.role;
+  }
+  public setRole(role: Role): void {
+    this.role = role;
+  }
+  public getPassword(): string {
+    return this.password;
+  }
+  public setPassword(password: string): void {
+    this.password = password;
   }
 }
