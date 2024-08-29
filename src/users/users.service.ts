@@ -62,7 +62,7 @@ export class UsersService {
 
   async findOneByEmail(email: string): Promise<User> {
     let user: User;
-    user.setEmail(new Email(email));
+    user.email = new Email(email);
     try {
       return await this.userRepository.findOneByOrFail({ ...user });
     } catch (err) {
@@ -74,11 +74,9 @@ export class UsersService {
     let updatingUser = new User(updateUserDto);
 
     if (updateUserDto.role)
-      updatingUser.setRole(
-        await this.roleService.findOneByName(updateUserDto.role as string)
-      );
+      updatingUser.role = await this.roleService.findOneByName(updateUserDto.role as string);
     if (updateUserDto.email)
-      updatingUser.setEmail(new Email(updateUserDto.email as string));
+      updatingUser.email = new Email(updateUserDto.email as string);
 
     try {
       await this.userRepository.update(id, updatingUser);
