@@ -1,5 +1,4 @@
 import { Column } from "typeorm";
-import { ApiProperty } from "@nestjs/swagger";
 
 export class Email {
   @Column({
@@ -16,4 +15,7 @@ export class Email {
     return this._email;
   }
 
+  set email(email: string) {
+    this._email = email;
+  }
 }

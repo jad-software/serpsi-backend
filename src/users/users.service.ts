@@ -61,7 +61,7 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string): Promise<User> {
-    let user: User;
+    let user: User = new User({});
     user.email = new Email(email);
     try {
       return await this.userRepository.findOneByOrFail({ ...user });
