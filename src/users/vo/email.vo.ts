@@ -1,6 +1,5 @@
-import { BadRequestException } from "@nestjs/common";
 import { Column } from "typeorm";
-
+import { ApiProperty } from "@nestjs/swagger";
 
 export class Email {
   @Column({
