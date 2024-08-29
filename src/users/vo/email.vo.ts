@@ -12,7 +12,7 @@ export class Email {
     this._email = email;
   }
 
-  get Email(): string {
+  get email(): string {
     return this._email;
   }
 

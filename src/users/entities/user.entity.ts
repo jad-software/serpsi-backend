@@ -21,7 +21,7 @@ export class User extends EntityBase implements IUser {
   private _password: string;
 
   @ManyToOne(() => Role, { eager: true })
-  public _role: Role;
+  private _role: Role;
 
   get email(): Email {
     return this._email;
