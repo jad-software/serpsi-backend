@@ -49,7 +49,12 @@ export class UsersService {
   async findOneById(id: string): Promise<User> {
     const userId = new Id(id);
     try {
-      return await this.userRepository.findOneByOrFail({ id: userId });
+      return await this.userRepository.findOne({
+        relations: {
+          role: true,
+        },
+        where: { id: userId },
+      });
     } catch (err) {
       throw new NotFoundException('User not found');
     }
@@ -57,9 +62,9 @@ export class UsersService {
 
   async findOneByEmail(email: string): Promise<User> {
     let user: User;
-    user.setEmail(new Email(email)); 
+    user.setEmail(new Email(email));
     try {
-      return await this.userRepository.findOneByOrFail({...user});
+      return await this.userRepository.findOneByOrFail({ ...user });
     } catch (err) {
       throw new NotFoundException('User not found');
     }
@@ -68,9 +73,13 @@ export class UsersService {
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     let updatingUser = new User(updateUserDto);
 
-    if (updateUserDto.role) updatingUser.setRole(await this.roleService.findOneByName(updateUserDto.role as string));
-    if (updateUserDto.email) updatingUser.setEmail( new Email(updateUserDto.email as string));
-    
+    if (updateUserDto.role)
+      updatingUser.setRole(
+        await this.roleService.findOneByName(updateUserDto.role as string)
+      );
+    if (updateUserDto.email)
+      updatingUser.setEmail(new Email(updateUserDto.email as string));
+
     try {
       await this.userRepository.update(id, updatingUser);
       let user = await this.findOneById(id);
