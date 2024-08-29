@@ -3,9 +3,10 @@ import { Role } from './role.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { EntityBase } from 'src/entity-base/entities/entity-base';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { IUser } from '../interfaces/user.interface';
 
 @Entity()
-export class User extends EntityBase {
+export class User extends EntityBase implements IUser {
   constructor(partial: Partial<CreateUserDto>) {
     super();
     Object.assign(this, partial);
@@ -14,30 +15,32 @@ export class User extends EntityBase {
   @Column(() => Email, {
     prefix: false,
   })
-  private email: Email;
+  private _email: Email;
 
-  @Column()
-  private password: string;
+  @Column({ name: 'password' })
+  private _password: string;
 
-  @ManyToOne(() => Role)
-  public role: Role;
+  @ManyToOne(() => Role, { eager: true })
+  public _role: Role;
 
-  public getEmail(): Email {
-    return this.email;
+  get email(): Email {
+    return this._email;
   }
-  public setEmail(email: Email): void {
-    this.email = email;
+  set email(email: Email) {
+    this._email = email;
   }
-  public getRole(): Role {
-    return this.role;
+
+  get password(): string {
+    return this._password;
   }
-  public setRole(role: Role): void {
-    this.role = role;
+  set password(password: string) {
+    this._password = password;
   }
-  public getPassword(): string {
-    return this.password;
+
+  get role(): Role {
+    return this._role;
   }
-  public setPassword(password: string): void {
-    this.password = password;
+  set role(role: Role) {
+    this._role = role;
   }
 }

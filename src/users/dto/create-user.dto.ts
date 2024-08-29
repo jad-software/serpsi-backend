@@ -2,14 +2,15 @@ import { IsEmail, IsNotEmpty, IsStrongPassword, Matches } from "class-validator"
 import { Role } from "../entities/role.entity";
 import { Email } from "../vo/email.vo";
 import { ApiProperty } from "@nestjs/swagger";
+import { IUser } from "../interfaces/user.interface";
 
-export class CreateUserDto {  
+export class CreateUserDto implements IUser {  
   @ApiProperty({ type: String, description: "Email do usuário", example: "william.henry.harrison@example-pet-store.com" })
   @IsNotEmpty()
   @Matches(RegExp('^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+[.]+[a-zA-Z]{2,}$'), {
     message: 'E-mail inválido'
   })
-  email: string | Email;
+  email: Email | string;
 
   @IsStrongPassword({
     minLength: 8,
@@ -23,5 +24,5 @@ export class CreateUserDto {
   
   @ApiProperty({ type: String, description: "Nome do cargo do usuário", example: "Admin" })
   @IsNotEmpty()
-  role: string | Role;  
+  role: Role | string;  
 }

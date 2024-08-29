@@ -7,20 +7,27 @@ import { Id } from '../vo/id.vo';
 
 export abstract class EntityBase {
     @Column(() => Id, { prefix: false })
-    public id: Id;
+    private _id: Id; 
 
-    @CreateDateColumn({ type: 'timestamptz' })
-    private createDate: Date;
+    @CreateDateColumn({ type: 'timestamptz', name: 'createDate' })
+    private _createDate: Date;
 
-    @UpdateDateColumn({ type: 'timestamptz' })
-    private updateDate: Date;
+    @UpdateDateColumn({ type: 'timestamptz', name: 'updateDate' })
+    private _updateDate: Date;
 
-
-    public getCreateDate(): Date {
-        return this.createDate;
+    get CreateDate(): Date {
+        return this._createDate;
     }
 
-    public getUpdateDate(): Date {
-        return this.updateDate;
+    get UpdateDate(): Date {
+        return this._updateDate;
+    }
+
+    get id(): Id {
+        return this._id;
+    }
+
+    set id(value: Id) {
+        this._id = value;
     }
 }

@@ -4,15 +4,16 @@ import { ApiProperty } from "@nestjs/swagger";
 export class Email {
   @Column({
     unique: true,
+    name: 'email'
   })
-  private email: string;
+  private _email: string;
 
   constructor(email: string) {
-    this.email = email;
+    this._email = email;
   }
 
-  public getEmail(): string {
-    return this.email;
+  get Email(): string {
+    return this._email;
   }
 
 }

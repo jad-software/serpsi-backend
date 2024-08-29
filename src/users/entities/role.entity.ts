@@ -8,6 +8,14 @@ export class Role extends EntityBase {
     super();
     Object.assign(this, partial);
   }
-  @Column()
-  private name: string;
+  @Column({name: 'name'})
+  private _name: string;
+
+  get name(): string {
+    return this._name;
+  }
+
+  set name(val: string) {
+    this._name = val;
+  }
 }
