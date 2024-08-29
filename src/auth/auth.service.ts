@@ -3,6 +3,7 @@ import { Injectable, NotAcceptableException, UnauthorizedException } from '@nest
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -15,8 +16,7 @@ export class AuthService {
     if (!user) {
       throw new NotAcceptableException('could not find the user');
     }
-    //const passwordValid = await bcrypt.compare(password, user.password)
-    const passwordValid = password === user.password;
+    const passwordValid = await bcrypt.compare(password, user.password);
     if (!passwordValid) {
       throw new UnauthorizedException("Invalid credentials");
     }

@@ -14,3 +14,5 @@ export const POSTGRES_URL = process.env.POSTGRES_URL;
 export const jwt_constants = {
   JWT_SECRET: process.env.JWT_SECRET,
 };
+
+export const bcrypt_salt = 10;
