@@ -1,10 +1,12 @@
-import { IsEmail, IsNotEmpty, IsStrongPassword } from "class-validator";
+import { IsEmail, IsNotEmpty, IsStrongPassword, Matches } from "class-validator";
 import { Role } from "../entities/role.entity";
 import { Email } from "../vo/email.vo";
 
-export class CreateUserDto {
-  @IsEmail()
+export class CreateUserDto {  
   @IsNotEmpty()
+  @Matches(RegExp('^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+[.]+[a-zA-Z]{2,}$'), {
+    message: 'E-mail inválido'
+  })
   email: string | Email;
   
   @IsStrongPassword({
@@ -12,7 +14,6 @@ export class CreateUserDto {
     minLowercase: 1,
     minUppercase: 1,
     minNumbers: 1,
-    minSymbols: 1,
   })
   @IsNotEmpty()
   password: string;

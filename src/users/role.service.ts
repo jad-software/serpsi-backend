@@ -9,19 +9,18 @@ import { Repository } from 'typeorm';
 import { Role } from './entities/role.entity';
 import { UpdateRoleDto } from './dto/upate-role.dto';
 import { Id } from 'src/entity-base/vo/id.vo';
+import { data_providers } from 'src/constants';
 
 @Injectable()
 export class RoleService {
   constructor(
-    @Inject('ROLE_REPOSITORY') private roleRepository: Repository<Role>
+    @Inject(data_providers.ROLE_REPOSITORY) private roleRepository: Repository<Role>
   ) {}
   async create(createRoleDto: CreateRoleDto): Promise<Role> {
-    const role = new Role(createRoleDto.name);
+    const role = new Role(createRoleDto);
     try {
-      const createdRole = this.roleRepository.create(role);
-      console.log(createdRole);
-      await this.roleRepository.save(createdRole);
-      return createdRole;
+     return await this.roleRepository.save(role);
+     
     } catch (err) {
       throw new InternalServerErrorException(err);
     }
@@ -41,7 +40,7 @@ export class RoleService {
   }
 
   async findOneByName(name: string): Promise<Role> {
-    const role = new Role(name);
+    const role = new Role({name});
     try {
       return this.roleRepository.findOneOrFail({ where: { ...role } });
     } catch (err) {
@@ -56,6 +55,6 @@ export class RoleService {
   }
 
   async remove(id: string): Promise<any> {
-    return this.roleRepository.delete(id);
+    return await this.roleRepository.delete(id);
   }
 }

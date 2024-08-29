@@ -4,6 +4,7 @@ import { UsersController } from './users.controller';
 import { RoleService } from './role.service';
 import { roleProvider } from './providers/role.providers';
 import { DatabaseModule } from 'src/database/database.module';
+import { userProvider } from './providers/user.providers';
 
 @Module({
   controllers: [UsersController],
@@ -11,7 +12,8 @@ import { DatabaseModule } from 'src/database/database.module';
   providers: [
     ...roleProvider,
     UsersService,
-    RoleService
+    RoleService,
+    ...userProvider
   ],
 })
 export class UsersModule {}

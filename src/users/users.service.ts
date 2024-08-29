@@ -1,34 +1,84 @@
 import { RoleService } from './role.service';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Email } from './vo/email.vo';
 import { User } from './entities/user.entity';
+import { data_providers } from 'src/constants';
+import { Repository } from 'typeorm';
+import { Email } from './vo/email.vo';
+import { Id } from 'src/entity-base/vo/id.vo';
+import { Role } from './entities/role.entity';
+
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly roleService: RoleService) {}
+  constructor(
+    private readonly roleService: RoleService,
+    @Inject(data_providers.USER_REPOSITORY) private userRepository: Repository<User>
+  ) { }
 
-  async create(createUserDto: CreateUserDto): Promise<string> {
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    try {
+      const userRole = await this.roleService.findOneByName(createUserDto.role as string);
+      const userEmail = new Email(createUserDto.email as string);
+      const user = new User({
+        email: userEmail,
+        password: createUserDto.password,
+        role: userRole
+      });
+      return await this.userRepository.save(user);
+    }
+    catch (err) {
+      throw new InternalServerErrorException(err);
+    }
   }
 
-  async findAll() {
-    return `This action returns all users`;
+  async findAll(): Promise<User[]> {
+    return await this.userRepository.find();
   }
   async findAllRoles() {
     return await this.roleService.findAll();
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} user`;
+  async findOneById(id: string): Promise<User> {
+    const roleId = new Id(id);
+    try {
+      return await this.userRepository.findOneByOrFail({ id: roleId });
+    } catch (err) {
+      throw new NotFoundException('User not found');
+    }
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async findOneByEmail(email: string): Promise<User> {
+    const userEmail = new Email(email);
+    try {
+      return await this.userRepository.findOneByOrFail({ email: userEmail });
+    } catch (err) {
+      throw new NotFoundException('User not found');
+    }
   }
 
-  async remove(id: string) {
-    return `This action deletes a #${id} user`;
+
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    let role = updateUserDto.role as Role;
+    if (updateUserDto.role) {
+       role = await this.roleService.findOneByName(updateUserDto.role as string);
+    }
+    try{
+      await this.userRepository.update(id, { 
+        email: updateUserDto.email as Email, 
+        role
+      });
+      let user = await this.findOneById(id);
+      return user;
+    }
+    catch(err) {
+      throw new InternalServerErrorException(err?.message);
+    }
+  
+  }
+
+  async remove(id: string): Promise<any> {
+    return await this.userRepository.delete(id);
   }
 }
