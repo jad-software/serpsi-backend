@@ -7,8 +7,9 @@ import { UsersModule } from 'src/users/users.module';
 import { jwt_constants } from 'src/constants';
 import { LocalStrategy } from './providers/local.strategy';
 import { JwtStrategy } from './providers/jwt.strategy';
-// import { JwtAuthGuard } from './guards/jwt.guards';
-// import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './guards/jwt.guards';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './guards/roles.guards';
 
 @Module({
   imports: [
@@ -26,6 +27,10 @@ import { JwtStrategy } from './providers/jwt.strategy';
     // {  //Descomentar quando for usar todas as rotas protegidas
     //   provide: APP_GUARD,
     //   useClass: JwtAuthGuard,
+    // },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: RolesGuard,
     // },
   ],
   controllers: [AuthController],
