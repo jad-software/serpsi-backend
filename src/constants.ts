@@ -2,7 +2,7 @@ require('dotenv').config();
 import { SetMetadata } from '@nestjs/common';
 
 export const IS_PUBLIC_KEY = 'isPublic';
-export const Public = () => SetMetadata(IS_PUBLIC_KEY, true)
+export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 
 export const data_providers = {
   ROLE_REPOSITORY: 'ROLE_REPOSITORY',

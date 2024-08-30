@@ -1,6 +1,6 @@
-import { EntityBase } from "src/entity-base/entities/entity-base";
-import { Column, Entity } from "typeorm";
-import { CreateRoleDto } from "../dto/create-role.dto";
+import { EntityBase } from 'src/entity-base/entities/entity-base';
+import { Column, Entity } from 'typeorm';
+import { CreateRoleDto } from '../dto/create-role.dto';
 
 @Entity()
 export class Role extends EntityBase {
@@ -8,7 +8,7 @@ export class Role extends EntityBase {
     super();
     Object.assign(this, partial);
   }
-  @Column({name: 'name'})
+  @Column({ name: 'name' })
   private _name: string;
 
   get name(): string {

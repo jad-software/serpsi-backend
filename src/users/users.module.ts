@@ -9,14 +9,7 @@ import { userProvider } from './providers/user.providers';
 @Module({
   controllers: [UsersController],
   imports: [DatabaseModule],
-  providers: [
-    ...roleProvider,
-    UsersService,
-    RoleService,
-    ...userProvider
-  ],
-  exports:[
-    UsersService
-  ]
+  providers: [...roleProvider, UsersService, RoleService, ...userProvider],
+  exports: [UsersService],
 })
 export class UsersModule {}

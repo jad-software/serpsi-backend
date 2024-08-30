@@ -14,7 +14,7 @@ import { RoleEnum } from 'src/users/vo/role.enum';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-  
+
   @Public()
   @UseGuards(LocalAuthGuard)
   @ApiBody({ type: LoginDTO })

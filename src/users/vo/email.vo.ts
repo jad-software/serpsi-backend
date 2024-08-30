@@ -1,9 +1,9 @@
-import { Column } from "typeorm";
+import { Column } from 'typeorm';
 
 export class Email {
   @Column({
     unique: true,
-    name: 'email'
+    name: 'email',
   })
   private _email: string;
 

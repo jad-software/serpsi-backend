@@ -56,7 +56,7 @@ export class UsersService {
     requestedUser.id = new Id(id);
     try {
       return await this.userRepository.findOneOrFail({
-        where: {...requestedUser},
+        where: { ...requestedUser },
         //relations: ['_role'],
       });
     } catch (err) {
