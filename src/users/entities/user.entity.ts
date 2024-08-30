@@ -1,9 +1,10 @@
 import { Email } from '../vo/email.vo';
 import { Role } from './role.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { AfterLoad, Column, Entity, ManyToOne } from 'typeorm';
 import { EntityBase } from 'src/entity-base/entities/entity-base';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { IUser } from '../interfaces/user.interface';
+import { RoleEnum } from '../vo/role.enum';
 
 @Entity()
 export class User extends EntityBase implements IUser {
@@ -17,7 +18,7 @@ export class User extends EntityBase implements IUser {
   })
   private _email: Email;
 
-  @Column({ name: 'password' })
+  @Column({ name: 'password', select: false })
   private _password: string;
 
   @ManyToOne(() => Role, { eager: true })

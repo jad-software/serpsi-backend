@@ -28,7 +28,10 @@ export class UsersService {
         createUserDto.role as string
       );
       const userEmail = new Email(createUserDto.email as string);
-      const hashedPassword = await bcrypt.hash(createUserDto.password, bcrypt_salt);
+      const hashedPassword = await bcrypt.hash(
+        createUserDto.password,
+        bcrypt_salt
+      );
       const user = new User({
         email: userEmail,
         password: hashedPassword,
@@ -49,16 +52,15 @@ export class UsersService {
   }
 
   async findOneById(id: string): Promise<User> {
-    const userId = new Id(id);
+    let requestedUser = new User({});
+    requestedUser.id = new Id(id);
     try {
-      return await this.userRepository.findOne({
-        relations: {
-          role: true,
-        },
-        where: { id: userId },
+      return await this.userRepository.findOneOrFail({
+        where: {...requestedUser},
+        //relations: ['_role'],
       });
     } catch (err) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(err?.message);
     }
   }
 
@@ -68,7 +70,7 @@ export class UsersService {
     try {
       return await this.userRepository.findOneByOrFail({ ...user });
     } catch (err) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('Usuário não encontrado');
     }
   }
 
@@ -76,7 +78,9 @@ export class UsersService {
     let updatingUser = new User(updateUserDto);
 
     if (updateUserDto.role)
-      updatingUser.role = await this.roleService.findOneByName(updateUserDto.role as string);
+      updatingUser.role = await this.roleService.findOneByName(
+        updateUserDto.role as string
+      );
     if (updateUserDto.email)
       updatingUser.email = new Email(updateUserDto.email as string);
 
