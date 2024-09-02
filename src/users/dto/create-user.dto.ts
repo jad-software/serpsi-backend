@@ -8,6 +8,7 @@ import { Role } from '../entities/role.entity';
 import { Email } from '../vo/email.vo';
 import { ApiProperty } from '@nestjs/swagger';
 import { IUser } from '../interfaces/user.interface';
+import { email } from 'src/constants';
 
 export class CreateUserDto implements IUser {
   @ApiProperty({
@@ -16,7 +17,7 @@ export class CreateUserDto implements IUser {
     example: 'william.henry.harrison@example-pet-store.com',
   })
   @IsNotEmpty()
-  @Matches(RegExp('^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+[.]+[a-zA-Z]{2,}$'), {
+  @Matches(RegExp(email.REGEX), {
     message: 'E-mail inválido',
   })
   email: Email | string;

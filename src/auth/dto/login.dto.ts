@@ -1,12 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, Matches } from 'class-validator';
+import { email } from 'src/constants';
 
 export class LoginDTO {
   @ApiProperty({
     description: 'Insira um e-mail existe',
     example: 'psi@teste.com',
   })
-  @Matches(RegExp('^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+[.]+[a-zA-Z]{2,}$'), {
+  @Matches(RegExp(email.REGEX), {
     message: 'E-mail inválido',
   })
   @IsNotEmpty()

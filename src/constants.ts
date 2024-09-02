@@ -16,3 +16,7 @@ export const jwt_constants = {
 };
 
 export const bcrypt_salt = 10;
+
+export const email = {
+  REGEX: '^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+[.]+[a-zA-Z]{2,}$',
+};
