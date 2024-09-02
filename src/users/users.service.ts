@@ -65,10 +65,13 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string): Promise<User> {
-    let user: User = new User({});
-    user.email = new Email(email);
     try {
-      return await this.userRepository.findOneByOrFail({ ...user });
+      return await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoin('user._role', 'role')
+        .where('user.email = :email', { email })
+        .select(['user._id._id', 'user._email._email', 'user._password', 'role._name'])
+        .getOneOrFail();
     } catch (err) {
       throw new NotFoundException('Usuário não encontrado');
     }
