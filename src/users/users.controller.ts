@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Put,
@@ -11,12 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import {
-  ApiBearerAuth,
-  ApiHeader,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -33,12 +27,6 @@ export class UsersController {
   @Get()
   async findAll() {
     return await this.usersService.findAll();
-  }
-
-  @ApiOperation({ summary: 'lista todos os cargos' })
-  @Get('roles')
-  async findAllRoles() {
-    return await this.usersService.findAllRoles();
   }
 
   @ApiOperation({ summary: 'retorna um usuário pelo id' })

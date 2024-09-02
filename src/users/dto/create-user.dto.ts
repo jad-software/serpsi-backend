@@ -1,14 +1,9 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsStrongPassword,
-  Matches,
-} from 'class-validator';
-import { Role } from '../entities/role.entity';
+import { IsEnum, IsNotEmpty, IsStrongPassword, Matches } from 'class-validator';
 import { Email } from '../vo/email.vo';
 import { ApiProperty } from '@nestjs/swagger';
 import { IUser } from '../interfaces/user.interface';
 import { email } from 'src/constants';
+import { Role } from '../vo/role.enum';
 
 export class CreateUserDto implements IUser {
   @ApiProperty({
@@ -38,10 +33,11 @@ export class CreateUserDto implements IUser {
   password: string;
 
   @ApiProperty({
-    type: String,
+    enum: Role,
     description: 'Nome do cargo do usuário',
-    example: 'Admin',
+    example: Role.PSYCHOLOGIST,
   })
   @IsNotEmpty()
-  role: Role | string;
+  @IsEnum(Role)
+  role: Role;
 }

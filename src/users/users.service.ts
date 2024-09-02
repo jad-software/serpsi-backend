@@ -1,4 +1,3 @@
-import { RoleService } from './role.service';
 import {
   Inject,
   Injectable,
@@ -17,16 +16,12 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly roleService: RoleService,
     @Inject(data_providers.USER_REPOSITORY)
     private userRepository: Repository<User>
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
-      const userRole = await this.roleService.findOneByName(
-        createUserDto.role as string
-      );
       const userEmail = new Email(createUserDto.email as string);
       const hashedPassword = await bcrypt.hash(
         createUserDto.password,
@@ -35,7 +30,7 @@ export class UsersService {
       const user = new User({
         email: userEmail,
         password: hashedPassword,
-        role: userRole,
+        role: createUserDto.role,
       });
       return await this.userRepository.save(user);
     } catch (err) {
@@ -47,17 +42,12 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
-  async findAllRoles() {
-    return await this.roleService.findAll();
-  }
-
   async findOneById(id: string): Promise<User> {
     let requestedUser = new User({});
     requestedUser.id = new Id(id);
     try {
       return await this.userRepository.findOneOrFail({
         where: { ...requestedUser },
-        //relations: ['_role'],
       });
     } catch (err) {
       throw new NotFoundException(err?.message);
@@ -68,9 +58,13 @@ export class UsersService {
     try {
       return await this.userRepository
         .createQueryBuilder('user')
-        .leftJoin('user._role', 'role')
         .where('user.email = :email', { email })
-        .select(['user._id._id', 'user._email._email', 'user._password', 'role._name'])
+        .select([
+          'user._id._id',
+          'user._email._email',
+          'user._password',
+          'user._role',
+        ])
         .getOneOrFail();
     } catch (err) {
       throw new NotFoundException('Usuário não encontrado');
@@ -80,10 +74,6 @@ export class UsersService {
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     let updatingUser = new User(updateUserDto);
 
-    if (updateUserDto.role)
-      updatingUser.role = await this.roleService.findOneByName(
-        updateUserDto.role as string
-      );
     if (updateUserDto.email)
       updatingUser.email = new Email(updateUserDto.email as string);
 

@@ -8,7 +8,7 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoginDTO } from './dto/login.dto';
 import { RolesGuard } from './guards/roles.guards';
 import { Roles } from './providers/roles.decorator';
-import { RoleEnum } from 'src/users/vo/role.enum';
+import { Role } from 'src/users/vo/role.enum';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -31,7 +31,7 @@ export class AuthController {
     return 'not implemented yet';
   }
   @ApiOperation({ summary: 'teste como funciona o JWT vai' })
-  @Roles(RoleEnum.PSYCHOLOGIST)
+  @Roles(Role.PSYCHOLOGIST)
   @UseGuards(RolesGuard)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
