@@ -7,10 +7,10 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { bcrypt_salt, data_providers } from 'src/constants';
+import { bcrypt_salt, data_providers } from '../constants';
 import { Repository } from 'typeorm';
 import { Email } from './vo/email.vo';
-import { Id } from 'src/entity-base/vo/id.vo';
+import { Id } from '../entity-base/vo/id.vo';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()

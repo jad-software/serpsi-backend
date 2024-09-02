@@ -2,7 +2,7 @@ import { IsEnum, IsNotEmpty, IsStrongPassword, Matches } from 'class-validator';
 import { Email } from '../vo/email.vo';
 import { ApiProperty } from '@nestjs/swagger';
 import { IUser } from '../interfaces/user.interface';
-import { email } from 'src/constants';
+import { email } from '../../constants';
 import { Role } from '../vo/role.enum';
 
 export class CreateUserDto implements IUser {

@@ -1,5 +1,5 @@
-import { data_providers } from 'src/constants';
-import { postgresDataSource } from 'src/data-source';
+import { data_providers } from '../constants';
+import { postgresDataSource } from '../data-source';
 
 export const databaseProviders = [
   {

@@ -1,7 +1,7 @@
 import { Email } from '../vo/email.vo';
 import { Role } from '../vo/role.enum';
-import { Column, Entity, ManyToOne } from 'typeorm';
-import { EntityBase } from 'src/entity-base/entities/entity-base';
+import { Column, Entity } from 'typeorm';
+import { EntityBase } from '../../entity-base/entities/entity-base';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { IUser } from '../interfaces/user.interface';
 
