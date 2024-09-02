@@ -5,10 +5,10 @@ export abstract class EntityBase {
   @Column(() => Id, { prefix: false })
   private _id: Id;
 
-  @CreateDateColumn({ type: 'timestamptz', name: 'createDate' })
+  @CreateDateColumn({ type: 'timestamptz', name: 'createDate', select: false })
   private _createDate: Date;
 
-  @UpdateDateColumn({ type: 'timestamptz', name: 'updateDate' })
+  @UpdateDateColumn({ type: 'timestamptz', name: 'updateDate', select: false })
   private _updateDate: Date;
 
   get CreateDate(): Date {
