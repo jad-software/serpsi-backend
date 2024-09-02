@@ -1,13 +1,14 @@
-import { postgresDataSource } from 'src/data-source';
+import { TEST_INTEGRATION, data_providers } from '../constants';
+import { postgresDataSource, testDataSource } from '../data-source';
 
 export const databaseProviders = [
-    {
-        provide: 'DATA_SOURCE',
-        useFactory: async () => {
-            const dataSource = postgresDataSource;
-            await dataSource.initialize();
-            console.log('Database connected successfully');
-            return dataSource;
-        },
+  {
+    provide: data_providers.DATA_SOURCE,
+    useFactory: async () => {
+      const dataSource = TEST_INTEGRATION ? testDataSource : postgresDataSource;
+      await dataSource.initialize();
+      console.log('Database connected successfully');
+      return dataSource;
     },
+  },
 ];

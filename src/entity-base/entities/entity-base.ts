@@ -1,30 +1,29 @@
-import {
-    Column,
-    CreateDateColumn,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Id } from '../vo/id.vo';
 
 export abstract class EntityBase {
-    @Column(() => Id)
-    private id: Id;
+  @Column(() => Id, { prefix: false })
+  private _id: Id;
 
-    @CreateDateColumn()
-    private createDate: Date;
+  @CreateDateColumn({ type: 'timestamptz', name: 'createDate', select: false })
+  private _createDate: Date;
 
-    @UpdateDateColumn()
-    private updateDate: Date;
+  @UpdateDateColumn({ type: 'timestamptz', name: 'updateDate', select: false })
+  private _updateDate: Date;
 
-    public getId(): string {
-        return this.id.getId();
-    }
+  get CreateDate(): Date {
+    return this._createDate;
+  }
 
-    public getCreateDate(): Date {
-        return this.createDate;
-    }
+  get UpdateDate(): Date {
+    return this._updateDate;
+  }
 
-    public getUpdateDate(): Date {
-        return this.updateDate;
-    }
+  get id(): Id {
+    return this._id;
+  }
+
+  set id(value: Id) {
+    this._id = value;
+  }
 }
