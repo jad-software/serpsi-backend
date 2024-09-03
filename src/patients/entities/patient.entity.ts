@@ -2,6 +2,7 @@ import { EntityBase } from '../../entity-base/entities/entity-base';
 import { Column, Entity } from 'typeorm';
 import { PaymentPlan } from '../vo/PaymentPlan.enum';
 import { CreatePatientDto } from '../dto/create-patient.dto';
+import { IPatient } from '../interfaces/patient.interface';
 
 //@Entity()
 /**
@@ -13,7 +14,7 @@ import { CreatePatientDto } from '../dto/create-patient.dto';
  * TODO [] implement Person foreign keys and relations  
  * 
  */
-export class Patient extends EntityBase {
+export class Patient extends EntityBase implements IPatient {
   constructor(partial: Partial<CreatePatientDto>) {
     super();
     Object.assign(this, partial);

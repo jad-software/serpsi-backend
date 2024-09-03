@@ -45,7 +45,7 @@ describe('PatientsService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should retrieve all users', async () => {
+  it('should retrieve all patient', async () => {
     const users: Patient[] = [
       new Patient({
         paymentPlan: PaymentPlan.MENSAL,
@@ -60,7 +60,7 @@ describe('PatientsService', () => {
     expect(mockRepository.find).toHaveBeenCalled();
   });
 
-  it('should return a user by id', async () => {
+  it('should return a patient by id', async () => {
     const email = 'john@example.com';
     const user: Patient = {
       id: new Id('f0846568-2bd9-450d-95e3-9a478e20e74b'),
@@ -79,7 +79,7 @@ describe('PatientsService', () => {
     });
   });
 
-  it('should update a user by id', async () => {
+  it('should update a patient by id', async () => {
     const updateUserDTO: UpdatePatientDto = {};
     const user: Patient = new Patient({});
     const expectedUser: Patient = new Patient({});
@@ -100,7 +100,8 @@ describe('PatientsService', () => {
       expectedUser
     );
   });
-  it('should remove a user by id', async () => {
+
+  it('should remove a patient by id', async () => {
     mockRepository.delete.mockResolvedValue({ affected: 1 });
 
     await service.remove('f0846568-2bd9-450d-95e3-9a478e20e74b');
