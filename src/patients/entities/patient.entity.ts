@@ -3,7 +3,7 @@ import { Column, Entity, OneToMany } from 'typeorm';
 import { PaymentPlan } from '../vo/PaymentPlan.enum';
 import { CreatePatientDto } from '../dto/create-patient.dto';
 import { IPatient } from '../interfaces/patient.interface';
-import { PatientToMedicine } from './patientToMedicine.entity';
+import { MedicamentInfo } from './medicamentInfo.entity';
 
 //@Entity()
 /**
@@ -29,10 +29,10 @@ export class Patient extends EntityBase implements IPatient {
   private _paymentPlan: PaymentPlan;
 
   @OneToMany(
-    () => PatientToMedicine,
-    (patientToMedicine) => patientToMedicine.patient
+    () => MedicamentInfo,
+    (medicamentInfo) => medicamentInfo.patient
   )
-  private _medicines: PatientToMedicine[];
+  private _medicines: MedicamentInfo[];
 
   get paymentPlan(): PaymentPlan {
     return this._paymentPlan;
@@ -41,11 +41,11 @@ export class Patient extends EntityBase implements IPatient {
     this._paymentPlan = paymentPlan;
   }
 
-  get medicines(): PatientToMedicine[] {
+  get medicines(): MedicamentInfo[] {
     return this._medicines;
   }
 
-  set medicines(medicines: PatientToMedicine[]) {
+  set medicines(medicines: MedicamentInfo[]) {
     this._medicines = medicines;
   }
 }

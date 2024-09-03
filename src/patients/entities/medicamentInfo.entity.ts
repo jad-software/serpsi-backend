@@ -4,7 +4,7 @@ import { Medicine } from './medicine.entity';
 import { EntityBase } from 'src/entity-base/entities/entity-base';
 
 //@Entity()
-export class PatientToMedicine extends EntityBase {
+export class MedicamentInfo extends EntityBase {
   @Column({ name: 'patientId' })
   private _patientId: string;
 
@@ -14,7 +14,9 @@ export class PatientToMedicine extends EntityBase {
   @ManyToOne(() => Patient, (patient) => patient.medicines)
   private _patient: Patient;
 
-  @ManyToOne(() => Medicine, (medicine) => medicine.patients)
+  @ManyToOne(() => Medicine, (medicine) => medicine.patients, {
+    eager: true,
+  })
   private _medicine: Medicine;
 
   get patientId(): string {

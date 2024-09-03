@@ -2,7 +2,7 @@ import { EntityBase } from '../../entity-base/entities/entity-base';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { CreateMedicineDto } from '../dto/create-medicine.dto';
 import { Patient } from './patient.entity';
-import { PatientToMedicine } from './patientToMedicine.entity';
+import { MedicamentInfo } from './medicamentInfo.entity';
 
 //@Entity()
 export class Medicine extends EntityBase {
@@ -15,10 +15,10 @@ export class Medicine extends EntityBase {
   private _name: string;
 
   @OneToMany(
-    () => PatientToMedicine,
-    (patientToMedicine) => patientToMedicine.medicine
+    () => MedicamentInfo,
+    (medicamentInfo) => medicamentInfo.medicine
   )
-  private _patients: PatientToMedicine[];
+  private _patients: MedicamentInfo[];
 
   get name(): string {
     return this._name;
@@ -28,11 +28,11 @@ export class Medicine extends EntityBase {
     this._name = name;
   }
 
-  get patients(): Patient[] {
-    return this.patients;
+  get patients(): MedicamentInfo[] {
+    return this._patients;
   }
 
-  set patients(patients: Patient[]) {
-    this.patients = patients;
+  set patients(patients: MedicamentInfo[]) {
+    this._patients = patients;
   }
 }
