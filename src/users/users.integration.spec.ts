@@ -6,7 +6,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Role } from './vo/role.enum';
 import { DatabaseModule } from '../database/database.module';
 import { userProvider } from './providers/user.providers';
-import { ConsoleLogger } from '@nestjs/common';
 import { Email } from './vo/email.vo';
 import { User } from './entities/user.entity';
 

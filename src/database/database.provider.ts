@@ -1,5 +1,6 @@
 import { TEST_INTEGRATION, data_providers } from '../constants';
-import { postgresDataSource, testDataSource } from '../data-source';
+import { postgresDataSource } from '../data-source';
+import { testDataSource } from '../data-source-test';
 
 export const databaseProviders = [
   {
