@@ -50,6 +50,10 @@ describe('PatientsController', () => {
     it('should create a Patient', async () => {
       const dto: CreatePatientDto = {
         paymentPlan: PaymentPlan.BIMESTRAL,
+        school: {
+          name: 'ativa idade',
+          CNPJ: '00.000.0000/0001-00',
+        },
       };
       expect(await controller.create(dto)).toEqual({ id: '1', ...dto });
       expect(service.create).toHaveBeenCalledWith(dto);

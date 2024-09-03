@@ -82,7 +82,6 @@ describe('PatientsService', () => {
     const updatePatientDTO: UpdatePatientDto = {};
     const expectedPatient: Patient = new Patient({});
 
-
     mockRepository.update.mockResolvedValue({ affected: 1 });
     mockRepository.findOneOrFail.mockResolvedValue(expectedPatient);
 

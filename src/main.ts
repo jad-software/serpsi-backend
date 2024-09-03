@@ -15,6 +15,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('users')
     .addTag('auth')
+    .addTag('patients')
     .addBearerAuth({
       type: 'http',
       scheme: 'bearer',

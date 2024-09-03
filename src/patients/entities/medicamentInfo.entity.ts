@@ -1,7 +1,7 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { Patient } from './patient.entity';
 import { Medicine } from './medicine.entity';
-import { EntityBase } from 'src/entity-base/entities/entity-base';
+import { EntityBase } from '../../entity-base/entities/entity-base';
 
 //@Entity()
 export class MedicamentInfo extends EntityBase {

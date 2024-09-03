@@ -1,9 +1,17 @@
 import { EntityBase } from '../../entity-base/entities/entity-base';
-import { Column, Entity, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { PaymentPlan } from '../vo/PaymentPlan.enum';
 import { CreatePatientDto } from '../dto/create-patient.dto';
 import { IPatient } from '../interfaces/patient.interface';
 import { MedicamentInfo } from './medicamentInfo.entity';
+import { School } from './school.entity';
 
 //@Entity()
 /**
@@ -28,10 +36,10 @@ export class Patient extends EntityBase implements IPatient {
   })
   private _paymentPlan: PaymentPlan;
 
-  @OneToMany(
-    () => MedicamentInfo,
-    (medicamentInfo) => medicamentInfo.patient
-  )
+  @ManyToOne(() => School)
+  private _school: School;
+
+  @OneToMany(() => MedicamentInfo, (medicamentInfo) => medicamentInfo.patient)
   private _medicines: MedicamentInfo[];
 
   get paymentPlan(): PaymentPlan {
@@ -47,5 +55,13 @@ export class Patient extends EntityBase implements IPatient {
 
   set medicines(medicines: MedicamentInfo[]) {
     this._medicines = medicines;
+  }
+
+  get school(): School {
+    return this._school;
+  }
+
+  set school(school: School) {
+    this._school = school;
   }
 }
