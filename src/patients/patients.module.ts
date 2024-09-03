@@ -3,9 +3,10 @@ import { PatientsService } from './patients.service';
 import { PatientsController } from './patients.controller';
 import { patientProvider } from './providers/patient.provider';
 import { DatabaseModule } from '../database/database.module';
+import { MedicinesModule } from './medicines.module';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, MedicinesModule],
   controllers: [PatientsController],
   providers: [PatientsService, ...patientProvider],
   exports: [PatientsService],

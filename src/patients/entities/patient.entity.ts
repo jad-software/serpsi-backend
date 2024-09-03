@@ -1,8 +1,9 @@
 import { EntityBase } from '../../entity-base/entities/entity-base';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { PaymentPlan } from '../vo/PaymentPlan.enum';
 import { CreatePatientDto } from '../dto/create-patient.dto';
 import { IPatient } from '../interfaces/patient.interface';
+import { PatientToMedicine } from './patientToMedicine.entity';
 
 //@Entity()
 /**
@@ -27,10 +28,24 @@ export class Patient extends EntityBase implements IPatient {
   })
   private _paymentPlan: PaymentPlan;
 
+  @OneToMany(
+    () => PatientToMedicine,
+    (patientToMedicine) => patientToMedicine.patient
+  )
+  private _medicines: PatientToMedicine[];
+
   get paymentPlan(): PaymentPlan {
     return this._paymentPlan;
   }
   set paymentPlan(paymentPlan: PaymentPlan) {
     this._paymentPlan = paymentPlan;
+  }
+
+  get medicines(): PatientToMedicine[] {
+    return this._medicines;
+  }
+
+  set medicines(medicines: PatientToMedicine[]) {
+    this._medicines = medicines;
   }
 }

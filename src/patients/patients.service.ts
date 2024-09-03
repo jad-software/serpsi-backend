@@ -20,8 +20,8 @@ export class PatientsService {
 
   async create(createPatientDto: CreatePatientDto) {
     try {
-      const user = new Patient(createPatientDto);
-      return await this.patientRepository.save(user);
+      const patient = new Patient(createPatientDto);
+      return await this.patientRepository.save(patient);
     } catch (err) {
       throw new InternalServerErrorException(err);
     }
@@ -48,8 +48,8 @@ export class PatientsService {
 
     try {
       await this.patientRepository.update(id, updatingPatient);
-      let user = await this.findOne(id);
-      return user;
+      let patient = await this.findOne(id);
+      return patient;
     } catch (err) {
       throw new InternalServerErrorException(err?.message);
     }
