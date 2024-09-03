@@ -8,4 +8,3 @@ export const postgresDataSource = new DataSource({
   entities: ['./dist/**/entities/*.{ts,js}'],
   logging: true,
 });
-

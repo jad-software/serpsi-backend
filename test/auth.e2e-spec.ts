@@ -23,7 +23,7 @@ describe('AuthController (e2e)', () => {
         });
       } else {
         return Promise.reject(new UnauthorizedException('Invalid credentials'));
-      } 
+      }
     }),
     validateUser: jest.fn((email: string, password: string) => {
       return Promise.resolve({
@@ -31,7 +31,7 @@ describe('AuthController (e2e)', () => {
         password,
         id: 'f0846568-2bd9-450d-95e3-9a478e20e74b',
         role: 'PSI',
-      })
+      });
     }),
   };
 
@@ -72,13 +72,12 @@ describe('AuthController (e2e)', () => {
       email: 'wrong@teste.com',
       password: 'wrongPassword',
     };
-  
+
     await request(app.getHttpServer())
       .post('/auth/login')
       .send(invalidPayload)
       .expect(401);
   });
-
 
   afterAll(async () => {
     await app.close();

@@ -10,7 +10,6 @@ import { RolesGuard } from './guards/roles.guards';
 import { Roles } from './providers/roles.decorator';
 import { Role } from '../users/vo/role.enum';
 
-
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
