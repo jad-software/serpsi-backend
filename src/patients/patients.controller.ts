@@ -16,27 +16,27 @@ export class PatientsController {
   constructor(private readonly patientsService: PatientsService) {}
 
   @Post()
-  create(@Body() createPatientDto: CreatePatientDto) {
-    return this.patientsService.create(createPatientDto);
+  async create(@Body() createPatientDto: CreatePatientDto) {
+    return await this.patientsService.create(createPatientDto);
   }
 
   @Get()
-  findAll() {
-    return this.patientsService.findAll();
+  async findAll() {
+    return await this.patientsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.patientsService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return await this.patientsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePatientDto: UpdatePatientDto) {
-    return this.patientsService.update(id, updatePatientDto);
+  async update(@Param('id') id: string, @Body() updatePatientDto: UpdatePatientDto) {
+    return await this.patientsService.update(id, updatePatientDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.patientsService.remove(id);
+  async remove(@Param('id') id: string) {
+    return await this.patientsService.remove(id);
   }
 }
