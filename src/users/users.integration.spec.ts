@@ -8,7 +8,12 @@ import { DatabaseModule } from '../database/database.module';
 import { userProvider } from './providers/user.providers';
 import { Email } from './vo/email.vo';
 import { User } from './entities/user.entity';
-import { TEST_INTEGRATION } from '../constants';
+import {
+  TEST_INTEGRATION,
+  TEST_POSTGRES_URL,
+  data_providers,
+} from '../constants';
+import { DataSource } from 'typeorm';
 
 describe('UsersController (integration)', () => {
   let controller: UsersController;
@@ -17,9 +22,25 @@ describe('UsersController (integration)', () => {
   let globalNumberofUsers: number;
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [DatabaseModule],
       controllers: [UsersController],
-      providers: [UsersService, ...userProvider],
+      providers: [
+        UsersService,
+        {
+          provide: data_providers.DATA_SOURCE,
+          useFactory: async () => {
+            const dataSource = new DataSource({
+              type: 'postgres',
+              url: TEST_POSTGRES_URL,
+              entities: ['./src/**/entities/*.{ts,js}'],
+              logging: false,
+            });
+            await dataSource.initialize();
+            console.log('test database connected successfully');
+            return dataSource;
+          },
+        },
+        ...userProvider,
+      ],
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
