@@ -1,5 +1,6 @@
 export enum PaymentPlan {
+  AVULSA = 'AVULSA',
   MENSAL = 'MENSAL',
   BIMESTRAL = 'BIMESTRAL',
-  SEMESTRAL = 'SEMESTRAL',
+  TRIMESTRAL = 'TRIMESTRAL',
 }
