@@ -15,9 +15,9 @@ describe('PatientsController', () => {
       ...dto,
     })),
     findAll: jest.fn(() => [
-      { id: '1', paymentPlan: PaymentPlan.BIMESTRAL, },
-      { id: '2', paymentPlan: PaymentPlan.MENSAL, },
-    ],),
+      { id: '1', paymentPlan: PaymentPlan.BIMESTRAL },
+      { id: '2', paymentPlan: PaymentPlan.MENSAL },
+    ]),
     findOne: jest.fn((id: string) => ({
       id,
       paymentPlan: PaymentPlan.MENSAL,
@@ -59,8 +59,8 @@ describe('PatientsController', () => {
   describe('findAll', () => {
     it('should return an array of patients', async () => {
       expect(await controller.findAll()).toEqual([
-        { id: '1', paymentPlan: PaymentPlan.BIMESTRAL, },
-        { id: '2', paymentPlan: PaymentPlan.MENSAL, },
+        { id: '1', paymentPlan: PaymentPlan.BIMESTRAL },
+        { id: '2', paymentPlan: PaymentPlan.MENSAL },
       ]);
       expect(service.findAll).toHaveBeenCalled();
     });

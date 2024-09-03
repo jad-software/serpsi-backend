@@ -13,7 +13,6 @@ import { Id } from '../entity-base/vo/id.vo';
 
 @Injectable()
 export class PatientsService {
-  
   constructor(
     @Inject(data_providers.PATIENT_REPOSITORY)
     private patientRepository: Repository<Patient>

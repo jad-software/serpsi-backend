@@ -29,7 +29,7 @@ describe('UsersController (integration)', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
   });
-  
+
   if (TEST_INTEGRATION) {
     describe('POST /users', () => {
       it('should create a user', async () => {

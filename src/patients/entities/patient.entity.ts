@@ -6,13 +6,13 @@ import { IPatient } from '../interfaces/patient.interface';
 
 //@Entity()
 /**
- *  
- * TODO [] implement school management entity          
+ *
+ * TODO [] implement school management entity
  * TODO [] implement Comorbity management entity        |
  * TODO [] implement Medicine management entity         |
  * TODO [] implement patient entity at database         V
- * TODO [] implement Person foreign keys and relations  
- * 
+ * TODO [] implement Person foreign keys and relations
+ *
  */
 export class Patient extends EntityBase implements IPatient {
   constructor(partial: Partial<CreatePatientDto>) {
