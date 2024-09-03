@@ -46,7 +46,7 @@ describe('PatientsService', () => {
   });
 
   it('should retrieve all patient', async () => {
-    const users: Patient[] = [
+    const patients: Patient[] = [
       new Patient({
         paymentPlan: PaymentPlan.MENSAL,
       }),
@@ -54,22 +54,21 @@ describe('PatientsService', () => {
         paymentPlan: PaymentPlan.BIMESTRAL,
       }),
     ];
-    mockRepository.find.mockResolvedValue(users);
+    mockRepository.find.mockResolvedValue(patients);
 
-    expect(await service.findAll()).toEqual(users);
+    expect(await service.findAll()).toEqual(patients);
     expect(mockRepository.find).toHaveBeenCalled();
   });
 
   it('should return a patient by id', async () => {
-    const email = 'john@example.com';
-    const user: Patient = {
+    const patient: Patient = {
       id: new Id('f0846568-2bd9-450d-95e3-9a478e20e74b'),
     } as Patient;
-    mockRepository.findOneOrFail.mockResolvedValue(user);
+    mockRepository.findOneOrFail.mockResolvedValue(patient);
 
     expect(
       await service.findOne('f0846568-2bd9-450d-95e3-9a478e20e74b')
-    ).toEqual(user);
+    ).toEqual(patient);
     expect(mockRepository.findOneOrFail).toHaveBeenCalledWith({
       where: {
         _id: {
@@ -80,24 +79,22 @@ describe('PatientsService', () => {
   });
 
   it('should update a patient by id', async () => {
-    const updateUserDTO: UpdatePatientDto = {};
-    const user: Patient = new Patient({});
-    const expectedUser: Patient = new Patient({});
+    const updatePatientDTO: UpdatePatientDto = {};
+    const expectedPatient: Patient = new Patient({});
 
-    user.id = new Id('f0846568-2bd9-450d-95e3-9a478e20e74b');
 
     mockRepository.update.mockResolvedValue({ affected: 1 });
-    mockRepository.findOneOrFail.mockResolvedValue(expectedUser);
+    mockRepository.findOneOrFail.mockResolvedValue(expectedPatient);
 
     expect(
       await service.update(
         'f0846568-2bd9-450d-95e3-9a478e20e74b',
-        updateUserDTO
+        updatePatientDTO
       )
-    ).toEqual(expectedUser);
+    ).toEqual(expectedPatient);
     expect(mockRepository.update).toHaveBeenCalledWith(
       'f0846568-2bd9-450d-95e3-9a478e20e74b',
-      expectedUser
+      expectedPatient
     );
   });
 
