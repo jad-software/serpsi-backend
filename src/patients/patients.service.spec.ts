@@ -6,6 +6,9 @@ import { data_providers } from '../constants';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { Id } from '../entity-base/vo/id.vo';
 import { PaymentPlan } from './vo/PaymentPlan.enum';
+import { SchoolService } from './school.service';
+import { CreateSchoolDto } from './dto/school/create-school.dto';
+import { UpdateSchoolDto } from './dto/school/update-school.dto';
 
 describe('PatientsService', () => {
   let service: PatientsService;
@@ -19,6 +22,28 @@ describe('PatientsService', () => {
     select: jest.fn().mockReturnThis(),
     getOneOrFail: jest.fn(),
   };
+  const mockSchoolService = {
+    create: jest.fn((dto: CreateSchoolDto) => ({
+      id: '1',
+      ...dto,
+    })),
+    findAll: jest.fn(() => [
+      { id: '1', name: 'ativa idade', CNPJ: '00.000.0000/0001-00' },
+      { id: '2', name: 'coperil', CNPJ: '00.000.0000/0001-01' },
+    ]),
+    findOneBy: jest.fn((search: UpdateSchoolDto) => ({
+      id: '1',
+      name: 'ativa idade',
+      CNPJ: '00.000.0000/0001-00',
+    })),
+    findOne: jest.fn((id: string) => ({
+      id: '1',
+      name: 'ativa idade',
+      CNPJ: '00.000.0000/0001-00',
+    })),
+    remove: jest.fn((id: string) => ({ id })),
+  };
+
   beforeEach(async () => {
     mockRepository = {
       save: jest.fn(),
@@ -35,6 +60,10 @@ describe('PatientsService', () => {
           provide: data_providers.PATIENT_REPOSITORY,
           useValue: mockRepository,
         },
+        {
+          provide: SchoolService,
+          useValue: mockSchoolService,
+        }
       ],
     }).compile();
 
