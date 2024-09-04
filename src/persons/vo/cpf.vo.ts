@@ -7,6 +7,7 @@ export class Cpf {
 
   @Column({
     name: 'cpf',
+    unique: true,
   })
   private _cpf: string;
 

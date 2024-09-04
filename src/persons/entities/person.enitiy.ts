@@ -13,7 +13,7 @@ export class Person extends EntityBase {
   @Column({ name: 'name' })
   private _name: string;
 
-  @Column({ name: 'rg' })
+  @Column({ name: 'rg', unique: true })
   private _rg: string;
 
   @Column({ name: 'profilePicture' })

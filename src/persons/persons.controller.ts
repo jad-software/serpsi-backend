@@ -8,7 +8,7 @@ export class PersonsController {
   constructor(private readonly personsService: PersonsService) {}
 
   @Post()
-  public create(@Body() createPeronDto: CreatePersonDto): Person {
+  async create(@Body() createPeronDto: CreatePersonDto): Promise<Person> {
     return this.personsService.create(createPeronDto);
   }
 }
