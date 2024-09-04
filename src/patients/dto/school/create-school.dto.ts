@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, Matches } from 'class-validator';
-import { ISchool } from '../interfaces/school.interface';
+import { ISchool } from '../../interfaces/school.interface';
 import { ApiProperty } from '@nestjs/swagger';
-import { CNPJ } from '../../constants';
+import { CNPJ } from '../../../constants';
 
 export class CreateSchoolDto implements ISchool {
   @ApiProperty({

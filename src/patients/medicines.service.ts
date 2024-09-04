@@ -4,8 +4,8 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateMedicineDto } from './dto/create-medicine.dto';
-import { UpdateMedicineDto } from './dto/update-medicine.dto';
+import { CreateMedicineDto } from './dto/medicine/create-medicine.dto';
+import { UpdateMedicineDto } from './dto/medicine/update-medicine.dto';
 import { Repository } from 'typeorm';
 import { Medicine } from './entities/medicine.entity';
 import { data_providers } from '../constants';

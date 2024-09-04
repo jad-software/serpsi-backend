@@ -1,4 +1,4 @@
-import { CreateSchoolDto } from '../dto/create-school.dto';
+import { CreateSchoolDto } from '../dto/school/create-school.dto';
 import { School } from '../entities/school.entity';
 import { PaymentPlan } from '../vo/PaymentPlan.enum';
 

@@ -12,7 +12,7 @@ import { Patient } from './entities/patient.entity';
 import { Id } from '../entity-base/vo/id.vo';
 import { SchoolService } from './school.service';
 import { School } from './entities/school.entity';
-import { UpdateSchoolDto } from './dto/update-school.dto';
+import { UpdateSchoolDto } from './dto/school/update-school.dto';
 
 @Injectable()
 export class PatientsService {

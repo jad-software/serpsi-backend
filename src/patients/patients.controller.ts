@@ -11,7 +11,7 @@ import {
 import { PatientsService } from './patients.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
-import { UpdateSchoolDto } from './dto/update-school.dto';
+import { UpdateSchoolDto } from './dto/school/update-school.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 @ApiTags('patients')
 @ApiBearerAuth()

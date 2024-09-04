@@ -5,8 +5,8 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateSchoolDto } from './dto/create-school.dto';
-import { UpdateSchoolDto } from './dto/update-school.dto';
+import { CreateSchoolDto } from './dto/school/create-school.dto';
+import { UpdateSchoolDto } from './dto/school/update-school.dto';
 import { data_providers } from '../constants';
 import { Like, Repository } from 'typeorm';
 import { School } from './entities/school.entity';

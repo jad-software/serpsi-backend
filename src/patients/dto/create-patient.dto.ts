@@ -3,7 +3,7 @@ import { PaymentPlan } from '../vo/PaymentPlan.enum';
 import { IsEnum, IsNotEmpty } from 'class-validator';
 import { IPatient } from '../interfaces/patient.interface';
 import { School } from '../entities/school.entity';
-import { CreateSchoolDto } from './create-school.dto';
+import { CreateSchoolDto } from './school/create-school.dto';
 
 export class CreatePatientDto implements IPatient {
   @ApiProperty({

@@ -1,6 +1,6 @@
 import { EntityBase } from '../../entity-base/entities/entity-base';
 import { ISchool } from '../interfaces/school.interface';
-import { CreateSchoolDto } from '../dto/create-school.dto';
+import { CreateSchoolDto } from '../dto/school/create-school.dto';
 import { Column, Entity, Index } from 'typeorm';
 
 @Entity()

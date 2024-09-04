@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Medicine } from './entities/medicine.entity';
 import { data_providers } from '../constants';
 import { Id } from '../entity-base/vo/id.vo';
-import { UpdateMedicineDto } from './dto/update-medicine.dto';
+import { UpdateMedicineDto } from './dto/medicine/update-medicine.dto';
 
 describe('MedicinesService', () => {
   let service: MedicinesService;
