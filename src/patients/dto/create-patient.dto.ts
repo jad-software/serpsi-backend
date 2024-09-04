@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PaymentPlan } from '../vo/PaymentPlan.enum';
-import { IsEnum, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty, ValidateNested } from 'class-validator';
 import { IPatient } from '../interfaces/patient.interface';
 import { School } from '../entities/school.entity';
 import { CreateSchoolDto } from './school/create-school.dto';
+import { Type } from 'class-transformer';
 
 export class CreatePatientDto implements IPatient {
   @ApiProperty({
@@ -19,6 +20,7 @@ export class CreatePatientDto implements IPatient {
     type: CreateSchoolDto,
     description: 'Dados da escola do paciente',
   })
-  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => CreateSchoolDto)
   school: CreateSchoolDto;
 }

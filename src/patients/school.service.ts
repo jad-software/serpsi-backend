@@ -45,20 +45,27 @@ export class SchoolService {
   }
 
   async findOneBy(search: UpdateSchoolDto) {
-    let requestedSchool = new School({...search});
-    // tem que mudar isso aqui
-    requestedSchool.name = (search.name && search.name.trim().length > 2) ? search.name.trim() : undefined;
+    let requestedSchool = new School({ ...search });
     try {
+      if (search.name)
+        requestedSchool.name = this.validateNameInSearch(search.name);
+
       return await this.schoolRepository
         .createQueryBuilder('school')
-        .where({
-          _name: Like('%' + requestedSchool.name + '%'),
+        .where('LOWER(school.name) LIKE LOWER(:name)', {
+          name: `%${requestedSchool.name}%`,
         })
         .orWhere('school.CNPJ = :CNPJ', { CNPJ: requestedSchool.CNPJ })
         .getOneOrFail();
     } catch (err) {
-      throw new NotFoundException('escola não encontrada');
+      throw new NotFoundException('escola não encontrada - ' + err.message);
     }
+  }
+
+  private validateNameInSearch(name: string) {
+    if (name.trim().length < 3)
+      throw new BadRequestException('nome vazio ou menor que 3 caracteres');
+    return name.trim();
   }
 
   async update(id: string, updateSchoolDto: UpdateSchoolDto) {
