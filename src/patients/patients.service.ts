@@ -13,7 +13,6 @@ import { Id } from '../entity-base/vo/id.vo';
 import { SchoolService } from './school.service';
 import { School } from './entities/school.entity';
 import { UpdateSchoolDto } from './dto/update-school.dto';
-import { AccessSchoolDao } from './dto/access-school.dao';
 
 @Injectable()
 export class PatientsService {
@@ -52,7 +51,7 @@ export class PatientsService {
     }
   }
 
-  async findOneSchool(search: AccessSchoolDao): Promise<School> {
+  async findOneSchool(search: UpdateSchoolDto): Promise<School> {
     try {
       return await this.schoolService.findOneBy(search);
     } catch (err) {

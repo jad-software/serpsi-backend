@@ -13,7 +13,6 @@ import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { UpdateSchoolDto } from './dto/update-school.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AccessSchoolDao } from './dto/access-school.dao';
 @ApiTags('patients')
 @ApiBearerAuth()
 @Controller('patients')
@@ -39,7 +38,7 @@ export class PatientsController {
 
   @ApiOperation({ summary: 'retorna uma escola pelo nome ou cnpj' })
   @Post('/school')
-  async findOneSchool(@Query() search?: AccessSchoolDao) {
+  async findOneSchool(@Query() search?: UpdateSchoolDto) {
     return await this.patientsService.findOneSchool(search);
   }
 

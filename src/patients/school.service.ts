@@ -11,7 +11,6 @@ import { data_providers } from '../constants';
 import { Like, Repository } from 'typeorm';
 import { School } from './entities/school.entity';
 import { Id } from '../entity-base/vo/id.vo';
-import { AccessSchoolDao } from './dto/access-school.dao';
 
 @Injectable()
 export class SchoolService {
@@ -45,7 +44,7 @@ export class SchoolService {
     }
   }
 
-  async findOneBy(search: AccessSchoolDao) {
+  async findOneBy(search: UpdateSchoolDto) {
     let requestedSchool = new School({...search});
     // tem que mudar isso aqui
     requestedSchool.name = (search.name && search.name.trim().length > 2) ? search.name.trim() : undefined;

@@ -20,6 +20,6 @@ export class CreateSchoolDto implements ISchool {
   })
   @IsNotEmpty()
   @IsString()
-  //@Matches(RegExp(CNPJ.REGEX), { message: 'CNPJ inválido' })
+  @Matches(RegExp(CNPJ.REGEX), { message: 'CNPJ inválido' })
   CNPJ: string;
 }
