@@ -1,5 +1,5 @@
-import { Cpf } from "../vo/cpf.vo";
-import { Phone } from "../vo/phone.vo";
+import { Cpf } from '../vo/cpf.vo';
+import { Phone } from '../vo/phone.vo';
 
 export interface IPerson {
   name: string;

@@ -1,11 +1,18 @@
+import { Column } from 'typeorm';
+
 export class Phone {
   constructor(ddi: string, ddd: string, number: string) {
     this._ddi = ddi;
     this._ddd = ddd;
     this._number = number;
   }
+  @Column({ default: () => '+55', name: 'ddi' })
   private _ddi: string;
+
+  @Column({ name: 'ddd' })
   private _ddd: string;
+
+  @Column({ name: 'number' })
   private _number: string;
 
   get ddi(): string {

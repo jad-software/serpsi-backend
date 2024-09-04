@@ -8,7 +8,13 @@ import { AuthModule } from './auth/auth.module';
 import { PersonsModule } from './persons/persons.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), DatabaseModule, UsersModule, AuthModule, PersonsModule],
+  imports: [
+    ConfigModule.forRoot(),
+    DatabaseModule,
+    UsersModule,
+    AuthModule,
+    PersonsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

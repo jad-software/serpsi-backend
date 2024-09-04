@@ -5,7 +5,7 @@ export const databaseProviders = [
   {
     provide: data_providers.DATA_SOURCE,
     useFactory: async () => {
-      const dataSource =  postgresDataSource;
+      const dataSource = postgresDataSource;
       await dataSource.initialize();
       console.log('Database connected successfully');
       return dataSource;
