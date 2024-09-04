@@ -9,7 +9,7 @@ import { PaymentPlan } from './vo/PaymentPlan.enum';
 describe('PatientsController', () => {
   let controller: PatientsController;
   let service: PatientsService;
-  const mockUserService = {
+  const mockService = {
     create: jest.fn((dto: CreatePatientDto) => ({
       id: '1',
       ...dto,
@@ -32,7 +32,7 @@ describe('PatientsController', () => {
       providers: [
         {
           provide: PatientsService,
-          useValue: mockUserService,
+          useValue: mockService,
         },
       ],
     }).compile();
