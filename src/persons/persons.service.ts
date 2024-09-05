@@ -15,17 +15,21 @@ import { UpdatePersonDto } from './dto/updatePerson.dto';
 import { CreateAddressDto } from './dto/createAddress.dto';
 import { Address } from './entities/address.entity';
 import { UpdateAddressDto } from './dto/updateAddress.dto';
+import { AddressesService } from './Addresses.service';
 
 @Injectable()
 export class PersonsService {
   constructor(
     @Inject(data_providers.PERSON_REPOSITORY)
     private personRepository: Repository<Person>,
-    @Inject(data_providers.ADDRESS_REPOSITORY)
-    private addressRepository: Repository<Address>
+    @Inject()
+    private addressService: AddressesService
   ) { }
-  async create(createPersonDto: CreatePersonDto, createAddressDto: CreateAddressDto) {
+  async create(
+    createPersonDto: CreatePersonDto,
+  ) {
     try {
+      console.log(createPersonDto.address);
       const phone = new Phone(
         createPersonDto.phone.ddd,
         createPersonDto.phone.ddi,
@@ -40,15 +44,8 @@ export class PersonsService {
         cpf: cpf,
         name: createPersonDto.name,
       });
-      person.address = new Address({
-        state: createAddressDto.state,
-        zipCode: createAddressDto.zipCode,
-        street: createAddressDto.street,
-        district: createAddressDto.district,
-        homeNumber: createAddressDto.homeNumber,
-        complement: createAddressDto.complement
-      });
-      await this.addressRepository.save(person.address)
+      const address = await this.addressService.create(createPersonDto.address);
+      person.address = address;
       await this.personRepository.save(person);
       return person;
     } catch (err) {
@@ -75,7 +72,11 @@ export class PersonsService {
     }
   }
 
-  async update(id: string, updatePersonDto: UpdatePersonDto, updateAddressDto?: UpdateAddressDto) {
+  async update(
+    id: string,
+    updatePersonDto: UpdatePersonDto,
+    updateAddressDto?: UpdateAddressDto
+  ) {
     try {
       const person = new Person(updatePersonDto);
       let foundPerson = await this.findOneById(id);
@@ -90,10 +91,7 @@ export class PersonsService {
         person.cpf = new Cpf(updatePersonDto.cpf.cpf);
       }
 
-      await this.personRepository.update(
-        foundPerson.id.id,
-        person
-      );
+      await this.personRepository.update(foundPerson.id.id, person);
       foundPerson = await this.findOneById(id);
       return foundPerson;
     } catch (err) {
@@ -109,7 +107,4 @@ export class PersonsService {
       throw new BadRequestException(err?.message);
     }
   }
-
-  
-  
 }

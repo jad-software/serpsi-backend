@@ -19,8 +19,10 @@ export class PersonsController {
   constructor(private readonly personsService: PersonsService) {}
 
   @Post()
-  async create(@Body() createPeronDto: CreatePersonDto, @Body() createAddressDto: CreateAddressDto): Promise<Person> {
-    return this.personsService.create(createPeronDto, createAddressDto);
+  async create(
+    @Body() createPeronDto: CreatePersonDto
+  ): Promise<Person> {
+    return this.personsService.create(createPeronDto);
   }
 
   @Get()
@@ -36,7 +38,7 @@ export class PersonsController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() updatePersonDto: UpdatePersonDto,
+    @Body() updatePersonDto: UpdatePersonDto
   ) {
     return await this.personsService.update(id, updatePersonDto);
   }

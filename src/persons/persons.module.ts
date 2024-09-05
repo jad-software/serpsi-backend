@@ -10,6 +10,11 @@ import { AddressesService } from './Addresses.service';
 @Module({
   controllers: [PersonsController, AdressesController],
   imports: [DatabaseModule],
-  providers: [...personProvider,...addressProvider, PersonsService, AddressesService],
+  providers: [
+    ...personProvider,
+    ...addressProvider,
+    PersonsService,
+    AddressesService,
+  ],
 })
 export class PersonsModule {}

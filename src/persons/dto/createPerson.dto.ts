@@ -10,6 +10,7 @@ import { Cpf } from '../vo/cpf.vo';
 import { Phone } from '../vo/phone.vo';
 import { Type } from 'class-transformer';
 import { CreateCpfDto } from './createCpf.dto';
+import { CreateAddressDto } from './createAddress.dto';
 
 export class CreatePersonDto implements IPerson {
   @IsNotEmpty()
@@ -34,4 +35,8 @@ export class CreatePersonDto implements IPerson {
   @ValidateNested()
   @Type(() => CreateCpfDto)
   cpf: Cpf;
+
+  @ValidateNested()
+  @Type(() => CreateAddressDto)
+  address: CreateAddressDto;
 }
