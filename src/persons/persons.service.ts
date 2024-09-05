@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { Phone } from './vo/phone.vo';
 import { Cpf } from './vo/cpf.vo';
 import { Id } from 'src/entity-base/vo/id.vo';
+import { UpdatePersonDto } from './dto/updatePerson.dto';
 
 @Injectable()
 export class PersonsService {
@@ -57,6 +58,31 @@ export class PersonsService {
     }
   }
 
+  async update(id: string, updatePersonDto: UpdatePersonDto) {
+    try {
+      const person = new Person(updatePersonDto);
+      let foundPerson = await this.findOneById(id);
+      if(updatePersonDto.phone){
+        person.phone =  new Phone(
+          updatePersonDto.phone.ddi || foundPerson.phone.ddi ,
+          updatePersonDto.phone.ddd || foundPerson.phone.ddd,
+          updatePersonDto.phone.number || foundPerson.phone.number
+        );
+      }
+      if(updatePersonDto.cpf) {
+        person.cpf = new Cpf(updatePersonDto.cpf.cpf);
+      }
+     
+      const personUpdated = await this.personRepository.update(foundPerson.id.id, person);
+      foundPerson = await this.findOneById(id);
+      return foundPerson;
+    }
+    catch (err) {
+      throw new BadRequestException(err?.message);
+    }
+
+  }
+
   async delete(id: string): Promise<any> {
     try {
       const person = await this.findOneById(id);
@@ -65,5 +91,5 @@ export class PersonsService {
       throw new BadRequestException(err?.message);
     }
   }
- 
+
 }
