@@ -63,7 +63,7 @@ describe('PatientsService', () => {
         {
           provide: SchoolService,
           useValue: mockSchoolService,
-        }
+        },
       ],
     }).compile();
 

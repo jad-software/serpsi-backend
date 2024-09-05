@@ -23,7 +23,7 @@ export class SchoolService {
   async create(createSchoolDto: CreateSchoolDto) {
     try {
       const school = new School(createSchoolDto);
-      school.CNPJ =  new CNPJ(createSchoolDto.CNPJ);
+      school.CNPJ = new CNPJ(createSchoolDto.CNPJ);
       return await this.schoolRepository.save(school);
     } catch (err) {
       throw new InternalServerErrorException(err);
