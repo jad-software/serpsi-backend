@@ -12,7 +12,6 @@ import {
   Param,
   Post,
   Put,
-  Query,
 } from '@nestjs/common';
 
 @Controller('persons')
@@ -38,9 +37,8 @@ export class PersonsController {
   async update(
     @Param('id') id: string,
     @Body() updatePersonDto: UpdatePersonDto,
-    @Body() updateAddresDto: UpdateAddressDto
   ) {
-    return await this.personsService.update(id, updatePersonDto, updateAddresDto);
+    return await this.personsService.update(id, updatePersonDto);
   }
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<any> {

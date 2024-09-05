@@ -90,11 +90,6 @@ export class PersonsService {
         person.cpf = new Cpf(updatePersonDto.cpf.cpf);
       }
 
-      if (updateAddressDto) {
-        console.log(updateAddressDto);
-        await this.updateAddress(foundPerson.address.id.id, updateAddressDto);
-      }
-
       await this.personRepository.update(
         foundPerson.id.id,
         person
@@ -115,33 +110,6 @@ export class PersonsService {
     }
   }
 
-  async findAddressById(id: string): Promise<Address> {
-    try {
-      const address = await this.addressRepository
-        .createQueryBuilder('address')
-        .where('address._id = :id', { id })
-        .getOneOrFail();
-      return address;
-    }
-    catch (err) {
-      throw new NotFoundException(err?.message);
-    }
-  }
-  async updateAddress(id: string, updateAddressDto: UpdateAddressDto): Promise<any> {
-    try {
-      const personsAdress = await this.findAddressById(id);
-      const updatedAddress = new Address({
-        state: updateAddressDto.state,
-        zipCode: updateAddressDto.zipCode,
-        street: updateAddressDto.street,
-        district: updateAddressDto.district,
-        homeNumber: updateAddressDto.homeNumber,
-        complement: updateAddressDto.complement
-      });
-      await this.addressRepository.update(id, updatedAddress);
-    }
-    catch (err) {
-      throw new NotFoundException(err?.message);
-    }
-  }
+  
+  
 }
