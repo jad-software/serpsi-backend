@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreatePersonDto } from './dto/createPerson.dto';
 import { Person } from './entities/person.enitiy';
 import { data_providers } from 'src/constants';
@@ -13,7 +18,7 @@ export class PersonsService {
   constructor(
     @Inject(data_providers.PERSON_REPOSITORY)
     private personRepository: Repository<Person>
-  ) { }
+  ) {}
   async create(createPersonDto: CreatePersonDto) {
     try {
       const phone = new Phone(
@@ -39,9 +44,8 @@ export class PersonsService {
   }
   async findAll(): Promise<Person[]> {
     try {
-      return await this.personRepository.find()
-    }
-    catch (err) {
+      return await this.personRepository.find();
+    } catch (err) {
       throw new BadRequestException(err?.message);
     }
   }
@@ -51,9 +55,8 @@ export class PersonsService {
         .createQueryBuilder('person')
         .where('person._id = :id', { id })
         .getOneOrFail();
-      return person
-    }
-    catch (err) {
+      return person;
+    } catch (err) {
       throw new NotFoundException(err?.message);
     }
   }
@@ -62,25 +65,26 @@ export class PersonsService {
     try {
       const person = new Person(updatePersonDto);
       let foundPerson = await this.findOneById(id);
-      if(updatePersonDto.phone){
-        person.phone =  new Phone(
-          updatePersonDto.phone.ddi || foundPerson.phone.ddi ,
+      if (updatePersonDto.phone) {
+        person.phone = new Phone(
+          updatePersonDto.phone.ddi || foundPerson.phone.ddi,
           updatePersonDto.phone.ddd || foundPerson.phone.ddd,
           updatePersonDto.phone.number || foundPerson.phone.number
         );
       }
-      if(updatePersonDto.cpf) {
+      if (updatePersonDto.cpf) {
         person.cpf = new Cpf(updatePersonDto.cpf.cpf);
       }
-     
-      const personUpdated = await this.personRepository.update(foundPerson.id.id, person);
+
+      const personUpdated = await this.personRepository.update(
+        foundPerson.id.id,
+        person
+      );
       foundPerson = await this.findOneById(id);
       return foundPerson;
-    }
-    catch (err) {
+    } catch (err) {
       throw new BadRequestException(err?.message);
     }
-
   }
 
   async delete(id: string): Promise<any> {
@@ -91,5 +95,4 @@ export class PersonsService {
       throw new BadRequestException(err?.message);
     }
   }
-
 }

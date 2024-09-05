@@ -3,9 +3,10 @@ import { CreatePersonDto } from '../dto/createPerson.dto';
 import { Phone } from '../vo/phone.vo';
 import { Cpf } from '../vo/cpf.vo';
 import { Column, Entity } from 'typeorm';
+import { IPerson } from '../interfaces/person.interface';
 
 @Entity()
-export class Person extends EntityBase {
+export class Person extends EntityBase implements IPerson {
   constructor(partial: Partial<CreatePersonDto>) {
     super();
     Object.assign(this, partial);
