@@ -2,6 +2,7 @@ import { EntityBase } from '../../entity-base/entities/entity-base';
 import { ISchool } from '../interfaces/school.interface';
 import { CreateSchoolDto } from '../dto/school/create-school.dto';
 import { Column, Entity, Index } from 'typeorm';
+import { CNPJ } from '../vo/CNPJ.vo';
 
 @Entity()
 export class School extends EntityBase implements ISchool {
@@ -13,8 +14,10 @@ export class School extends EntityBase implements ISchool {
   @Column({ unique: true, name: 'name' })
   private _name: string;
 
-  @Column({ unique: true, name: 'CNPJ' })
-  private _CNPJ: string;
+  @Column(() => CNPJ, {
+    prefix: false,
+  })
+  private _CNPJ: CNPJ;
 
   get name(): string {
     return this._name;
@@ -22,10 +25,10 @@ export class School extends EntityBase implements ISchool {
   set name(value: string) {
     this._name = value;
   }
-  get CNPJ(): string {
+  get CNPJ(): CNPJ {
     return this._CNPJ;
   }
-  set CNPJ(value: string) {
+  set CNPJ(value: CNPJ) {
     this._CNPJ = value;
   }
 }

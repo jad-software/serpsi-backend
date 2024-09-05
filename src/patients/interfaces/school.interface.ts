@@ -1,4 +1,6 @@
+import { CNPJ } from "../vo/CNPJ.vo";
+
 export interface ISchool {
   name: string;
-  CNPJ: string;
+  CNPJ: CNPJ | string;
 }

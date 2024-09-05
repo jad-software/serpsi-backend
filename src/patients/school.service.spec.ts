@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { School } from './entities/school.entity';
 import { data_providers } from '../constants';
 import { Id } from '../entity-base/vo/id.vo';
-import { UpdateSchoolDto } from './dto/update-school.dto';
+import { UpdateSchoolDto } from './dto/school/update-school.dto';
 
 describe('SchoolService', () => {
   let service: SchoolService;

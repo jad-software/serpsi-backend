@@ -8,9 +8,10 @@ import {
 import { CreateSchoolDto } from './dto/school/create-school.dto';
 import { UpdateSchoolDto } from './dto/school/update-school.dto';
 import { data_providers } from '../constants';
-import { Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { School } from './entities/school.entity';
 import { Id } from '../entity-base/vo/id.vo';
+import { CNPJ } from './vo/CNPJ.vo';
 
 @Injectable()
 export class SchoolService {
@@ -22,6 +23,7 @@ export class SchoolService {
   async create(createSchoolDto: CreateSchoolDto) {
     try {
       const school = new School(createSchoolDto);
+      school.CNPJ =  new CNPJ(createSchoolDto.CNPJ);
       return await this.schoolRepository.save(school);
     } catch (err) {
       throw new InternalServerErrorException(err);
