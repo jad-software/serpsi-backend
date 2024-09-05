@@ -3,10 +3,11 @@ import { PersonsController } from './persons.controller';
 import { PersonsService } from './persons.service';
 import { personProvider } from './providers/person.providers';
 import { DatabaseModule } from 'src/database/database.module';
+import { addressProvider } from './providers/address.providers';
 
 @Module({
   controllers: [PersonsController],
   imports: [DatabaseModule],
-  providers: [...personProvider, PersonsService],
+  providers: [...personProvider,...addressProvider, PersonsService],
 })
 export class PersonsModule {}

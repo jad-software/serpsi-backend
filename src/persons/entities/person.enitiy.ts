@@ -2,8 +2,9 @@ import { EntityBase } from 'src/entity-base/entities/entity-base';
 import { CreatePersonDto } from '../dto/createPerson.dto';
 import { Phone } from '../vo/phone.vo';
 import { Cpf } from '../vo/cpf.vo';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { IPerson } from '../interfaces/person.interface';
+import { Address } from './address.entity';
 
 @Entity()
 export class Person extends EntityBase implements IPerson {
@@ -32,6 +33,9 @@ export class Person extends EntityBase implements IPerson {
     prefix: false,
   })
   private _cpf: Cpf;
+
+  @ManyToOne(() => Address, (address) => address.persons)
+  address: Address;
 
   get name(): string {
     return this._name;

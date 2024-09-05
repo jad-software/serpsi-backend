@@ -1,15 +1,16 @@
 import { EntityBase } from 'src/entity-base/entities/entity-base';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { IAddress } from '../interfaces/address.interface';
 import { CreateAddressDto } from '../dto/createAddress.dto';
+import { Person } from './person.enitiy';
 
 @Entity()
 export class Address extends EntityBase implements IAddress {
   constructor(partial: Partial<CreateAddressDto>) {
-    super()
+    super();
     Object.assign(this, partial);
   }
-  
+
   @Column({ name: 'zipCode' })
   private _zipCode: string;
   @Column({ name: 'street' })
@@ -22,6 +23,9 @@ export class Address extends EntityBase implements IAddress {
   private _homeNumber: number;
   @Column({ name: 'complement' })
   private _complement: string;
+
+  @OneToMany(() => Person, (person) => person.address)
+  persons: Person[];
 
   get zipCode(): string {
     return this._zipCode;

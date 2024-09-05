@@ -1,4 +1,6 @@
+import { CreateAddressDto } from './dto/createAddress.dto';
 import { CreatePersonDto } from './dto/createPerson.dto';
+import { UpdateAddressDto } from './dto/updateAddress.dto';
 import { UpdatePersonDto } from './dto/updatePerson.dto';
 import { Person } from './entities/person.enitiy';
 import { PersonsService } from './persons.service';
@@ -18,8 +20,8 @@ export class PersonsController {
   constructor(private readonly personsService: PersonsService) {}
 
   @Post()
-  async create(@Body() createPeronDto: CreatePersonDto): Promise<Person> {
-    return this.personsService.create(createPeronDto);
+  async create(@Body() createPeronDto: CreatePersonDto, @Body() createAddressDto: CreateAddressDto): Promise<Person> {
+    return this.personsService.create(createPeronDto, createAddressDto);
   }
 
   @Get()
@@ -35,9 +37,10 @@ export class PersonsController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() updatePersonDto: UpdatePersonDto
+    @Body() updatePersonDto: UpdatePersonDto,
+    @Body() updateAddresDto: UpdateAddressDto
   ) {
-    return await this.personsService.update(id, updatePersonDto);
+    return await this.personsService.update(id, updatePersonDto, updateAddresDto);
   }
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<any> {
