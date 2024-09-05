@@ -1,8 +1,7 @@
 import { EntityBase } from '../../entity-base/entities/entity-base';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { CreateMedicineDto } from '../dto/medicine/create-medicine.dto';
-import { Patient } from './patient.entity';
-import { MedicamentInfo } from './medicamentInfo.entity';
+import { MedicamentInfo } from './medicament-info.entity';
 
 //@Entity()
 export class Medicine extends EntityBase {

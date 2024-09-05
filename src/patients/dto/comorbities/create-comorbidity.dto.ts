@@ -12,4 +12,3 @@ export class CreateComorbidityDto {
   @IsString({ always: true })
   name: string;
 }
-

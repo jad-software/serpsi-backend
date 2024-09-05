@@ -2,25 +2,27 @@ import { EntityBase } from '../../entity-base/entities/entity-base';
 import {
   Column,
   Entity,
-  JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
-  OneToOne,
 } from 'typeorm';
 import { PaymentPlan } from '../vo/PaymentPlan.enum';
 import { CreatePatientDto } from '../dto/create-patient.dto';
 import { IPatient } from '../interfaces/patient.interface';
-import { MedicamentInfo } from './medicamentInfo.entity';
+import { MedicamentInfo } from './medicament-info.entity';
 import { School } from './school.entity';
+import { Comorbidity } from './comorbidity.entity';
 
-//@Entity()
+@Entity()
 /**
  *
- * TODO [] implement school management entity
- * TODO [] implement Comorbity management entity        |
- * TODO [] implement Medicine management entity         |
- * TODO [] implement patient entity at database         V
- * TODO [] implement Person foreign keys and relations
+ * TODO [X] implement school management entity
+ * TODO [X] implement Comorbity management entity        |
+ * TODO [X] implement Medicine management entity         |
+ * TODO [ ] implement MedicamentInfo management          |
+ * TODO [ ] implement patient entity at database         V
+ * TODO [ ] implement Person foreign keys and relations
  *
  */
 export class Patient extends EntityBase implements IPatient {
@@ -39,8 +41,12 @@ export class Patient extends EntityBase implements IPatient {
   @ManyToOne(() => School)
   private _school: School;
 
-  @OneToMany(() => MedicamentInfo, (medicamentInfo) => medicamentInfo.patient)
+  // @OneToMany(() => MedicamentInfo, (medicamentInfo) => medicamentInfo.patient)
   private _medicines: MedicamentInfo[];
+
+  @ManyToMany(() => Comorbidity)
+  @JoinTable()
+  private _comorbidities: Comorbidity[];
 
   get paymentPlan(): PaymentPlan {
     return this._paymentPlan;
@@ -63,5 +69,13 @@ export class Patient extends EntityBase implements IPatient {
 
   set school(school: School) {
     this._school = school;
+  }
+
+  get comorbidities(): Comorbidity[] {
+    return this._comorbidities;
+  }
+
+  set comorbidities(comorbidities: Comorbidity[]) {
+    this._comorbidities = comorbidities;
   }
 }

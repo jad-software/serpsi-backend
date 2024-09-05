@@ -5,10 +5,10 @@ import { patientProvider } from './providers/patient.provider';
 import { DatabaseModule } from '../database/database.module';
 import { MedicinesModule } from './medicines.module';
 import { SchoolModule } from './school.module';
-import { ComorbitiesModule } from './comorbidities.module';
+import { ComorbiditiesModule } from './comorbidities.module';
 
 @Module({
-  imports: [DatabaseModule, MedicinesModule, SchoolModule, ComorbitiesModule],
+  imports: [DatabaseModule, MedicinesModule, SchoolModule, ComorbiditiesModule],
   controllers: [PatientsController],
   providers: [PatientsService, ...patientProvider],
   exports: [PatientsService],

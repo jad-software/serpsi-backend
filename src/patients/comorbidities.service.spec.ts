@@ -29,11 +29,12 @@ describe('ComorbitiesService', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ComorbiditiesService,
+      providers: [
+        ComorbiditiesService,
         {
           provide: data_providers.COMORBIDITY_REPOSITORY,
-          useValue: mockRepository
-        }
+          useValue: mockRepository,
+        },
       ],
     }).compile();
 

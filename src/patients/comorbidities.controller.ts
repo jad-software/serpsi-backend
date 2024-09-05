@@ -10,14 +10,19 @@ import {
 } from '@nestjs/common';
 import { ComorbiditiesService } from './comorbidities.service';
 import { CreateComorbidityDto } from './dto/comorbities/create-comorbidity.dto';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('comorbidities')
 @ApiBearerAuth()
 @Controller('comorbidities')
 export class ComorbiditiesController {
   constructor(private readonly comorbiditiesService: ComorbiditiesService) {}
-  
+
   @ApiOperation({ summary: 'cria uma nova comorbidade' })
   @Post()
   async create(@Body() createComorbidityDto: CreateComorbidityDto) {
@@ -29,7 +34,7 @@ export class ComorbiditiesController {
   async findAll() {
     return await this.comorbiditiesService.findAll();
   }
-  
+
   @ApiOperation({ summary: 'retorna uma comorbidade pelo id' })
   @Get(':id')
   async findOne(@Param('id') id: string) {

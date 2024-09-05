@@ -13,19 +13,36 @@ import { Id } from '../entity-base/vo/id.vo';
 import { SchoolService } from './school.service';
 import { School } from './entities/school.entity';
 import { UpdateSchoolDto } from './dto/school/update-school.dto';
+import { ComorbiditiesService } from './comorbidities.service';
+import { Comorbidity } from './entities/comorbidity.entity';
 
 @Injectable()
 export class PatientsService {
   constructor(
     @Inject(data_providers.PATIENT_REPOSITORY)
     private patientRepository: Repository<Patient>,
-    private readonly schoolService: SchoolService
+    private readonly schoolService: SchoolService,
+    private readonly comorbiditiesService: ComorbiditiesService
   ) {}
 
   async create(createPatientDto: CreatePatientDto) {
+    const patient = new Patient({ ...createPatientDto });
     try {
-      const school = await this.schoolService.create(createPatientDto.school);
-      const patient = new Patient(createPatientDto);
+      let school = await this.schoolService.findOneBy(createPatientDto.school);
+      if (!school)
+        school = await this.schoolService.create(createPatientDto.school);
+
+      let comorbidities: Comorbidity[] = [];
+      for (let comorbidityDto of createPatientDto.comorbidities) {
+        let comorbidityEntity = (
+          await this.comorbiditiesService.findByName(comorbidityDto.name)
+        ).at(0);
+        if (!comorbidityEntity)
+          comorbidityEntity =
+            await this.comorbiditiesService.create(comorbidityDto);
+        comorbidities.push(comorbidityEntity);
+      }
+      patient.comorbidities = comorbidities;
       patient.school = school;
       return await this.patientRepository.save(patient);
     } catch (err) {
@@ -34,7 +51,11 @@ export class PatientsService {
   }
 
   async findAll() {
-    return await this.patientRepository.find();
+    return await this.patientRepository
+      .createQueryBuilder('patient')
+      .leftJoinAndSelect('patient._school', 'school')
+      .leftJoinAndSelect('patient._comorbidities', 'comorbidities')
+      .getMany();
   }
 
   async findOne(id: string) {
