@@ -3,7 +3,7 @@ import { Column, Entity, OneToMany } from 'typeorm';
 import { CreateMedicineDto } from '../dto/medicine/create-medicine.dto';
 import { MedicamentInfo } from './medicament-info.entity';
 
-//@Entity()
+@Entity()
 export class Medicine extends EntityBase {
   constructor(partial: Partial<CreateMedicineDto>) {
     super();
@@ -13,7 +13,7 @@ export class Medicine extends EntityBase {
   @Column({ name: 'name', unique: true })
   private _name: string;
 
-  @OneToMany(() => MedicamentInfo, (medicamentInfo) => medicamentInfo.medicine)
+  //@OneToMany(() => MedicamentInfo, (medicamentInfo) => medicamentInfo.medicine)
   private _patients: MedicamentInfo[];
 
   get name(): string {

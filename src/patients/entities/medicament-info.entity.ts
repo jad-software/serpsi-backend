@@ -9,8 +9,10 @@ export class MedicamentInfo extends EntityBase {
   constructor(partial: Partial<CreateMedicamentInfoDto>) {
     super();
     Object.assign(this, partial);
-    this.dosage = `${partial.dosage} ${partial.dosageUnity}`;
-    this.generateSchedules();
+    if (partial.dosage && partial.dosageUnity)
+      this.dosage = `${partial.dosage} ${partial.dosageUnity}`;
+    if (partial.frequency && partial.firstTimeOfTheDay)
+      this.generateSchedules();
   }
   @Column({ name: 'dosage' })
   private _dosage: string;

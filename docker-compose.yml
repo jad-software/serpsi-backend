@@ -1,13 +1,12 @@
 version: '3.9'
-
 services:
   postgres:
-    container_name: postgres_container
     image: postgres
+    container_name: postgres_container
+    ports:
+      - '5432:5432'
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       PGDATA: /data/postgres
       POSTGRES_DB: serpsi
-    ports:
-      - "5432:5432"

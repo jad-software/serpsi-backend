@@ -54,6 +54,8 @@ describe('PatientsController', () => {
           name: 'ativa idade',
           CNPJ: '00.000.0000/0001-00',
         },
+        comorbidities: [],
+        medicines: [],
       };
       expect(await controller.create(dto)).toEqual({ id: '1', ...dto });
       expect(service.create).toHaveBeenCalledWith(dto);

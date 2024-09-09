@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -41,6 +42,26 @@ export class MedicinesService {
     } catch (err) {
       throw new NotFoundException(err?.message);
     }
+  }
+
+  async findByName(name: string) {
+    try {
+      name = this.validate(name);
+      return await this.medicineRepository
+        .createQueryBuilder('medicine')
+        .where('LOWER(medicine.name) LIKE LOWER(:name)', {
+          name: `${name}%`,
+        })
+        .getMany();
+    } catch (err) {
+      throw new NotFoundException(err.message);
+    }
+  }
+
+  validate(name: string): string {
+    if (name.trim().length < 3)
+      throw new BadRequestException('nome vazio ou menor que 3 caracteres');
+    return name;
   }
 
   async update(id: string, updateMedicineDto: UpdateMedicineDto) {
