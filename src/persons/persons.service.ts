@@ -56,8 +56,8 @@ export class PersonsService {
           uploadedFileId = fileSaved.public_id;
           person.profilePicture = fileSaved.url;
         }
-        await this.personRepository.save(person);
       }
+      await this.personRepository.save(person);
       return person;
     } catch (err) {
       if (uploadedFileId) {

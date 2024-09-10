@@ -26,10 +26,9 @@ export class CreatePersonDto implements IPerson {
   })
   rg: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
     description: 'Foto de perfil da pessoa',
-    example: 'testeFotoPerfil.png',
   })
   @IsOptional()
   profilePicture?: string;

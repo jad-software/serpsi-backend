@@ -26,7 +26,7 @@ import { validate } from 'class-validator';
 @ApiTags('persons')
 @Controller('persons')
 export class PersonsController {
-  constructor(private readonly personsService: PersonsService) {}
+  constructor(private readonly personsService: PersonsService) { }
 
   @Post()
   @ApiOperation({
@@ -40,9 +40,97 @@ export class PersonsController {
   }
 
   @Post('/picture')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        personData: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              example: 'Nome de Uma pessoa',
+            },
+            rg: {
+              type: 'string',
+              example: '13.131.121-9'
+            },
+            phone: {
+              type: 'object',
+              properties: {
+                ddi: {
+                  type: 'string',
+                  example: '+55'
+                },
+                ddd: {
+                  type: 'string',
+                  example: '75'
+                },
+                number: {
+                  type: 'string',
+                  example: '99981798'
+                }
+              }
+            },
+            cpf: {
+              type: 'object',
+              properties: {
+                cpf: {
+                  type: 'string',
+                  example: '134.145.155-55'
+                }
+              }
+            },
+            birthdate: {
+              type: 'Date',
+              example: '1990-10-31'
+            },
+            user:{
+              type: 'string',
+              example: 'a39b249c-24ea-4307-86c5-7e6180659cb3'
+            },
+            address: {
+              type: 'object',
+              properties: {
+                state: {
+                  type: 'string',
+                  example: 'BA'
+                },
+                zipCode: {
+                  type: 'string',
+                  example: '41796616'
+                },
+                street: {
+                  type: 'string',
+                  example: 'teste de street no swagger'
+                },
+                district: {
+                  type: 'string',
+                  example: 'District no swagger'
+                },
+                homeNumber: {
+                  type: 'number',
+                  example: 21
+                },
+                complement: {
+                  type: 'string',
+                  example: 'Complement de Swagger'
+                }
+              }
+            }
+          }
+        },
+        profilePicture:{
+          type: 'string',
+          format: 'binary'
+        }
+      }
+    }
+  })
   @UseInterceptors(FileInterceptor('profilePicture'))
   @ApiOperation({
-    summary: 'Cria Person',
+    summary: 'Cria Person com Profile Picture',
   })
   @ApiResponse({
     status: 201,
@@ -109,10 +197,10 @@ export class PersonsController {
   @Put('/picture/:id')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    schema:{
+    schema: {
       type: 'object',
-      properties:{
-        profilePicture:{
+      properties: {
+        profilePicture: {
           type: 'string',
           format: 'binary'
         }
