@@ -9,15 +9,16 @@ import {
   Body,
   Controller,
   Delete,
+  FileTypeValidator,
   Get,
   Param,
+  ParseFilePipe,
   Post,
   Put,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-
 
 @ApiTags('persons')
 @Controller('persons')
@@ -48,7 +49,8 @@ export class PersonsController {
 
   @Get(':id')
   @ApiOperation({
-    summary: 'Retorna uma Person de acordo com o id e faz o relacionamento com Address e User',
+    summary:
+      'Retorna uma Person de acordo com o id e faz o relacionamento com Address e User',
   })
   async findOneById(@Param('id') id: string): Promise<Person> {
     return await this.personsService.findOneById(id);
@@ -64,7 +66,7 @@ export class PersonsController {
   ) {
     return await this.personsService.update(id, updatePersonDto);
   }
-  
+
   @Delete(':id')
   @ApiOperation({
     summary: 'Faz o delete de uma Person de acordo com o id',
@@ -75,7 +77,15 @@ export class PersonsController {
 
   @Put('/picture/:id')
   @UseInterceptors(FileInterceptor('profilePicture'))
-  async uploadPictore(@UploadedFile() file: Express.Multer.File, @Param('id') id: string) {
+  async uploadPictore(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [new FileTypeValidator({ fileType: /(jpeg|png)$/ })],
+      })
+    )
+    file: Express.Multer.File,
+    @Param('id') id: string
+  ) {
     return await this.personsService.savePersonPicture(file, id);
   }
 }

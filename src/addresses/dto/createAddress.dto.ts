@@ -6,7 +6,7 @@ export class CreateAddressDto implements IAddress {
   @ApiProperty({
     type: String,
     description: 'CEP do endereço da pessoa',
-    example: '41796616'
+    example: '41796616',
   })
   @IsNotEmpty()
   @IsString()
@@ -15,7 +15,7 @@ export class CreateAddressDto implements IAddress {
   @ApiProperty({
     type: String,
     description: 'Rua do endereço da pessoa',
-    example: 'Rua da pessoa teste Swagger'
+    example: 'Rua da pessoa teste Swagger',
   })
   @IsNotEmpty()
   @IsString()
@@ -24,7 +24,7 @@ export class CreateAddressDto implements IAddress {
   @ApiProperty({
     type: String,
     description: 'Bairro do endereço da pessoa',
-    example: 'Centro'
+    example: 'Centro',
   })
   @IsNotEmpty()
   @IsString()
@@ -33,7 +33,7 @@ export class CreateAddressDto implements IAddress {
   @ApiProperty({
     type: String,
     description: 'Estado do endereço da pessoa',
-    example: 'BA'
+    example: 'BA',
   })
   @IsNotEmpty()
   @IsString()
@@ -42,7 +42,7 @@ export class CreateAddressDto implements IAddress {
   @ApiProperty({
     type: Number,
     description: 'Numero da casa da pessoa',
-    example: 94
+    example: 94,
   })
   @IsNumber()
   @Min(0)
@@ -51,7 +51,7 @@ export class CreateAddressDto implements IAddress {
   @ApiProperty({
     type: String,
     description: 'Complemento do endereço da pessoa',
-    example: 'Tô sem ideia do que colocar'
+    example: 'Tô sem ideia do que colocar',
   })
   @IsNotEmpty()
   @IsString()

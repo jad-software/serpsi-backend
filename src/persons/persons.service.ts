@@ -43,7 +43,7 @@ export class PersonsService {
         cpf: cpf,
         name: createPersonDto.name,
       });
-      if(createPersonDto.user){
+      if (createPersonDto.user) {
         const user = await this.userService.findOneById(createPersonDto.user);
         person.user = user;
       }
@@ -118,24 +118,23 @@ export class PersonsService {
       if (person.address) {
         await this.addressService.delete(person.address.id.id);
       }
-      if(person.user){
+      if (person.user) {
         await this.userService.remove(person.user.id.id);
       }
     } catch (err) {
       throw new BadRequestException(err?.message);
     }
   }
-  async savePersonPicture(file: Express.Multer.File, id: string){
+  async savePersonPicture(file: Express.Multer.File, id: string) {
     try {
       const person = await this.findOneById(id);
       const fileSaved = await this.cloudinaryService.uploadFile(file);
-      if(fileSaved){
+      if (fileSaved) {
         person.profilePicture = fileSaved.url;
         await this.personRepository.save(person);
       }
       return person;
-    }
-    catch(err){
+    } catch (err) {
       throw new BadRequestException(err?.message);
     }
   }

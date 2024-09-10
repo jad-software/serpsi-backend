@@ -10,9 +10,9 @@ export class UpdatePersonDto extends PartialType(
     type: UpdateAddressDto,
     description: 'Endereço da Pessoa',
     example: {
-      "state": "RJ",
-      "complement": "Sei lá"
-    }
+      state: 'RJ',
+      complement: 'Sei lá',
+    },
   })
   @ValidateNested()
   @Type(() => UpdateAddressDto)

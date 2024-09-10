@@ -15,11 +15,10 @@ import { CreateAddressDto } from 'src/addresses/dto/createAddress.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreatePersonDto implements IPerson {
-
   @ApiProperty({
     type: String,
     description: 'Rg da pessoa',
-    example: '12.544.143-1'
+    example: '12.544.143-1',
   })
   @IsNotEmpty()
   @Matches(new RegExp(/^\d{1,2}\.?\d{3}\.?\d{3}-?[a-zA-Z0-9]{1}$/), {
@@ -30,7 +29,7 @@ export class CreatePersonDto implements IPerson {
   @ApiProperty({
     type: String,
     description: 'Foto de perfil da pessoa',
-    example: 'testeFotoPerfil.png'
+    example: 'testeFotoPerfil.png',
   })
   @IsNotEmpty()
   profilePicture: string;
@@ -38,7 +37,7 @@ export class CreatePersonDto implements IPerson {
   @ApiProperty({
     type: Date,
     description: 'Data de nascimento da pessoa',
-    example: '1990-08-25'
+    example: '1990-08-25',
   })
   @IsNotEmpty()
   @Type(() => Date)
@@ -48,7 +47,7 @@ export class CreatePersonDto implements IPerson {
   @ApiProperty({
     type: String,
     description: 'Nome da pessoa',
-    example: 'Meu nome'
+    example: 'Meu nome',
   })
   @IsNotEmpty()
   name: string;
@@ -57,10 +56,10 @@ export class CreatePersonDto implements IPerson {
     type: Phone,
     description: 'Telefone da pessoa',
     example: {
-      "ddi": "+55",
-      "ddd": "71",
-      "number": "998085317"
-    }
+      ddi: '+55',
+      ddd: '71',
+      number: '998085317',
+    },
   })
   @IsNotEmpty()
   phone: Phone;
@@ -69,8 +68,8 @@ export class CreatePersonDto implements IPerson {
     type: Cpf,
     description: 'Cpf da pessoa',
     example: {
-      "cpf": "423.693.123-13"
-    }
+      cpf: '423.693.123-13',
+    },
   })
   @ValidateNested()
   @Type(() => CreateCpfDto)
@@ -79,23 +78,23 @@ export class CreatePersonDto implements IPerson {
   @ApiPropertyOptional({
     type: String,
     description: 'Id do User ao qual a Pessoa Pertence',
-    example: "198aa036-dc41-4e86-a802-53e6be4d73a5"
+    example: '198aa036-dc41-4e86-a802-53e6be4d73a5',
   })
   @IsOptional()
   @IsString()
-  user?: string
+  user?: string;
 
   @ApiProperty({
     type: CreateAddressDto,
     description: 'Endereço da Pessoa',
     example: {
-      "state": "SP",
-      "zipCode": "41796616",
-      "street": "teste de street de refatoração no update",
-      "district": "district de teste  de refatoração no update",
-      "homeNumber": 278,
-      "complement": "complemento de refatoração no update"
-    }
+      state: 'SP',
+      zipCode: '41796616',
+      street: 'teste de street de refatoração no update',
+      district: 'district de teste  de refatoração no update',
+      homeNumber: 278,
+      complement: 'complemento de refatoração no update',
+    },
   })
   @ValidateNested()
   @Type(() => CreateAddressDto)
