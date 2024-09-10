@@ -13,6 +13,7 @@ import { Cpf } from './vo/cpf.vo';
 import { UpdatePersonDto } from './dto/updatePerson.dto';
 import { AddressesService } from 'src/addresses/Addresses.service';
 import { UsersService } from 'src/users/users.service';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class PersonsService {
@@ -23,6 +24,8 @@ export class PersonsService {
     private addressService: AddressesService,
     @Inject()
     private userService: UsersService,
+    @Inject()
+    private cloudinaryService: CloudinaryService
   ) {}
   async create(createPersonDto: CreatePersonDto) {
     try {
@@ -119,6 +122,20 @@ export class PersonsService {
         await this.userService.remove(person.user.id.id);
       }
     } catch (err) {
+      throw new BadRequestException(err?.message);
+    }
+  }
+  async savePersonPicture(file: Express.Multer.File, id: string){
+    try {
+      const person = await this.findOneById(id);
+      const fileSaved = await this.cloudinaryService.uploadFile(file);
+      if(fileSaved){
+        person.profilePicture = fileSaved.url;
+        await this.personRepository.save(person);
+      }
+      return person;
+    }
+    catch(err){
       throw new BadRequestException(err?.message);
     }
   }

@@ -13,7 +13,11 @@ import {
   Param,
   Post,
   Put,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+
 
 @ApiTags('persons')
 @Controller('persons')
@@ -67,5 +71,11 @@ export class PersonsController {
   })
   async delete(@Param('id') id: string): Promise<any> {
     return await this.personsService.delete(id);
+  }
+
+  @Put('/picture/:id')
+  @UseInterceptors(FileInterceptor('profilePicture'))
+  async uploadPictore(@UploadedFile() file: Express.Multer.File, @Param('id') id: string) {
+    return await this.personsService.savePersonPicture(file, id);
   }
 }

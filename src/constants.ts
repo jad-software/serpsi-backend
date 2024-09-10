@@ -23,3 +23,9 @@ export const bcrypt_salt = 10;
 export const email = {
   REGEX: '^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+[.]+[a-zA-Z]{2,}$',
 };
+
+export const CLOUDNARY_KEYS = {
+  CLOUDINARUY_NAME: process.env.CLOUDINARY_NAME,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET
+};
