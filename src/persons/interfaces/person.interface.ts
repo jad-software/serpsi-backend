@@ -7,7 +7,7 @@ import { CreateAddressDto } from '../../addresses/dto/createAddress.dto';
 export interface IPerson {
   name: string;
   rg: string;
-  profilePicture: string;
+  profilePicture?: string;
   birthdate: Date;
   phone: Phone;
   cpf: Cpf;

@@ -26,8 +26,8 @@ export class PersonsService {
     private userService: UsersService,
     @Inject()
     private cloudinaryService: CloudinaryService
-  ) {}
-  async create(createPersonDto: CreatePersonDto) {
+  ) { }
+  async create(createPersonDto: CreatePersonDto, file?: Express.Multer.File,) {
     try {
       const phone = new Phone(
         createPersonDto.phone.ddi,
@@ -38,7 +38,7 @@ export class PersonsService {
       const person = new Person({
         birthdate: createPersonDto.birthdate,
         phone: phone,
-        profilePicture: createPersonDto.profilePicture,
+        profilePicture: createPersonDto.profilePicture || '',
         rg: createPersonDto.rg,
         cpf: cpf,
         name: createPersonDto.name,
@@ -49,7 +49,13 @@ export class PersonsService {
       }
       const address = await this.addressService.create(createPersonDto.address);
       person.address = address;
-      await this.personRepository.save(person);
+      if (file) {
+        const fileSaved = await this.cloudinaryService.uploadFile(file);
+        if (fileSaved) {
+          person.profilePicture = fileSaved.url;
+        }
+        await this.personRepository.save(person);
+      }
       return person;
     } catch (err) {
       throw new BadRequestException(err?.message);

@@ -31,8 +31,8 @@ export class CreatePersonDto implements IPerson {
     description: 'Foto de perfil da pessoa',
     example: 'testeFotoPerfil.png',
   })
-  @IsNotEmpty()
-  profilePicture: string;
+  @IsOptional()
+  profilePicture?: string;
 
   @ApiProperty({
     type: Date,

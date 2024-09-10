@@ -6,6 +6,7 @@ import { UpdatePersonDto } from './dto/updatePerson.dto';
 import { Person } from './entities/person.enitiy';
 import { PersonsService } from './persons.service';
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -19,11 +20,15 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { plainToClass } from 'class-transformer';
+import { validate } from 'class-validator';
 
 @ApiTags('persons')
 @Controller('persons')
 export class PersonsController {
-  constructor(private readonly personsService: PersonsService) {}
+  constructor(private readonly personsService: PersonsService) { }
+
+
 
   @Post()
   @ApiOperation({
@@ -34,6 +39,31 @@ export class PersonsController {
   })
   async create(@Body() createPeronDto: CreatePersonDto): Promise<Person> {
     return this.personsService.create(createPeronDto);
+  }
+
+  @Post('/picture')
+  @UseInterceptors(FileInterceptor('profilePicture'))
+  @ApiOperation({
+    summary: 'Cria Person',
+  })
+  @ApiResponse({
+    status: 201,
+  })
+  async createWithPicture(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [new FileTypeValidator({ fileType: /(jpeg|png)$/ })],
+      }),
+    ) file: Express.Multer.File,
+    @Body('personData') personData: string,
+  ): Promise<Person> {
+    const parsedData = JSON.parse(personData);
+    const createPersonDto = plainToClass(CreatePersonDto, parsedData);
+    const errors = await validate(createPersonDto);
+    if(errors.length > 0) {
+      throw new BadRequestException(`Validation Error in Field: ${errors[0].property}`);
+    }
+    return this.personsService.create(createPersonDto, file);
   }
 
   @Get()
@@ -78,12 +108,11 @@ export class PersonsController {
   @Put('/picture/:id')
   @UseInterceptors(FileInterceptor('profilePicture'))
   async uploadPictore(
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [new FileTypeValidator({ fileType: /(jpeg|png)$/ })],
-      })
-    )
-    file: Express.Multer.File,
+    @UploadedFile(new ParseFilePipe({
+      validators: [
+        new FileTypeValidator({ fileType: /(jpeg|png)$/ }),
+      ],
+    })) file: Express.Multer.File,
     @Param('id') id: string
   ) {
     return await this.personsService.savePersonPicture(file, id);
