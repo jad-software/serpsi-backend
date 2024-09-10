@@ -5,10 +5,11 @@ import { Cpf } from '../vo/cpf.vo';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { IPerson } from '../interfaces/person.interface';
 import { Address } from './address.entity';
+import { UpdatePersonDto } from '../dto/updatePerson.dto';
 
 @Entity()
 export class Person extends EntityBase implements IPerson {
-  constructor(partial: Partial<CreatePersonDto>) {
+  constructor(partial: Partial<CreatePersonDto | UpdatePersonDto>) {
     super();
     Object.assign(this, partial);
   }

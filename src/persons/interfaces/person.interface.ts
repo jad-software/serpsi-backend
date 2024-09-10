@@ -1,4 +1,5 @@
 import { CreateAddressDto } from '../dto/createAddress.dto';
+import { UpdateAddressDto } from '../dto/updateAddress.dto';
 import { Address } from '../entities/address.entity';
 import { Cpf } from '../vo/cpf.vo';
 import { Phone } from '../vo/phone.vo';
@@ -10,5 +11,5 @@ export interface IPerson {
   birthdate: Date;
   phone: Phone;
   cpf: Cpf;
-  address: CreateAddressDto | Address;
+  address: CreateAddressDto | UpdateAddressDto | Address;
 }

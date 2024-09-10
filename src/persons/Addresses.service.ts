@@ -1,5 +1,10 @@
 import { CreateAddressDto } from './dto/createAddress.dto';
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { data_providers } from 'src/constants';
 import { Repository } from 'typeorm';
 import { Address } from './entities/address.entity';
@@ -10,7 +15,7 @@ export class AddressesService {
   constructor(
     @Inject(data_providers.ADDRESS_REPOSITORY)
     private addressRepository: Repository<Address>
-  ) { }
+  ) {}
 
   async create(createAddressDto: CreateAddressDto): Promise<Address> {
     try {
@@ -24,11 +29,9 @@ export class AddressesService {
       });
       await this.addressRepository.save(address);
       return address;
-    }
-    catch (err) {
+    } catch (err) {
       throw new BadRequestException(err?.message);
     }
-
   }
 
   async findAddressById(id: string): Promise<Address> {

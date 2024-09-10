@@ -10,11 +10,7 @@ import { data_providers } from 'src/constants';
 import { Repository } from 'typeorm';
 import { Phone } from './vo/phone.vo';
 import { Cpf } from './vo/cpf.vo';
-import { Id } from 'src/entity-base/vo/id.vo';
 import { UpdatePersonDto } from './dto/updatePerson.dto';
-import { CreateAddressDto } from './dto/createAddress.dto';
-import { Address } from './entities/address.entity';
-import { UpdateAddressDto } from './dto/updateAddress.dto';
 import { AddressesService } from './Addresses.service';
 
 @Injectable()
@@ -24,10 +20,8 @@ export class PersonsService {
     private personRepository: Repository<Person>,
     @Inject()
     private addressService: AddressesService
-  ) { }
-  async create(
-    createPersonDto: CreatePersonDto,
-  ) {
+  ) {}
+  async create(createPersonDto: CreatePersonDto) {
     try {
       console.log(createPersonDto.address);
       const phone = new Phone(
@@ -72,12 +66,9 @@ export class PersonsService {
     }
   }
 
-  async update(
-    id: string,
-    updatePersonDto: UpdatePersonDto,
-    updateAddressDto?: UpdateAddressDto
-  ) {
+  async update(id: string, updatePersonDto: UpdatePersonDto) {
     try {
+      console.log(updatePersonDto);
       const person = new Person(updatePersonDto);
       let foundPerson = await this.findOneById(id);
       if (updatePersonDto.phone) {
@@ -89,6 +80,14 @@ export class PersonsService {
       }
       if (updatePersonDto.cpf) {
         person.cpf = new Cpf(updatePersonDto.cpf.cpf);
+      }
+
+      if (updatePersonDto.address) {
+        await this.addressService.updateAddress(
+          foundPerson.address.id.id,
+          updatePersonDto.address
+        );
+        delete person.address;
       }
 
       await this.personRepository.update(foundPerson.id.id, person);
@@ -104,8 +103,8 @@ export class PersonsService {
       const person = await this.findOneById(id);
       console.log(person);
       await this.personRepository.delete(person.id.id);
-      if(person.address){
-        await this.addressService.delete(person.address.id.id)
+      if (person.address) {
+        await this.addressService.delete(person.address.id.id);
       }
     } catch (err) {
       throw new BadRequestException(err?.message);
