@@ -8,7 +8,7 @@ import { data_providers } from 'src/constants';
 import { Repository } from 'typeorm';
 import { Address } from './entities/address.entity';
 import { CreateAddressDto } from './dto/createAddress.dto';
-import { UpdateAddressDto } from '../persons/dto/updateAddress.dto';
+import { UpdateAddressDto } from './dto/updateAddress.dto';
 
 @Injectable()
 export class AddressesService {

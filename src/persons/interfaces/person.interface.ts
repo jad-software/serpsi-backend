@@ -1,5 +1,5 @@
 import { Address } from 'src/addresses/entities/address.entity';
-import { UpdateAddressDto } from '../dto/updateAddress.dto';
+import { UpdateAddressDto } from '../../addresses/dto/updateAddress.dto';
 import { Cpf } from '../vo/cpf.vo';
 import { Phone } from '../vo/phone.vo';
 import { CreateAddressDto } from '../../addresses/dto/createAddress.dto';
