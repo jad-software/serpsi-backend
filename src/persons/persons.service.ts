@@ -102,7 +102,11 @@ export class PersonsService {
   async delete(id: string): Promise<any> {
     try {
       const person = await this.findOneById(id);
-      await this.personRepository.delete(person);
+      console.log(person);
+      await this.personRepository.delete(person.id.id);
+      if(person.address){
+        await this.addressService.delete(person.address.id.id)
+      }
     } catch (err) {
       throw new BadRequestException(err?.message);
     }

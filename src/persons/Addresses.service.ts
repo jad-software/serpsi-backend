@@ -62,4 +62,13 @@ export class AddressesService {
       throw new NotFoundException(err?.message);
     }
   }
+
+  async delete(id: string): Promise<any> {
+    try {
+      const address = await this.findAddressById(id);
+      await this.addressRepository.delete(address.id.id);
+    } catch (err) {
+      throw new BadRequestException(err?.message);
+    }
+  }
 }
