@@ -3,18 +3,11 @@ import { PersonsController } from './persons.controller';
 import { PersonsService } from './persons.service';
 import { personProvider } from './providers/person.providers';
 import { DatabaseModule } from 'src/database/database.module';
-import { addressProvider } from './providers/address.providers';
-import { AdressesController } from './Addresses.controller';
-import { AddressesService } from './Addresses.service';
+import { AddressesModule } from 'src/addresses/addresses.module';
 
 @Module({
-  controllers: [PersonsController, AdressesController],
-  imports: [DatabaseModule],
-  providers: [
-    ...personProvider,
-    ...addressProvider,
-    PersonsService,
-    AddressesService,
-  ],
+  controllers: [PersonsController],
+  imports: [DatabaseModule, AddressesModule],
+  providers: [...personProvider, PersonsService],
 })
 export class PersonsModule {}

@@ -1,8 +1,8 @@
 import { EntityBase } from 'src/entity-base/entities/entity-base';
 import { Column, Entity, OneToMany } from 'typeorm';
-import { IAddress } from '../interfaces/address.interface';
+import { IAddress } from '../../addresses/interfaces/address.interface';
 import { CreateAddressDto } from '../dto/createAddress.dto';
-import { Person } from './person.enitiy';
+import { Person } from '../../persons/entities/person.enitiy';
 
 @Entity()
 export class Address extends EntityBase implements IAddress {

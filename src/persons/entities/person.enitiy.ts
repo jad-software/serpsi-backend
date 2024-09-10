@@ -1,10 +1,10 @@
+import { Address } from './../../addresses/entities/address.entity';
 import { EntityBase } from 'src/entity-base/entities/entity-base';
 import { CreatePersonDto } from '../dto/createPerson.dto';
 import { Phone } from '../vo/phone.vo';
 import { Cpf } from '../vo/cpf.vo';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { IPerson } from '../interfaces/person.interface';
-import { Address } from './address.entity';
 import { UpdatePersonDto } from '../dto/updatePerson.dto';
 
 @Entity()

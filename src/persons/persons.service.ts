@@ -11,7 +11,7 @@ import { Repository } from 'typeorm';
 import { Phone } from './vo/phone.vo';
 import { Cpf } from './vo/cpf.vo';
 import { UpdatePersonDto } from './dto/updatePerson.dto';
-import { AddressesService } from './Addresses.service';
+import { AddressesService } from 'src/addresses/Addresses.service';
 
 @Injectable()
 export class PersonsService {
@@ -20,14 +20,13 @@ export class PersonsService {
     private personRepository: Repository<Person>,
     @Inject()
     private addressService: AddressesService
-  ) {}
+  ) { }
   async create(createPersonDto: CreatePersonDto) {
     try {
-      console.log(createPersonDto.address);
       const phone = new Phone(
-        createPersonDto.phone.ddd,
         createPersonDto.phone.ddi,
-        createPersonDto.phone.number
+        createPersonDto.phone.ddd,
+        createPersonDto.phone.number,
       );
       const cpf = new Cpf(createPersonDto.cpf.cpf);
       const person = new Person({
@@ -68,14 +67,16 @@ export class PersonsService {
 
   async update(id: string, updatePersonDto: UpdatePersonDto) {
     try {
-      console.log(updatePersonDto);
       const person = new Person(updatePersonDto);
+
       let foundPerson = await this.findOneById(id);
+      console.log(foundPerson);
+      console.log('Phone', updatePersonDto.phone);
       if (updatePersonDto.phone) {
         person.phone = new Phone(
           updatePersonDto.phone.ddi || foundPerson.phone.ddi,
           updatePersonDto.phone.ddd || foundPerson.phone.ddd,
-          updatePersonDto.phone.number || foundPerson.phone.number
+          updatePersonDto.phone.number || foundPerson.phone.number,
         );
       }
       if (updatePersonDto.cpf) {

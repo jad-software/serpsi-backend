@@ -1,4 +1,3 @@
-import { CreateAddressDto } from './dto/createAddress.dto';
 import {
   BadRequestException,
   Inject,
@@ -8,7 +7,8 @@ import {
 import { data_providers } from 'src/constants';
 import { Repository } from 'typeorm';
 import { Address } from './entities/address.entity';
-import { UpdateAddressDto } from './dto/updateAddress.dto';
+import { CreateAddressDto } from './dto/createAddress.dto';
+import { UpdateAddressDto } from '../persons/dto/updateAddress.dto';
 
 @Injectable()
 export class AddressesService {

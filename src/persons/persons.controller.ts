@@ -1,4 +1,4 @@
-import { CreateAddressDto } from './dto/createAddress.dto';
+import { CreateAddressDto } from '../addresses/dto/createAddress.dto';
 import { CreatePersonDto } from './dto/createPerson.dto';
 import { UpdateAddressDto } from './dto/updateAddress.dto';
 import { UpdatePersonDto } from './dto/updatePerson.dto';

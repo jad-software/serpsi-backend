@@ -1,8 +1,8 @@
-import { CreateAddressDto } from '../dto/createAddress.dto';
+import { Address } from 'src/addresses/entities/address.entity';
 import { UpdateAddressDto } from '../dto/updateAddress.dto';
-import { Address } from '../entities/address.entity';
 import { Cpf } from '../vo/cpf.vo';
 import { Phone } from '../vo/phone.vo';
+import { CreateAddressDto } from '../../addresses/dto/createAddress.dto';
 
 export interface IPerson {
   name: string;

@@ -1,5 +1,4 @@
 import { DataSource } from 'typeorm';
-import { Person } from '../entities/person.enitiy';
 import { data_providers } from 'src/constants';
 import { Address } from '../entities/address.entity';
 

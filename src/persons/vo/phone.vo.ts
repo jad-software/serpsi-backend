@@ -1,5 +1,6 @@
 import { Column } from 'typeorm';
 
+
 export class Phone {
   constructor(ddi: string, ddd: string, number: string) {
     this._ddi = ddi;
