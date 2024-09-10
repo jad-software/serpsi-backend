@@ -26,9 +26,7 @@ import { validate } from 'class-validator';
 @ApiTags('persons')
 @Controller('persons')
 export class PersonsController {
-  constructor(private readonly personsService: PersonsService) { }
-
-
+  constructor(private readonly personsService: PersonsService) {}
 
   @Post()
   @ApiOperation({
@@ -53,15 +51,18 @@ export class PersonsController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [new FileTypeValidator({ fileType: /(jpeg|png)$/ })],
-      }),
-    ) file: Express.Multer.File,
-    @Body('personData') personData: string,
+      })
+    )
+    file: Express.Multer.File,
+    @Body('personData') personData: string
   ): Promise<Person> {
     const parsedData = JSON.parse(personData);
     const createPersonDto = plainToClass(CreatePersonDto, parsedData);
     const errors = await validate(createPersonDto);
-    if(errors.length > 0) {
-      throw new BadRequestException(`Validation Error in Field: ${errors[0].property}`);
+    if (errors.length > 0) {
+      throw new BadRequestException(
+        `Validation Error in Field: ${errors[0].property}`
+      );
     }
     return this.personsService.create(createPersonDto, file);
   }
@@ -108,11 +109,12 @@ export class PersonsController {
   @Put('/picture/:id')
   @UseInterceptors(FileInterceptor('profilePicture'))
   async uploadPictore(
-    @UploadedFile(new ParseFilePipe({
-      validators: [
-        new FileTypeValidator({ fileType: /(jpeg|png)$/ }),
-      ],
-    })) file: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [new FileTypeValidator({ fileType: /(jpeg|png)$/ })],
+      })
+    )
+    file: Express.Multer.File,
     @Param('id') id: string
   ) {
     return await this.personsService.savePersonPicture(file, id);
