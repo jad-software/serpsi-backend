@@ -12,6 +12,7 @@ import { Phone } from './vo/phone.vo';
 import { Cpf } from './vo/cpf.vo';
 import { UpdatePersonDto } from './dto/updatePerson.dto';
 import { AddressesService } from 'src/addresses/Addresses.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class PersonsService {
@@ -19,14 +20,16 @@ export class PersonsService {
     @Inject(data_providers.PERSON_REPOSITORY)
     private personRepository: Repository<Person>,
     @Inject()
-    private addressService: AddressesService
-  ) { }
+    private addressService: AddressesService,
+    @Inject()
+    private userService: UsersService,
+  ) {}
   async create(createPersonDto: CreatePersonDto) {
     try {
       const phone = new Phone(
         createPersonDto.phone.ddi,
         createPersonDto.phone.ddd,
-        createPersonDto.phone.number,
+        createPersonDto.phone.number
       );
       const cpf = new Cpf(createPersonDto.cpf.cpf);
       const person = new Person({
@@ -37,6 +40,10 @@ export class PersonsService {
         cpf: cpf,
         name: createPersonDto.name,
       });
+      if(createPersonDto.user){
+        const user = await this.userService.findOneById(createPersonDto.user);
+        person.user = user;
+      }
       const address = await this.addressService.create(createPersonDto.address);
       person.address = address;
       await this.personRepository.save(person);
@@ -57,6 +64,7 @@ export class PersonsService {
       const person = await this.personRepository
         .createQueryBuilder('person')
         .leftJoinAndSelect('person.address', 'address')
+        .leftJoinAndSelect('person.user', 'user')
         .where('person._id = :id', { id })
         .getOneOrFail();
       return person;
@@ -76,7 +84,7 @@ export class PersonsService {
         person.phone = new Phone(
           updatePersonDto.phone.ddi || foundPerson.phone.ddi,
           updatePersonDto.phone.ddd || foundPerson.phone.ddd,
-          updatePersonDto.phone.number || foundPerson.phone.number,
+          updatePersonDto.phone.number || foundPerson.phone.number
         );
       }
       if (updatePersonDto.cpf) {
@@ -106,6 +114,9 @@ export class PersonsService {
       await this.personRepository.delete(person.id.id);
       if (person.address) {
         await this.addressService.delete(person.address.id.id);
+      }
+      if(person.user){
+        await this.userService.remove(person.user.id.id);
       }
     } catch (err) {
       throw new BadRequestException(err?.message);

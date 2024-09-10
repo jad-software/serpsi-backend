@@ -1,7 +1,8 @@
 import {
   IsDate,
   IsNotEmpty,
-  IsObject,
+  IsOptional,
+  IsString,
   Matches,
   ValidateNested,
 } from 'class-validator';
@@ -35,6 +36,10 @@ export class CreatePersonDto implements IPerson {
   @ValidateNested()
   @Type(() => CreateCpfDto)
   cpf: Cpf;
+
+  @IsOptional()
+  @IsString()
+  user?:string
 
   @ValidateNested()
   @Type(() => CreateAddressDto)

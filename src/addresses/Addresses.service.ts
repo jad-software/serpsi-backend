@@ -45,10 +45,7 @@ export class AddressesService {
       throw new NotFoundException(err?.message);
     }
   }
-  async update(
-    id: string,
-    updateAddressDto: UpdateAddressDto
-  ): Promise<any> {
+  async update(id: string, updateAddressDto: UpdateAddressDto): Promise<any> {
     try {
       const updatedAddress = new Address({
         state: updateAddressDto.state,
