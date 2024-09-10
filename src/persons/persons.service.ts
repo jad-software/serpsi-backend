@@ -84,7 +84,7 @@ export class PersonsService {
       }
 
       if (updatePersonDto.address) {
-        await this.addressService.updateAddress(
+        await this.addressService.update(
           foundPerson.address.id.id,
           updatePersonDto.address
         );

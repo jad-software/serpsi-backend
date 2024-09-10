@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AddressesService } from './Addresses.service';
-import { addressProvider } from './prioviders/address.providers';
+import { addressProvider } from './providers/address.providers';
 import { DatabaseModule } from 'src/database/database.module';
 
 @Module({

@@ -34,7 +34,7 @@ export class AddressesService {
     }
   }
 
-  async findAddressById(id: string): Promise<Address> {
+  async findById(id: string): Promise<Address> {
     try {
       const address = await this.addressRepository
         .createQueryBuilder('address')
@@ -45,7 +45,7 @@ export class AddressesService {
       throw new NotFoundException(err?.message);
     }
   }
-  async updateAddress(
+  async update(
     id: string,
     updateAddressDto: UpdateAddressDto
   ): Promise<any> {
@@ -59,7 +59,7 @@ export class AddressesService {
         complement: updateAddressDto.complement,
       });
       await this.addressRepository.update(id, updatedAddress);
-      const personsAdress = await this.findAddressById(id);
+      const personsAdress = await this.findById(id);
       return personsAdress;
     } catch (err) {
       throw new NotFoundException(err?.message);
@@ -68,7 +68,7 @@ export class AddressesService {
 
   async delete(id: string): Promise<any> {
     try {
-      const address = await this.findAddressById(id);
+      const address = await this.findById(id);
       await this.addressRepository.delete(address.id.id);
     } catch (err) {
       throw new BadRequestException(err?.message);
