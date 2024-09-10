@@ -29,7 +29,6 @@ export class CloudinaryService {
         resolve(result);
       });
     });
-
   }
 
   private extractPublicIdFromUrl(url: string): string | null {
@@ -38,9 +37,8 @@ export class CloudinaryService {
     return match ? match[1] : null;
   }
 
-    searchData(url: string): string {
+  searchData(url: string): string {
     const publicId = this.extractPublicIdFromUrl(url);
-    return publicId
+    return publicId;
   }
-
 }

@@ -1,4 +1,4 @@
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateAddressDto } from '../addresses/dto/createAddress.dto';
 import { CreatePersonDto } from './dto/createPerson.dto';
 import { UpdateAddressDto } from '../addresses/dto/updateAddress.dto';
@@ -107,6 +107,18 @@ export class PersonsController {
   }
 
   @Put('/picture/:id')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema:{
+      type: 'object',
+      properties:{
+        profilePicture:{
+          type: 'string',
+          format: 'binary'
+        }
+      }
+    }
+  })
   @UseInterceptors(FileInterceptor('profilePicture'))
   async uploadPictore(
     @UploadedFile(

@@ -53,7 +53,6 @@ export class PersonsService {
       if (file) {
         const fileSaved = await this.cloudinaryService.uploadFile(file);
         if (fileSaved) {
-          
           uploadedFileId = fileSaved.public_id;
           person.profilePicture = fileSaved.url;
         }
@@ -93,7 +92,7 @@ export class PersonsService {
       const person = new Person(updatePersonDto);
 
       let foundPerson = await this.findOneById(id);
-      
+
       if (updatePersonDto.phone) {
         person.phone = new Phone(
           updatePersonDto.phone.ddi || foundPerson.phone.ddi,
@@ -125,7 +124,7 @@ export class PersonsService {
     try {
       const person = await this.findOneById(id);
       const publicID = this.cloudinaryService.searchData(person.profilePicture);
-      
+
       await this.personRepository.delete(person.id.id);
       if (person.address) {
         await this.addressService.delete(person.address.id.id);
