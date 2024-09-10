@@ -124,6 +124,7 @@ export class PersonsService {
   async delete(id: string): Promise<any> {
     try {
       const person = await this.findOneById(id);
+      const publicID = this.cloudinaryService.searchData(person.profilePicture);
       
       await this.personRepository.delete(person.id.id);
       if (person.address) {
@@ -132,6 +133,7 @@ export class PersonsService {
       if (person.user) {
         await this.userService.remove(person.user.id.id);
       }
+      await this.cloudinaryService.deleteFile(publicID);
     } catch (err) {
       throw new BadRequestException(err?.message);
     }

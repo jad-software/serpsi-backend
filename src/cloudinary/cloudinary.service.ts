@@ -29,5 +29,18 @@ export class CloudinaryService {
         resolve(result);
       });
     });
+
   }
+
+  private extractPublicIdFromUrl(url: string): string | null {
+    const regex = /\/image\/upload\/v\d+\/([^\.\/]+)(\.[^\.\/]+)?$/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  }
+
+    searchData(url: string): string {
+    const publicId = this.extractPublicIdFromUrl(url);
+    return publicId
+  }
+
 }
