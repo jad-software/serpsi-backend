@@ -1,18 +1,29 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Patient } from './patient.entity';
 import { Medicine } from './medicine.entity';
 import { EntityBase } from '../../entity-base/entities/entity-base';
 import { CreateMedicamentInfoDto } from '../dto/medicine/create-medicament-info.dto';
+import { Id } from 'src/entity-base/vo/id.vo';
 
-//@Entity()
+@Entity()
 export class MedicamentInfo extends EntityBase {
   constructor(partial: Partial<CreateMedicamentInfoDto>) {
     super();
-    Object.assign(this, partial);
-    if (partial.dosage && partial.dosageUnity)
-      this.dosage = `${partial.dosage} ${partial.dosageUnity}`;
-    if (partial.frequency && partial.firstTimeOfTheDay)
-      this.generateSchedules();
+    if (partial) {
+      Object.assign(this, partial);
+      if(partial.dosage){
+        this.dosage = partial.dosage.toString();
+      }
+      
+      if (partial.dosage && partial.dosageUnity) {
+        this.dosage = `${partial.dosage} ${partial.dosageUnity}`;
+      }
+
+      if (partial.frequency && partial.firstTimeOfTheDay) {
+        this.firstTimeOfTheDay = new Date(partial.firstTimeOfTheDay);
+        this.generateSchedules();
+      }
+    }
   }
   @Column({ name: 'dosage' })
   private _dosage: string;
@@ -33,19 +44,15 @@ export class MedicamentInfo extends EntityBase {
 
   @ManyToOne(() => Patient, (patient) => patient.medicines)
   private _patient: Patient;
-  @Column({ name: 'patientId' })
-  private _patientId: string;
 
   @ManyToOne(() => Medicine, (medicine) => medicine.patients, {
     eager: true,
   })
   private _medicine: Medicine;
-  @Column({ name: 'medicineId' })
-  private _medicineId: string;
 
   private generateSchedules(): void {
     const schedules: Date[] = [];
-    for (let i = 0; i < 24; i += this.frequency) {
+    for (let i = 0; i < 24; i += 24 / this.frequency) {
       let time = new Date(
         this.firstTimeOfTheDay.getTime() + i * 60 * 60 * 1000
       );
@@ -54,18 +61,6 @@ export class MedicamentInfo extends EntityBase {
     this._schedules = schedules;
   }
 
-  get patientId(): string {
-    return this._patientId;
-  }
-  set patientId(patientId: string) {
-    this._patientId = patientId;
-  }
-  get medicineId(): string {
-    return this._medicineId;
-  }
-  set medicineId(medicineId: string) {
-    this._medicineId = medicineId;
-  }
   get patient(): Patient {
     return this._patient;
   }

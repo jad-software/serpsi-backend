@@ -16,6 +16,6 @@ import { MedicinesController } from './medicines.controller';
     MedicamentInfoService,
     ...medicamentInfoProvider,
   ],
-  exports: [MedicinesService],
+  exports: [MedicinesService, MedicamentInfoService],
 })
 export class MedicinesModule {}

@@ -21,7 +21,7 @@ import { Comorbidity } from './comorbidity.entity';
  * TODO [X] implement Comorbity management entity        |
  * TODO [X] implement Medicine management entity         |
  * TODO [ ] implement MedicamentInfo management          |
- * TODO [ ] implement patient entity at database         V
+ * TODO [X] implement patient entity at database         V
  * TODO [ ] implement Person foreign keys and relations
  *
  */
@@ -41,7 +41,9 @@ export class Patient extends EntityBase implements IPatient {
   @ManyToOne(() => School)
   private _school: School;
 
-  // @OneToMany(() => MedicamentInfo, (medicamentInfo) => medicamentInfo.patient)
+  @OneToMany(() => MedicamentInfo, (medicamentInfo) => medicamentInfo.patient, {
+    cascade: true,
+  })
   private _medicines: MedicamentInfo[];
 
   @ManyToMany(() => Comorbidity)

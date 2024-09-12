@@ -15,6 +15,10 @@ import { School } from './entities/school.entity';
 import { UpdateSchoolDto } from './dto/school/update-school.dto';
 import { ComorbiditiesService } from './comorbidities.service';
 import { Comorbidity } from './entities/comorbidity.entity';
+import { MedicamentInfo } from './entities/medicament-info.entity';
+import { MedicamentInfoService } from './medicament-info.service';
+import { CreateMedicamentInfoDto } from './dto/medicine/create-medicament-info.dto';
+import { OmitType } from '@nestjs/swagger';
 
 @Injectable()
 export class PatientsService {
@@ -22,40 +26,69 @@ export class PatientsService {
     @Inject(data_providers.PATIENT_REPOSITORY)
     private patientRepository: Repository<Patient>,
     private readonly schoolService: SchoolService,
-    private readonly comorbiditiesService: ComorbiditiesService
+    private readonly comorbiditiesService: ComorbiditiesService,
+    private readonly medicamentInfoService: MedicamentInfoService
   ) {}
 
   async create(createPatientDto: CreatePatientDto) {
-    const patient = new Patient({ ...createPatientDto });
-    try {
-      let school = await this.schoolService.findOneBy(createPatientDto.school);
-      if (!school)
-        school = await this.schoolService.create(createPatientDto.school);
+    const patient = this.patientRepository.create(
+      new Patient({ ...createPatientDto, medicines: [] })
+    );
+    let school = await this.setSchool(createPatientDto);
+    let comorbidities: Comorbidity[] =
+      await this.setComorbities(createPatientDto);
 
-      let comorbidities: Comorbidity[] = [];
-      for (let comorbidityDto of createPatientDto.comorbidities) {
-        let comorbidityEntity = (
-          await this.comorbiditiesService.findByName(comorbidityDto.name)
-        ).at(0);
-        if (!comorbidityEntity)
-          comorbidityEntity =
-            await this.comorbiditiesService.create(comorbidityDto);
-        comorbidities.push(comorbidityEntity);
-      }
-      patient.comorbidities = comorbidities;
-      patient.school = school;
-      return await this.patientRepository.save(patient);
+    patient.school = school;
+    patient.comorbidities = comorbidities;
+    let savedPatient = await this.patientRepository.save(patient);
+
+    let medicines: MedicamentInfo[] = await this.setMedicines(createPatientDto.medicines, savedPatient);
+    savedPatient.medicines = medicines;
+    
+    return savedPatient;
+    try {
     } catch (err) {
       throw new InternalServerErrorException(err);
     }
   }
 
+  private async setSchool(createPatientDto: CreatePatientDto) {
+    let school = await this.schoolService.findOneBy(createPatientDto.school);
+    if (!school)
+      school = await this.schoolService.create(createPatientDto.school);
+    return school;
+  }
+
+  private async setMedicines(medicinesDto: CreateMedicamentInfoDto[], patient: Patient) {
+    let medicines: MedicamentInfo[] = [];
+    for (let medicamentDto of medicinesDto) {
+      let medicament = await this.medicamentInfoService.create(medicamentDto, patient);
+      medicament.patient = undefined;
+      medicines.push(medicament);
+    }
+    
+    return medicines;
+  }
+
+  private async setComorbities(createPatientDto: CreatePatientDto) {
+    let comorbidities: Comorbidity[] = [];
+    for (let comorbidityDto of createPatientDto.comorbidities) {
+      let comorbidityEntity = (
+        await this.comorbiditiesService.findByName(comorbidityDto.name)
+      ).at(0);
+      if (!comorbidityEntity)
+        comorbidityEntity =
+          await this.comorbiditiesService.create(comorbidityDto);
+      comorbidities.push(comorbidityEntity);
+    }
+    return comorbidities;
+  }
+
   async findAll() {
-    return await this.patientRepository
-      .createQueryBuilder('patient')
-      .leftJoinAndSelect('patient._school', 'school')
-      .leftJoinAndSelect('patient._comorbidities', 'comorbidities')
-      .getMany();
+    return await this.medicamentInfoService.findAll();
+    // return await this.patientRepository.find({
+    //   relations: ['_school', '_comorbidities', '_medicines'],
+    // })
   }
 
   async findOne(id: string) {
@@ -91,6 +124,7 @@ export class PatientsService {
   }
 
   async remove(id: string) {
-    return await this.patientRepository.delete(id);
+    return await this.medicamentInfoService.remove(id);
+    // return await this.patientRepository.delete(id);
   }
 }

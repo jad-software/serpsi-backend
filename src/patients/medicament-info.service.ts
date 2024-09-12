@@ -10,25 +10,37 @@ import { Repository } from 'typeorm';
 import { CreateMedicamentInfoDto } from './dto/medicine/create-medicament-info.dto';
 import { UpdateMedicamentInfoDto } from './dto/medicine/update-medicament-info.dto';
 import { MedicamentInfo } from './entities/medicament-info.entity';
+import { MedicinesService } from './medicines.service';
+import { Patient } from './entities/patient.entity';
 
 @Injectable()
 export class MedicamentInfoService {
   constructor(
     @Inject(data_providers.MEDICAMENTINFO_REPOSITORY)
-    private medicamentInfoRepository: Repository<MedicamentInfo>
+    private medicamentInfoRepository: Repository<MedicamentInfo>,
+    private medicineService: MedicinesService
   ) {}
 
-  async create(createMedicamentInfoDto: CreateMedicamentInfoDto) {
+  async create(createMedicamentInfoDto: CreateMedicamentInfoDto,  patient: Patient) {
+    const medicamentInfo = new MedicamentInfo(createMedicamentInfoDto);
+    let medicine = (
+      await this.medicineService.findByName(
+        createMedicamentInfoDto.medicine.name
+      )
+    ).at(0);
+    medicamentInfo.medicine = medicine;
+    medicamentInfo.patient = patient;
+    return await this.medicamentInfoRepository.save(medicamentInfo);
     try {
-      const medicamentInfo = new MedicamentInfo(createMedicamentInfoDto);
-      return await this.medicamentInfoRepository.save(medicamentInfo);
     } catch (err) {
       throw new InternalServerErrorException(err);
     }
   }
 
   async findAll() {
-    return await this.medicamentInfoRepository.find();
+    return await this.medicamentInfoRepository.find({
+      //relations: ['_patient', '_medicine'],
+    });
   }
 
   async findOne(id: string) {

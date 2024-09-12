@@ -1,14 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsDate,
   IsDateString,
   IsInt,
   IsNotEmpty,
   IsString,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import { CreateMedicineDto } from './create-medicine.dto';
 import { Type } from 'class-transformer';
+import { Patient } from 'src/patients/entities/patient.entity';
 
 export class CreateMedicamentInfoDto {
   @ApiProperty({
@@ -17,7 +18,7 @@ export class CreateMedicamentInfoDto {
   })
   @ValidateNested()
   @Type(() => CreateMedicineDto)
-  medicament: CreateMedicineDto;
+  medicine: CreateMedicineDto;
 
   @ApiProperty({
     type: Number,
@@ -26,7 +27,7 @@ export class CreateMedicamentInfoDto {
   })
   @IsNotEmpty()
   @IsInt()
-  dosage: number;
+  dosage: number | string;
 
   @ApiProperty({
     type: String,
@@ -43,6 +44,7 @@ export class CreateMedicamentInfoDto {
     example: 2,
   })
   @IsNotEmpty()
+  @Min(1)
   @IsInt()
   frequency: number;
 
