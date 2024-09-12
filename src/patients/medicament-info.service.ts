@@ -21,7 +21,10 @@ export class MedicamentInfoService {
     private medicineService: MedicinesService
   ) {}
 
-  async create(createMedicamentInfoDto: CreateMedicamentInfoDto,  patient: Patient) {
+  async create(
+    createMedicamentInfoDto: CreateMedicamentInfoDto,
+    patient: Patient
+  ) {
     const medicamentInfo = new MedicamentInfo(createMedicamentInfoDto);
     let medicine = (
       await this.medicineService.findByName(
@@ -39,7 +42,7 @@ export class MedicamentInfoService {
 
   async findAll() {
     return await this.medicamentInfoRepository.find({
-      //relations: ['_patient', '_medicine'],
+      relations: ['_patient', '_medicine'],
     });
   }
 

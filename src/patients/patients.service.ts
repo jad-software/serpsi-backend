@@ -18,7 +18,6 @@ import { Comorbidity } from './entities/comorbidity.entity';
 import { MedicamentInfo } from './entities/medicament-info.entity';
 import { MedicamentInfoService } from './medicament-info.service';
 import { CreateMedicamentInfoDto } from './dto/medicine/create-medicament-info.dto';
-import { OmitType } from '@nestjs/swagger';
 
 @Injectable()
 export class PatientsService {
@@ -42,9 +41,12 @@ export class PatientsService {
     patient.comorbidities = comorbidities;
     let savedPatient = await this.patientRepository.save(patient);
 
-    let medicines: MedicamentInfo[] = await this.setMedicines(createPatientDto.medicines, savedPatient);
+    let medicines: MedicamentInfo[] = await this.setMedicines(
+      createPatientDto.medicines,
+      savedPatient
+    );
     savedPatient.medicines = medicines;
-    
+
     return savedPatient;
     try {
     } catch (err) {
@@ -59,14 +61,20 @@ export class PatientsService {
     return school;
   }
 
-  private async setMedicines(medicinesDto: CreateMedicamentInfoDto[], patient: Patient) {
+  private async setMedicines(
+    medicinesDto: CreateMedicamentInfoDto[],
+    patient: Patient
+  ) {
     let medicines: MedicamentInfo[] = [];
     for (let medicamentDto of medicinesDto) {
-      let medicament = await this.medicamentInfoService.create(medicamentDto, patient);
+      let medicament = await this.medicamentInfoService.create(
+        medicamentDto,
+        patient
+      );
       medicament.patient = undefined;
       medicines.push(medicament);
     }
-    
+
     return medicines;
   }
 
@@ -85,10 +93,10 @@ export class PatientsService {
   }
 
   async findAll() {
-    return await this.medicamentInfoService.findAll();
-    // return await this.patientRepository.find({
-    //   relations: ['_school', '_comorbidities', '_medicines'],
-    // })
+    // return await this.medicamentInfoService.findAll();
+    return await this.patientRepository.find({
+      relations: ['_school', '_comorbidities', '_medicines'],
+    });
   }
 
   async findOne(id: string) {
