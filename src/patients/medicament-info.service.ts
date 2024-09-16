@@ -50,11 +50,14 @@ export class MedicamentInfoService {
   }
 
   async findAllToPatient(Patient_id: string): Promise<MedicamentInfo[]> {
-    return await this.medicamentInfoRepository
+    let medicaments =  await this.medicamentInfoRepository
       .createQueryBuilder('medicamentInfo')
       .leftJoinAndSelect('medicamentInfo._medicine', '_medicine')
       .where('medicamentInfo.Patient_id = :Patient_id', { Patient_id })
       .getMany();
+    return medicaments.map((value) => {
+      return new MedicamentInfo(value);
+    });
   }
 
   async findOne(
