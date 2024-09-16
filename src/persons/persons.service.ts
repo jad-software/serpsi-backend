@@ -26,7 +26,7 @@ export class PersonsService {
     private userService: UsersService,
     @Inject()
     private cloudinaryService: CloudinaryService
-  ) {}
+  ) { }
   async create(createPersonDto: CreatePersonDto, file?: Express.Multer.File) {
     let uploadedFileId: string | null = null;
     try {
@@ -133,8 +133,8 @@ export class PersonsService {
       }
       if (person.user) {
         await this.userService.remove(person.user.id.id);
+        await this.cloudinaryService.deleteFile(publicID);
       }
-      await this.cloudinaryService.deleteFile(publicID);
     } catch (err) {
       throw new BadRequestException(err?.message);
     }
@@ -142,10 +142,20 @@ export class PersonsService {
   async savePersonPicture(file: Express.Multer.File, id: string) {
     try {
       const person = await this.findOneById(id);
+      const oldProfilePicture = person.profilePicture;
       const fileSaved = await this.cloudinaryService.uploadFile(file);
       if (fileSaved) {
         person.profilePicture = fileSaved.url;
         await this.personRepository.save(person);
+      
+        if (oldProfilePicture) {
+          const publicID = this.cloudinaryService.searchData(
+            oldProfilePicture
+          );
+          if (publicID) {
+            await this.cloudinaryService.deleteFile(publicID);
+          }
+        }
       }
       return person;
     } catch (err) {
