@@ -1,4 +1,10 @@
-import { ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateAddressDto } from '../addresses/dto/createAddress.dto';
 import { CreatePersonDto } from './dto/createPerson.dto';
 import { UpdateAddressDto } from '../addresses/dto/updateAddress.dto';
@@ -26,7 +32,7 @@ import { validate } from 'class-validator';
 @ApiTags('persons')
 @Controller('persons')
 export class PersonsController {
-  constructor(private readonly personsService: PersonsService) { }
+  constructor(private readonly personsService: PersonsService) {}
 
   @Post()
   @ApiOperation({
@@ -54,79 +60,79 @@ export class PersonsController {
             },
             rg: {
               type: 'string',
-              example: '13.131.121-9'
+              example: '13.131.121-9',
             },
             phone: {
               type: 'object',
               properties: {
                 ddi: {
                   type: 'string',
-                  example: '+55'
+                  example: '+55',
                 },
                 ddd: {
                   type: 'string',
-                  example: '75'
+                  example: '75',
                 },
                 number: {
                   type: 'string',
-                  example: '99981798'
-                }
-              }
+                  example: '99981798',
+                },
+              },
             },
             cpf: {
               type: 'object',
               properties: {
                 cpf: {
                   type: 'string',
-                  example: '134.145.155-55'
-                }
-              }
+                  example: '134.145.155-55',
+                },
+              },
             },
             birthdate: {
               type: 'Date',
-              example: '1990-10-31'
+              example: '1990-10-31',
             },
-            user:{
+            user: {
               type: 'string',
-              example: 'a39b249c-24ea-4307-86c5-7e6180659cb3'
+              example: 'a39b249c-24ea-4307-86c5-7e6180659cb3',
             },
             address: {
               type: 'object',
               properties: {
                 state: {
                   type: 'string',
-                  example: 'BA'
+                  example: 'BA',
                 },
                 zipCode: {
                   type: 'string',
-                  example: '41796616'
+                  example: '41796616',
                 },
                 street: {
                   type: 'string',
-                  example: 'teste de street no swagger'
+                  example: 'teste de street no swagger',
                 },
                 district: {
                   type: 'string',
-                  example: 'District no swagger'
+                  example: 'District no swagger',
                 },
                 homeNumber: {
                   type: 'number',
-                  example: 21
+                  example: 21,
                 },
                 complement: {
                   type: 'string',
-                  example: 'Complement de Swagger'
-                }
-              }
-            }
-          }
+                  example: 'Complement de Swagger',
+                },
+              },
+            },
+          },
         },
-        profilePicture:{
+        profilePicture: {
           type: 'string',
-          format: 'binary'
-        }
-      }
-    }
+          format: 'binary',
+        },
+      },
+    },
   })
   @UseInterceptors(FileInterceptor('profilePicture'))
   @ApiOperation({
@@ -183,6 +189,9 @@ export class PersonsController {
     @Param('id') id: string,
     @Body() updatePersonDto: UpdatePersonDto
   ) {
+    if ('profilePicture' in updatePersonDto) {
+      delete updatePersonDto.profilePicture;
+    }
     return await this.personsService.update(id, updatePersonDto);
   }
 
@@ -202,10 +211,10 @@ export class PersonsController {
       properties: {
         profilePicture: {
           type: 'string',
-          format: 'binary'
-        }
-      }
-    }
+          format: 'binary',
+        },
+      },
+    },
   })
   @UseInterceptors(FileInterceptor('profilePicture'))
   async uploadPictore(

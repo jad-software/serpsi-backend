@@ -66,6 +66,7 @@ export class PersonsService {
       throw new BadRequestException(err?.message);
     }
   }
+
   async findAll(): Promise<Person[]> {
     try {
       return await this.personRepository.find();
@@ -73,6 +74,7 @@ export class PersonsService {
       throw new BadRequestException(err?.message);
     }
   }
+
   async findOneById(id: string): Promise<Person> {
     try {
       const person = await this.personRepository
