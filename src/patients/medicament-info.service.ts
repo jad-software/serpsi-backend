@@ -31,6 +31,10 @@ export class MedicamentInfoService {
           createMedicamentInfoDto.medicine.name
         )
       ).at(0);
+      if (!medicine)
+        medicine = await this.medicineService.create(
+          createMedicamentInfoDto.medicine
+        );
       medicamentInfo.medicine = medicine;
       medicamentInfo.patient = patient;
       return await this.medicamentInfoRepository.save(medicamentInfo);

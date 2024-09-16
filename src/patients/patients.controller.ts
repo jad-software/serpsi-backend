@@ -35,13 +35,7 @@ export class PatientsController {
   async findOne(@Param('id') id: string) {
     return await this.patientsService.findOne(id);
   }
-
-  @ApiOperation({ summary: 'retorna uma escola pelo nome ou cnpj' })
-  @Post('/school')
-  async findOneSchool(@Query() search?: UpdateSchoolDto) {
-    return await this.patientsService.findOneSchool(search);
-  }
-
+  
   @ApiOperation({ summary: 'atualiza um paciente pelo id' })
   @Put(':id')
   async update(

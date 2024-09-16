@@ -41,7 +41,7 @@ export class PatientsService {
       patient.school = school;
       patient.comorbidities = comorbidities;
       let savedPatient = await this.patientRepository.save(patient);
-      
+
       let medicines = await this.setMedicines(
         createPatientDto.medicines,
         savedPatient
@@ -107,14 +107,6 @@ export class PatientsService {
       });
       patient.medicines = await this.medicamentInfoService.findAllToPatient(patient.id.id);
       return patient;
-    } catch (err) {
-      throw new NotFoundException(err?.message);
-    }
-  }
-
-  async findOneSchool(search: UpdateSchoolDto): Promise<School> {
-    try {
-      return await this.schoolService.findOneBy(search);
     } catch (err) {
       throw new NotFoundException(err?.message);
     }
