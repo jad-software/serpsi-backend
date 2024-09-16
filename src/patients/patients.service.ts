@@ -30,25 +30,25 @@ export class PatientsService {
   ) {}
 
   async create(createPatientDto: CreatePatientDto) {
-    const patient = this.patientRepository.create(
-      new Patient({ ...createPatientDto, medicines: [] })
-    );
-    let school = await this.setSchool(createPatientDto);
-    let comorbidities: Comorbidity[] =
-      await this.setComorbities(createPatientDto);
-
-    patient.school = school;
-    patient.comorbidities = comorbidities;
-    let savedPatient = await this.patientRepository.save(patient);
-
-    let medicines: MedicamentInfo[] = await this.setMedicines(
-      createPatientDto.medicines,
-      savedPatient
-    );
-    savedPatient.medicines = medicines;
-
-    return savedPatient;
     try {
+      const patient = this.patientRepository.create(
+        new Patient({ ...createPatientDto, medicines: [] })
+      );
+      let school = await this.setSchool(createPatientDto);
+      let comorbidities: Comorbidity[] =
+        await this.setComorbities(createPatientDto);
+
+      patient.school = school;
+      patient.comorbidities = comorbidities;
+      let savedPatient = await this.patientRepository.save(patient);
+      
+      let medicines = await this.setMedicines(
+        createPatientDto.medicines,
+        savedPatient
+      );
+      savedPatient.medicines = medicines;
+
+      return savedPatient;
     } catch (err) {
       throw new InternalServerErrorException(err);
     }
@@ -74,7 +74,6 @@ export class PatientsService {
       medicament.patient = undefined;
       medicines.push(medicament);
     }
-
     return medicines;
   }
 
@@ -93,9 +92,8 @@ export class PatientsService {
   }
 
   async findAll() {
-    // return await this.medicamentInfoService.findAll();
     return await this.patientRepository.find({
-      relations: ['_school', '_comorbidities', '_medicines'],
+      relations: ['_school', '_comorbidities'],
     });
   }
 
@@ -103,9 +101,12 @@ export class PatientsService {
     let requestedPatient = new Patient({});
     requestedPatient.id = new Id(id);
     try {
-      return await this.patientRepository.findOneOrFail({
+      let patient = await this.patientRepository.findOneOrFail({
         where: { ...requestedPatient },
+        relations: ['_school', '_comorbidities'],
       });
+      patient.medicines = await this.medicamentInfoService.findAllToPatient(patient.id.id);
+      return patient;
     } catch (err) {
       throw new NotFoundException(err?.message);
     }
@@ -132,7 +133,6 @@ export class PatientsService {
   }
 
   async remove(id: string) {
-    return await this.medicamentInfoService.remove(id);
-    // return await this.patientRepository.delete(id);
+    return await this.patientRepository.delete(id);
   }
 }

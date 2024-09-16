@@ -41,9 +41,7 @@ export class Patient extends EntityBase implements IPatient {
   @ManyToOne(() => School)
   private _school: School;
 
-  @OneToMany(() => MedicamentInfo, (medicamentInfo) => medicamentInfo.patient, {
-    cascade: true,
-  })
+  @OneToMany(() => MedicamentInfo, (medicamentInfo) => medicamentInfo.patient)
   private _medicines: MedicamentInfo[];
 
   @ManyToMany(() => Comorbidity)

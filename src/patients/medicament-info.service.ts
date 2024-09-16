@@ -5,7 +5,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { data_providers } from '../constants';
-import { Id } from '../entity-base/vo/id.vo';
 import { Repository } from 'typeorm';
 import { CreateMedicamentInfoDto } from './dto/medicine/create-medicament-info.dto';
 import { UpdateMedicamentInfoDto } from './dto/medicine/update-medicament-info.dto';
@@ -24,31 +23,44 @@ export class MedicamentInfoService {
   async create(
     createMedicamentInfoDto: CreateMedicamentInfoDto,
     patient: Patient
-  ) {
+  ): Promise<MedicamentInfo> {
     const medicamentInfo = new MedicamentInfo(createMedicamentInfoDto);
-    let medicine = (
-      await this.medicineService.findByName(
-        createMedicamentInfoDto.medicine.name
-      )
-    ).at(0);
-    medicamentInfo.medicine = medicine;
-    medicamentInfo.patient = patient;
-    return await this.medicamentInfoRepository.save(medicamentInfo);
     try {
+      let medicine = (
+        await this.medicineService.findByName(
+          createMedicamentInfoDto.medicine.name
+        )
+      ).at(0);
+      medicamentInfo.medicine = medicine;
+      medicamentInfo.patient = patient;
+      return await this.medicamentInfoRepository.save(medicamentInfo);
     } catch (err) {
       throw new InternalServerErrorException(err);
     }
   }
 
-  async findAll() {
+  async findAll(): Promise<MedicamentInfo[]> {
     return await this.medicamentInfoRepository.find({
       relations: ['_patient', '_medicine'],
     });
   }
 
-  async findOne(id: string) {
+  async findAllToPatient(Patient_id: string): Promise<MedicamentInfo[]> {
+    return await this.medicamentInfoRepository.find({
+      where: {
+        Patient_id,
+      },
+      relations: ['_medicine'],
+    });
+  }
+
+  async findOne(
+    patient_id: string,
+    medicament_id: string
+  ): Promise<MedicamentInfo> {
     let requestedMedicamentInfo = new MedicamentInfo({});
-    requestedMedicamentInfo.id = new Id(id);
+    requestedMedicamentInfo.Patient_id = patient_id;
+    requestedMedicamentInfo.Medicine_id = medicament_id;
     try {
       return await this.medicamentInfoRepository.findOneOrFail({
         where: { ...requestedMedicamentInfo },
@@ -58,19 +70,32 @@ export class MedicamentInfoService {
     }
   }
 
-  async update(id: string, updateMedicamentInfoDto: UpdateMedicamentInfoDto) {
+  async update(
+    patient_id: string,
+    medicament_id: string,
+    updateMedicamentInfoDto: UpdateMedicamentInfoDto
+  ) {
     let updatingMedicamentInfo = new MedicamentInfo(updateMedicamentInfoDto);
 
     try {
-      await this.medicamentInfoRepository.update(id, updatingMedicamentInfo);
-      let medicamentInfo = await this.findOne(id);
+      await this.medicamentInfoRepository.update(
+        {
+          Patient_id: patient_id,
+          Medicine_id: medicament_id,
+        },
+        updatingMedicamentInfo
+      );
+      let medicamentInfo = await this.findOne(patient_id, medicament_id);
       return medicamentInfo;
     } catch (err) {
       throw new InternalServerErrorException(err?.message);
     }
   }
 
-  async remove(id: string) {
-    return await this.medicamentInfoRepository.delete(id);
+  async remove(patient_id: string, medicament_id: string) {
+    return await this.medicamentInfoRepository.delete({
+      Patient_id: patient_id,
+      Medicine_id: medicament_id,
+    });
   }
 }

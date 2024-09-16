@@ -1,32 +1,50 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+  RelationId,
+} from 'typeorm';
 import { Patient } from './patient.entity';
 import { Medicine } from './medicine.entity';
-import { EntityBase } from '../../entity-base/entities/entity-base';
 import { CreateMedicamentInfoDto } from '../dto/medicine/create-medicament-info.dto';
-import { Id } from 'src/entity-base/vo/id.vo';
 
 @Entity()
-export class MedicamentInfo extends EntityBase {
+export class MedicamentInfo {
   constructor(partial: Partial<CreateMedicamentInfoDto>) {
-    super();
+    Object.assign(this, partial);
     if (partial) {
-      Object.assign(this, partial);
-      if(partial.dosage){
-        this.dosage = partial.dosage.toString();
-      }
-      
-      if (partial.dosage && partial.dosageUnity) {
-        this.dosage = `${partial.dosage} ${partial.dosageUnity}`;
-      }
-
       if (partial.frequency && partial.firstTimeOfTheDay) {
         this.firstTimeOfTheDay = new Date(partial.firstTimeOfTheDay);
         this.generateSchedules();
       }
     }
   }
+
+  @PrimaryColumn({ name: 'Patient_id' })
+  Patient_id: string;
+
+  @PrimaryColumn({ name: 'Medicine_id' })
+  Medicine_id: string;
+
+  @ManyToOne(() => Patient, (patient) => patient.medicines, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'Patient_id' })
+  private _patient: Patient;
+
+  @ManyToOne(() => Medicine, (medicine) => medicine.patients, {
+    eager: true,
+  })
+  private _medicine: Medicine;
+
   @Column({ name: 'dosage' })
-  private _dosage: string;
+  private _dosage: number;
+
+  @Column({ name: 'dosageUnity' })
+  private _dosageUnity: string;
 
   @Column({ name: 'frequency' })
   private _frequency: number;
@@ -42,14 +60,6 @@ export class MedicamentInfo extends EntityBase {
 
   private _schedules: Date[];
 
-  @ManyToOne(() => Patient, (patient) => patient.medicines)
-  private _patient: Patient;
-
-  @ManyToOne(() => Medicine, (medicine) => medicine.patients, {
-    eager: true,
-  })
-  private _medicine: Medicine;
-
   private generateSchedules(): void {
     const schedules: Date[] = [];
     for (let i = 0; i < 24; i += 24 / this.frequency) {
@@ -59,6 +69,12 @@ export class MedicamentInfo extends EntityBase {
       schedules.push(time);
     }
     this._schedules = schedules;
+  }
+  get dosageUnity(): string {
+    return this._dosageUnity;
+  }
+  set dosageUnity(dosageUnity: string) {
+    this._dosageUnity = dosageUnity;
   }
 
   get patient(): Patient {
@@ -73,10 +89,10 @@ export class MedicamentInfo extends EntityBase {
   set medicine(medicine: Medicine) {
     this._medicine = medicine;
   }
-  get dosage(): string {
+  get dosage(): number {
     return this._dosage;
   }
-  set dosage(dosage: string) {
+  set dosage(dosage: number) {
     this._dosage = dosage;
   }
   get frequency(): number {

@@ -6,5 +6,5 @@ export const testDataSource = new DataSource({
   url: TEST_POSTGRES_URL,
   migrations: ['./dist/database/migrations/*.{ts,js}'],
   entities: ['./dist/**/entities/*.{ts,js}'],
-  logging: false,
+  logging: true,
 });
