@@ -98,14 +98,17 @@ export class PatientsService {
   }
 
   async findOne(id: string) {
-    let requestedPatient = new Patient({});
-    requestedPatient.id = new Id(id);
     try {
-      let patient = await this.patientRepository.findOneOrFail({
-        where: { ...requestedPatient },
-        relations: ['_school', '_comorbidities'],
-      });
-      patient.medicines = await this.medicamentInfoService.findAllToPatient(patient.id.id);
+      let patient = await this.patientRepository
+        .createQueryBuilder('patient')
+        .leftJoinAndSelect('patient._school', '_school')
+        .leftJoinAndSelect('patient._comorbidities', '_comorbidities')
+        .where('patient.id = :id', { id })
+        .getOneOrFail();
+
+      patient.medicines = await this.medicamentInfoService.findAllToPatient(
+        patient.id.id
+      );
       return patient;
     } catch (err) {
       throw new NotFoundException(err?.message);

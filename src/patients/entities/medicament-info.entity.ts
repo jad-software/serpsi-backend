@@ -23,13 +23,12 @@ export class MedicamentInfo {
   }
 
   @PrimaryColumn({ name: 'Patient_id' })
-  Patient_id: string;
+  private _patient_id: string;
 
   @PrimaryColumn({ name: 'Medicine_id' })
-  Medicine_id: string;
+  private _medicine_id: string;
 
   @ManyToOne(() => Patient, (patient) => patient.medicines, {
-    eager: true,
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'Patient_id' })
@@ -76,7 +75,19 @@ export class MedicamentInfo {
   set dosageUnity(dosageUnity: string) {
     this._dosageUnity = dosageUnity;
   }
+  get Patient_id(): string {
+    return this._patient_id;
+  }
+  set Patient_id(patient_id: string) {
+    this._patient_id = patient_id;
+  }
 
+  get Medicine_id(): string {
+    return this._medicine_id;
+  }
+  set Medicine_id(medicine_id: string) {
+    this._medicine_id = medicine_id;
+  }
   get patient(): Patient {
     return this._patient;
   }
