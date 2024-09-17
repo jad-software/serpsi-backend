@@ -37,7 +37,7 @@ export class PatientsController {
   async findOne(@Param('id') id: string) {
     return await this.patientsService.findOne(id);
   }
-  
+
   @ApiOperation({ summary: 'atualiza um paciente pelo id' })
   @Put(':id')
   async update(
@@ -49,17 +49,16 @@ export class PatientsController {
 
   @ApiOperation({ summary: 'atualiza a escola de um paciente pelo id' })
   @Put(':id/school')
-  async updateSchool(
-    @Param('id') id: string,
-    @Body() school: UpdateSchoolDto
-  ) {
+  async updateSchool(@Param('id') id: string, @Body() school: UpdateSchoolDto) {
     return await this.patientsService.updateSchool(id, school);
   }
 
-  @ApiOperation({ summary: 'atualiza a lista de comorbidades de um paciente pelo id' })
+  @ApiOperation({
+    summary: 'atualiza a lista de comorbidades de um paciente pelo id',
+  })
   @ApiBody({
     type: CreateComorbidityDto,
-    isArray: true
+    isArray: true,
   })
   @Put(':id/comorbities')
   async addComorbities(
@@ -69,10 +68,13 @@ export class PatientsController {
     return await this.patientsService.addComorbities(id, comorbities);
   }
 
-  @ApiOperation({ summary: 'adiciona medicamentos para lista de um paciente pelo id (se a conexão com o remedio já existir ele atualiza)' })
+  @ApiOperation({
+    summary:
+      'adiciona medicamentos para lista de um paciente pelo id (se a conexão com o remedio já existir ele atualiza)',
+  })
   @ApiBody({
     type: CreateMedicamentInfoDto,
-    isArray: true
+    isArray: true,
   })
   @Put(':id/medicament')
   async addMedicaments(
@@ -84,7 +86,10 @@ export class PatientsController {
 
   @ApiOperation({ summary: 'deleta um paciente pelo id' })
   @Delete(':id/medicament/:medId')
-  async removeMedicaments(@Param('id') id: string, @Param('medId') medId: string) {
+  async removeMedicaments(
+    @Param('id') id: string,
+    @Param('medId') medId: string
+  ) {
     return await this.patientsService.removeMedicament(id, medId);
   }
 

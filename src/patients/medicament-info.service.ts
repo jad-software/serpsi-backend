@@ -50,7 +50,7 @@ export class MedicamentInfoService {
   }
 
   async findAllToPatient(Patient_id: string): Promise<MedicamentInfo[]> {
-    let medicaments =  await this.medicamentInfoRepository
+    let medicaments = await this.medicamentInfoRepository
       .createQueryBuilder('medicamentInfo')
       .leftJoinAndSelect('medicamentInfo._medicine', '_medicine')
       .where('medicamentInfo.Patient_id = :Patient_id', { Patient_id })
@@ -80,6 +80,6 @@ export class MedicamentInfoService {
     let medicamentInfo = new MedicamentInfo({});
     medicamentInfo.Patient_id = patient_id;
     medicamentInfo.Medicine_id = medicament_id;
-    return await this.medicamentInfoRepository.delete({...medicamentInfo});
+    return await this.medicamentInfoRepository.delete({ ...medicamentInfo });
   }
 }
