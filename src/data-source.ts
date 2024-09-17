@@ -9,10 +9,10 @@ export const postgresDataSource = new DataSource({
   logging: true,
 });
 
-export const testDataSource = new DataSource({
-  type: 'postgres',
-  url: TEST_POSTGRES_URL,
-  migrations: ['./dist/database/migrations/*.{ts,js}'],
-  entities: ['./src/**/entities/*.{ts,js}'],
-  logging: false,
-});
+// export const testDataSource = new DataSource({
+//   type: 'postgres',
+//   url: TEST_POSTGRES_URL,
+//   migrations: ['./dist/database/migrations/*.{ts,js}'],
+//   entities: ['./src/**/entities/*.{ts,js}'],
+//   logging: false,
+// });

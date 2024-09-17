@@ -9,6 +9,8 @@ export const data_providers = {
   ROLE_REPOSITORY: 'ROLE_REPOSITORY',
   DATA_SOURCE: 'DATA_SOURCE',
   USER_REPOSITORY: 'USER_REPOSITORY',
+  PERSON_REPOSITORY: 'PERSON_REPOSITORY',
+  ADDRESS_REPOSITORY: 'ADDRESS_REPOSITORY',
 };
 export const POSTGRES_URL = process.env.POSTGRES_URL;
 export const TEST_POSTGRES_URL = process.env.TEST_POSTGRES_URL;
@@ -20,4 +22,10 @@ export const bcrypt_salt = 10;
 
 export const email = {
   REGEX: '^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+[.]+[a-zA-Z]{2,}$',
+};
+
+export const CLOUDNARY_KEYS = {
+  CLOUDINARUY_NAME: process.env.CLOUDINARY_NAME,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
 };

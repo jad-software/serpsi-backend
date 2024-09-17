@@ -30,7 +30,6 @@ describe('UsersController (integration)', () => {
     it('should create a user', async () => {
       const dto: CreateUserDto = {
         email: 'john.doe@example.com',
-        password: 'Senha@123',
         role: Role.PSYCHOLOGIST,
       };
       globalUser = await controller.create(dto);

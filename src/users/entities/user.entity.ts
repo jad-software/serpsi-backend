@@ -1,9 +1,10 @@
 import { Email } from '../vo/email.vo';
 import { Role } from '../vo/role.enum';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToOne } from 'typeorm';
 import { EntityBase } from '../../entity-base/entities/entity-base';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { IUser } from '../interfaces/user.interface';
+import { Person } from '../../persons/entities/person.enitiy';
 
 @Entity()
 export class User extends EntityBase implements IUser {
@@ -27,6 +28,9 @@ export class User extends EntityBase implements IUser {
     default: Role.PSYCHOLOGIST,
   })
   private _role: Role;
+
+  @OneToOne(() => Person, (person) => person.user)
+  person: Person;
 
   get email(): Email {
     return this._email;
