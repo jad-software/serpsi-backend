@@ -9,7 +9,7 @@ export class CloudinaryService {
     return new Promise<CloudinaryResponse>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
-          // resource_type: 'auto',
+          resource_type: 'auto',
           // public_id: `${file.originalname.split('.')[0]}.pdf`, // Garante que tenha a extensão .pdf
           // format: 'pdf'
         },
