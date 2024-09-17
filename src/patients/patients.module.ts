@@ -6,9 +6,16 @@ import { DatabaseModule } from '../database/database.module';
 import { MedicinesModule } from './medicines.module';
 import { SchoolModule } from './school.module';
 import { ComorbiditiesModule } from './comorbidities.module';
+import { PersonsModule } from 'src/persons/persons.module';
 
 @Module({
-  imports: [DatabaseModule, MedicinesModule, SchoolModule, ComorbiditiesModule],
+  imports: [
+    DatabaseModule,
+    MedicinesModule,
+    SchoolModule,
+    ComorbiditiesModule,
+    PersonsModule,
+  ],
   controllers: [PatientsController],
   providers: [PatientsService, ...patientProvider],
   exports: [PatientsService],

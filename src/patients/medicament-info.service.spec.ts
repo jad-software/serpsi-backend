@@ -89,9 +89,7 @@ describe('MedicamentInfoService', () => {
     mockQueryBuilder.getMany.mockResolvedValue([medicament]);
 
     expect(
-      await service.findAllToPatient(
-        'f0846568-2bd9-450d-95e3-9a478e20e74b'
-      )
+      await service.findAllToPatient('f0846568-2bd9-450d-95e3-9a478e20e74b')
     ).toEqual([medicament]);
     expect(mockQueryBuilder.where).toHaveBeenCalledWith(
       'medicamentInfo.Patient_id = :Patient_id',
