@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { PaymentPlan } from '../vo/PaymentPlan.enum';
 import { IsEnum, IsNotEmpty, ValidateNested } from 'class-validator';
 import { IPatient } from '../interfaces/patient.interface';
@@ -6,6 +6,7 @@ import { CreateSchoolDto } from './school/create-school.dto';
 import { Type } from 'class-transformer';
 import { CreateComorbidityDto } from './comorbities/create-comorbidity.dto';
 import { CreateMedicamentInfoDto } from './medicine/create-medicament-info.dto';
+import { CreatePersonDto } from '../../persons/dto/createPerson.dto';
 
 export class CreatePatientDto implements IPatient {
   @ApiProperty({
@@ -16,6 +17,14 @@ export class CreatePatientDto implements IPatient {
   @IsNotEmpty()
   @IsEnum(PaymentPlan)
   paymentPlan: PaymentPlan;
+
+  @ApiProperty({
+    type: OmitType(CreatePersonDto, ['user'] as const),
+    description: 'Dados pessoais do paciente',
+  })
+  @ValidateNested()
+  @Type(() => OmitType(CreatePersonDto, ['user'] as const))
+  person: CreatePersonDto;
 
   @ApiProperty({
     type: CreateSchoolDto,

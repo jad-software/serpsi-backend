@@ -39,7 +39,7 @@ export class Person extends EntityBase implements IPerson {
   @ManyToOne(() => Address, (address) => address.persons)
   address: Address;
 
-  @OneToOne(() => User, (user) => user.person)
+  @OneToOne(() => User, (user) => user.person, { nullable: true })
   @JoinColumn()
   user: User;
 

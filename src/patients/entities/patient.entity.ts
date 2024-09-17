@@ -2,10 +2,12 @@ import { EntityBase } from '../../entity-base/entities/entity-base';
 import {
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
 import { PaymentPlan } from '../vo/PaymentPlan.enum';
 import { CreatePatientDto } from '../dto/create-patient.dto';
@@ -13,6 +15,7 @@ import { IPatient } from '../interfaces/patient.interface';
 import { MedicamentInfo } from './medicament-info.entity';
 import { School } from './school.entity';
 import { Comorbidity } from './comorbidity.entity';
+import { Person } from '../../persons/entities/person.enitiy';
 
 @Entity()
 /**
@@ -20,9 +23,9 @@ import { Comorbidity } from './comorbidity.entity';
  * TODO [X] implement school management entity
  * TODO [X] implement Comorbity management entity        |
  * TODO [X] implement Medicine management entity         |
- * TODO [ ] implement MedicamentInfo management          |
+ * TODO [X] implement MedicamentInfo management          |
  * TODO [X] implement patient entity at database         V
- * TODO [ ] implement Person foreign keys and relations
+ * TODO [X] implement Person foreign keys and relations
  *
  */
 export class Patient extends EntityBase implements IPatient {
@@ -48,11 +51,23 @@ export class Patient extends EntityBase implements IPatient {
   @JoinTable()
   private _comorbidities: Comorbidity[];
 
+  @OneToOne(() => Person, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @JoinColumn()
+  private _person: Person;
+
   get paymentPlan(): PaymentPlan {
     return this._paymentPlan;
   }
   set paymentPlan(paymentPlan: PaymentPlan) {
     this._paymentPlan = paymentPlan;
+  }
+
+  get person(): Person {
+    return this._person;
+  }
+
+  set person(person: Person) {
+    this._person = person;
   }
 
   get medicines(): MedicamentInfo[] {

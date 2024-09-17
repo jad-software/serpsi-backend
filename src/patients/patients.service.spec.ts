@@ -14,6 +14,8 @@ import { ComorbiditiesService } from './comorbidities.service';
 import { MedicamentInfoService } from './medicament-info.service';
 import { CreateMedicamentInfoDto } from './dto/medicine/create-medicament-info.dto';
 import { MedicamentInfo } from './entities/medicament-info.entity';
+import { PersonsService } from '../persons/persons.service';
+import { Person } from '../persons/entities/person.enitiy';
 
 describe('PatientsService', () => {
   let service: PatientsService;
@@ -135,6 +137,11 @@ describe('PatientsService', () => {
       medicament_id,
     })),
   };
+  const mockPersonsService = {
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn().mockResolvedValue({}), // Ajuste aqui, se necessário
+  };
 
   beforeEach(async () => {
     mockRepository = {
@@ -163,6 +170,10 @@ describe('PatientsService', () => {
         {
           provide: MedicamentInfoService,
           useValue: mockMedicamentInfoService,
+        },
+        {
+          provide: PersonsService,
+          useValue: mockPersonsService,
         },
       ],
     }).compile();
@@ -205,7 +216,7 @@ describe('PatientsService', () => {
 
   it('should update a patient by id', async () => {
     const updatePatientDTO: UpdatePatientDto = {
-      paymentPlan: PaymentPlan.BIMESTRAL
+      paymentPlan: PaymentPlan.BIMESTRAL,
     };
     const expectedPatient: Patient = new Patient(updatePatientDTO);
     expectedPatient.id = new Id('f0846568-2bd9-450d-95e3-9a478e20e74b');
@@ -226,8 +237,19 @@ describe('PatientsService', () => {
 
   it('should remove a patient by id', async () => {
     mockRepository.delete.mockResolvedValue({ affected: 1 });
+    let patient = new Patient({});
+    patient.id = new Id('f0846568-2bd9-450d-95e3-9a478e20e74b');
+    patient.person = new Person({});
+    patient.person.id = new Id('f0846568-2bd9-450d-95e3-9a478e');
 
-    await service.remove('f0846568-2bd9-450d-95e3-9a478e20e74b');
+    mockQueryBuilder.getOneOrFail.mockResolvedValue(patient);
+    await service.remove(patient.id.id);
+
+    // Verificando se a função delete foi chamada no personsService
+    expect(mockPersonsService.delete).toHaveBeenCalledWith(
+      patient.person.id.id
+    );
+
     expect(mockRepository.delete).toHaveBeenCalledWith(
       'f0846568-2bd9-450d-95e3-9a478e20e74b'
     );

@@ -11,7 +11,6 @@ import { Repository } from 'typeorm';
 import { Patient } from './entities/patient.entity';
 import { Id } from '../entity-base/vo/id.vo';
 import { SchoolService } from './school.service';
-import { School } from './entities/school.entity';
 import { UpdateSchoolDto } from './dto/school/update-school.dto';
 import { ComorbiditiesService } from './comorbidities.service';
 import { Comorbidity } from './entities/comorbidity.entity';
@@ -19,6 +18,9 @@ import { MedicamentInfo } from './entities/medicament-info.entity';
 import { MedicamentInfoService } from './medicament-info.service';
 import { CreateMedicamentInfoDto } from './dto/medicine/create-medicament-info.dto';
 import { CreateComorbidityDto } from './dto/comorbities/create-comorbidity.dto';
+import { CreatePersonDto } from '../persons/dto/createPerson.dto';
+import { PersonsService } from '../persons/persons.service';
+import { CreateSchoolDto } from './dto/school/create-school.dto';
 
 @Injectable()
 export class PatientsService {
@@ -27,7 +29,8 @@ export class PatientsService {
     private patientRepository: Repository<Patient>,
     private readonly schoolService: SchoolService,
     private readonly comorbiditiesService: ComorbiditiesService,
-    private readonly medicamentInfoService: MedicamentInfoService
+    private readonly medicamentInfoService: MedicamentInfoService,
+    private readonly personsService: PersonsService
   ) {}
 
   async create(createPatientDto: CreatePatientDto) {
@@ -35,11 +38,12 @@ export class PatientsService {
       const patient = this.patientRepository.create(
         new Patient({ ...createPatientDto, medicines: [] })
       );
-      let school = await this.setSchool(createPatientDto);
+      let person = await this.setPerson(createPatientDto.person);
+      let school = await this.setSchool(createPatientDto.school);
       let comorbidities: Comorbidity[] = await this.setComorbities(
         createPatientDto.comorbidities
       );
-
+      patient.person = person;
       patient.school = school;
       patient.comorbidities = comorbidities;
       let savedPatient = await this.patientRepository.save(patient);
@@ -56,10 +60,14 @@ export class PatientsService {
     }
   }
 
-  private async setSchool(createPatientDto: CreatePatientDto) {
-    let school = await this.schoolService.findOneBy(createPatientDto.school);
-    if (!school)
-      school = await this.schoolService.create(createPatientDto.school);
+  private async setPerson(createPersondto: CreatePersonDto) {
+    let person = await this.personsService.create(createPersondto);
+    return person;
+  }
+
+  private async setSchool(schoolDto: CreateSchoolDto) {
+    let school = await this.schoolService.findOneBy(schoolDto);
+    if (!school) school = await this.schoolService.create(schoolDto);
     return school;
   }
 
@@ -94,7 +102,7 @@ export class PatientsService {
 
   async findAll() {
     return await this.patientRepository.find({
-      relations: ['_school', '_comorbidities'],
+      relations: ['_school', '_comorbidities', '_person'],
     });
   }
 
@@ -104,6 +112,7 @@ export class PatientsService {
         .createQueryBuilder('patient')
         .leftJoinAndSelect('patient._school', '_school')
         .leftJoinAndSelect('patient._comorbidities', '_comorbidities')
+        .leftJoinAndSelect('patient._person', '_person')
         .where('patient.id = :id', { id })
         .getOneOrFail();
 
@@ -148,14 +157,22 @@ export class PatientsService {
 
   async update(id: string, updatePatientDto: UpdatePatientDto) {
     let updatingPatient = new Patient(updatePatientDto);
+    updatingPatient.person = undefined;
     try {
       await this.patientRepository.update(id, updatingPatient);
       let patient = await this.findOne(id);
+      if (updatePatientDto.person) {
+        patient.person = await this.personsService.update(
+          id,
+          updatePatientDto.person
+        );
+      }
       return patient;
     } catch (err) {
       throw new InternalServerErrorException(err?.message);
     }
   }
+
   async updateSchool(id: string, school: UpdateSchoolDto) {
     const newSchool = await this.schoolService.findOneBy(school);
     let updatingPatient = new Patient({});
@@ -171,8 +188,11 @@ export class PatientsService {
   }
 
   async remove(id: string) {
-    return await this.patientRepository.delete(id);
+    let patient = await this.findOne(id);
+    await this.personsService.delete(patient.person.id.id);
+    return await this.patientRepository.delete(patient.id.id);
   }
+
   async removeMedicament(patientId: string, medicamentId: string) {
     return await this.medicamentInfoService.remove(patientId, medicamentId);
   }
