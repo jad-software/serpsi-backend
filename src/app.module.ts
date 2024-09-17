@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { PersonsModule } from './persons/persons.module';
 import { AddressesModule } from './addresses/addresses.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { PatientsModule } from './patients/patients.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     PersonsModule,
     AddressesModule,
     CloudinaryModule,
+    PatientsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

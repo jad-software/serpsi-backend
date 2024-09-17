@@ -10,8 +10,7 @@ services:
       POSTGRES_PASSWORD: postgres
       PGDATA: /data/postgres
       POSTGRES_DB: serpsi
-
-
+      
   pgadmin:
     image: dpage/pgadmin4:8:11.0
     restart: always
