@@ -18,6 +18,7 @@ import { Comorbidity } from './entities/comorbidity.entity';
 import { MedicamentInfo } from './entities/medicament-info.entity';
 import { MedicamentInfoService } from './medicament-info.service';
 import { CreateMedicamentInfoDto } from './dto/medicine/create-medicament-info.dto';
+import { CreateComorbidityDto } from './dto/comorbities/create-comorbidity.dto';
 
 @Injectable()
 export class PatientsService {
@@ -35,8 +36,9 @@ export class PatientsService {
         new Patient({ ...createPatientDto, medicines: [] })
       );
       let school = await this.setSchool(createPatientDto);
-      let comorbidities: Comorbidity[] =
-        await this.setComorbities(createPatientDto);
+      let comorbidities: Comorbidity[] = await this.setComorbities(
+        createPatientDto.comorbidities
+      );
 
       patient.school = school;
       patient.comorbidities = comorbidities;
@@ -77,18 +79,17 @@ export class PatientsService {
     return medicines;
   }
 
-  private async setComorbities(createPatientDto: CreatePatientDto) {
-    let comorbidities: Comorbidity[] = [];
-    for (let comorbidityDto of createPatientDto.comorbidities) {
-      let comorbidityEntity = (
+  private async setComorbities(comorbidities: CreateComorbidityDto[]) {
+    let setComorbidities: Comorbidity[] = [];
+    for (let comorbidityDto of comorbidities) {
+      let comorbidity = (
         await this.comorbiditiesService.findByName(comorbidityDto.name)
       ).at(0);
-      if (!comorbidityEntity)
-        comorbidityEntity =
-          await this.comorbiditiesService.create(comorbidityDto);
-      comorbidities.push(comorbidityEntity);
+      if (!comorbidity)
+        comorbidity = await this.comorbiditiesService.create(comorbidityDto);
+      setComorbidities.push(comorbidity);
     }
-    return comorbidities;
+    return setComorbidities;
   }
 
   async findAll() {
@@ -115,8 +116,51 @@ export class PatientsService {
     }
   }
 
+  async addComorbities(id: string, comorbities: CreateComorbidityDto[]) {
+    let updatingPatient = new Patient({});
+    updatingPatient.id = new Id(id);
+    updatingPatient.comorbidities = await this.setComorbities(comorbities);
+
+    try {
+      await this.patientRepository.save(updatingPatient);
+      let patient = await this.findOne(id);
+      return patient;
+    } catch (err) {
+      throw new InternalServerErrorException(err?.message);
+    }
+  }
+
+  async addMedicaments(id: string, medicaments: CreateMedicamentInfoDto[]) {
+    let updatingPatient = new Patient({});
+    updatingPatient.id = new Id(id);
+
+    try {
+      updatingPatient.medicines = await this.setMedicines(
+        medicaments,
+        updatingPatient
+      );
+      let patient = await this.findOne(id);
+      return patient;
+    } catch (err) {
+      throw new InternalServerErrorException(err?.message);
+    }
+  }
+
   async update(id: string, updatePatientDto: UpdatePatientDto) {
     let updatingPatient = new Patient(updatePatientDto);
+
+    try {
+      await this.patientRepository.update(id, updatingPatient);
+      let patient = await this.findOne(id);
+      return patient;
+    } catch (err) {
+      throw new InternalServerErrorException(err?.message);
+    }
+  }
+  async updateSchool(id: string, school: UpdateSchoolDto) {
+    const newSchool = await this.schoolService.findOneBy(school);
+    let updatingPatient = new Patient({});
+    updatingPatient.school = newSchool;
 
     try {
       await this.patientRepository.update(id, updatingPatient);
@@ -129,5 +173,8 @@ export class PatientsService {
 
   async remove(id: string) {
     return await this.patientRepository.delete(id);
+  }
+  async removeMedicament(patientId: string, medicamentId: string){
+    return await this.medicamentInfoService.remove(patientId, medicamentId);
   }
 }

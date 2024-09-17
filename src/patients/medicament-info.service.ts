@@ -76,32 +76,10 @@ export class MedicamentInfoService {
     }
   }
 
-  async update(
-    patient_id: string,
-    medicament_id: string,
-    updateMedicamentInfoDto: UpdateMedicamentInfoDto
-  ) {
-    let updatingMedicamentInfo = new MedicamentInfo(updateMedicamentInfoDto);
-
-    try {
-      await this.medicamentInfoRepository.update(
-        {
-          Patient_id: patient_id,
-          Medicine_id: medicament_id,
-        },
-        updatingMedicamentInfo
-      );
-      let medicamentInfo = await this.findOne(patient_id, medicament_id);
-      return medicamentInfo;
-    } catch (err) {
-      throw new InternalServerErrorException(err?.message);
-    }
-  }
-
   async remove(patient_id: string, medicament_id: string) {
-    return await this.medicamentInfoRepository.delete({
-      Patient_id: patient_id,
-      Medicine_id: medicament_id,
-    });
+    let medicamentInfo = new MedicamentInfo({});
+    medicamentInfo.Patient_id = patient_id;
+    medicamentInfo.Medicine_id = medicament_id;
+    return await this.medicamentInfoRepository.delete({...medicamentInfo});
   }
 }
