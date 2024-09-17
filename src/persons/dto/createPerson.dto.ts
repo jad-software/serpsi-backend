@@ -11,7 +11,7 @@ import { Cpf } from '../vo/cpf.vo';
 import { Phone } from '../vo/phone.vo';
 import { Type } from 'class-transformer';
 import { CreateCpfDto } from './createCpf.dto';
-import { CreateAddressDto } from 'src/addresses/dto/createAddress.dto';
+import { CreateAddressDto } from '../../addresses/dto/createAddress.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreatePersonDto implements IPerson {

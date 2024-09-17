@@ -16,5 +16,5 @@ export class UpdatePersonDto extends PartialType(
   })
   @ValidateNested()
   @Type(() => UpdateAddressDto)
-  address: UpdateAddressDto;
+  address?: UpdateAddressDto;
 }

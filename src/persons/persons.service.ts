@@ -6,14 +6,14 @@ import {
 } from '@nestjs/common';
 import { CreatePersonDto } from './dto/createPerson.dto';
 import { Person } from './entities/person.enitiy';
-import { data_providers } from 'src/constants';
+import { data_providers } from '../constants';
 import { Repository } from 'typeorm';
 import { Phone } from './vo/phone.vo';
 import { Cpf } from './vo/cpf.vo';
 import { UpdatePersonDto } from './dto/updatePerson.dto';
-import { AddressesService } from 'src/addresses/Addresses.service';
-import { UsersService } from 'src/users/users.service';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { AddressesService } from '../addresses/Addresses.service';
+import { UsersService } from '../users/users.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class PersonsService {

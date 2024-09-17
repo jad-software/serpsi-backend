@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { data_providers } from 'src/constants';
+import { data_providers } from '../constants';
 import { Repository } from 'typeorm';
 import { Address } from './entities/address.entity';
 import { CreateAddressDto } from './dto/createAddress.dto';

@@ -1,4 +1,4 @@
-import { EntityBase } from 'src/entity-base/entities/entity-base';
+import { EntityBase } from '../../entity-base/entities/entity-base';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { IAddress } from '../../addresses/interfaces/address.interface';
 import { CreateAddressDto } from '../dto/createAddress.dto';
