@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { data_providers } from 'src/constants';
+import { data_providers } from '../../constants';
 import { Address } from '../entities/address.entity';
 
 export const addressProvider = [

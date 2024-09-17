@@ -1,4 +1,4 @@
-import { Address } from 'src/addresses/entities/address.entity';
+import { Address } from '../../addresses/entities/address.entity';
 import { UpdateAddressDto } from '../../addresses/dto/updateAddress.dto';
 import { Cpf } from '../vo/cpf.vo';
 import { Phone } from '../vo/phone.vo';
