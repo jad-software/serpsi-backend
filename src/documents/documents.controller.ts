@@ -42,8 +42,8 @@ export class DocumentsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.documentsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.documentsService.findOne(id);
   }
 
   @Patch(':id')

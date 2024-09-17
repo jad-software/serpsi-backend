@@ -33,8 +33,17 @@ export class DocumentsService {
     return `This action returns all documents`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} document`;
+  async findOne(id: string): Promise<Document> {
+    try {
+      const document = await this.documentRepository
+        .createQueryBuilder('document')
+        .where('document._id = :id ', { id })
+        .getOneOrFail();
+      return document;
+    }
+    catch (err) {
+      throw new BadRequestException(err?.message);
+    }
   }
 
   update(id: number, updateDocumentDto: UpdateDocumentDto) {
