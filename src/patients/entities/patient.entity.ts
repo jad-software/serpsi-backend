@@ -18,16 +18,6 @@ import { Comorbidity } from './comorbidity.entity';
 import { Person } from '../../persons/entities/person.enitiy';
 
 @Entity()
-/**
- *
- * TODO [X] implement school management entity
- * TODO [X] implement Comorbity management entity        |
- * TODO [X] implement Medicine management entity         |
- * TODO [X] implement MedicamentInfo management          |
- * TODO [X] implement patient entity at database         V
- * TODO [X] implement Person foreign keys and relations
- *
- */
 export class Patient extends EntityBase implements IPatient {
   constructor(partial: Partial<CreatePatientDto>) {
     super();
