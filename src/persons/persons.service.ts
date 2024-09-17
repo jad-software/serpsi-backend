@@ -133,6 +133,8 @@ export class PersonsService {
       }
       if (person.user) {
         await this.userService.remove(person.user.id.id);
+      }
+      if(publicID){
         await this.cloudinaryService.deleteFile(publicID);
       }
     } catch (err) {
