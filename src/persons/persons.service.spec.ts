@@ -97,7 +97,7 @@ describe('PersonsService', () => {
 
       jest.spyOn(personRepository, 'save').mockRejectedValue(new Error('Repository error'));
 
-      await expect(service.create(createPersonDto)).rejects.toThrowError(BadRequestException);
+      await expect(service.create(createPersonDto)).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -138,30 +138,81 @@ describe('PersonsService', () => {
         getOneOrFail: jest.fn().mockRejectedValue(new Error('Not found')),
       } as any);
 
-      await expect(service.findOneById('person-id')).rejects.toThrowError(NotFoundException);
+      await expect(service.findOneById('person-id')).rejects.toThrow(NotFoundException);
     });
   });
- 
-describe('delete', () => {
-  it('should delete a person', async () => {
-    const personId = new Id('person-id');
-    const person = new Person({ name: 'John Doe' });
-    person.id = personId; // Ajuste conforme a estrutura da entidade Person
 
-    jest.spyOn(service, 'findOneById').mockResolvedValue(person); // Mock do método findOneById
-    jest.spyOn(personRepository, 'delete').mockResolvedValue({ affected: 1 } as any); // Mock do método delete
+  describe('delete', () => {
+    it('should delete a person', async () => {
+      const personId = new Id('person-id');
+      const person = new Person({ name: 'John Doe' });
+      person.id = personId; // Ajuste conforme a estrutura da entidade Person
+
+      jest.spyOn(service, 'findOneById').mockResolvedValue(person); // Mock do método findOneById
+      jest.spyOn(personRepository, 'delete').mockResolvedValue({ affected: 1 } as any); // Mock do método delete
 
 
-    await service.delete(personId.id);
+      await service.delete(personId.id);
 
-    expect(personRepository.delete).toHaveBeenCalledWith(personId.id);
+      expect(personRepository.delete).toHaveBeenCalledWith(personId.id);
+    });
+
+    it('should throw BadRequestException if an error occurs', async () => {
+      const personId = 'person-id';
+      jest.spyOn(service, 'findOneById').mockRejectedValue(new Error('Find error'));
+
+      await expect(service.delete(personId)).rejects.toThrow(BadRequestException);
+    });
   });
 
-  it('should throw BadRequestException if an error occurs', async () => {
-    const personId = 'person-id';
-    jest.spyOn(service, 'findOneById').mockRejectedValue(new Error('Find error'));
+  describe('update', () => {
+    it('should update a person', async () => {
+      const id = new Id('a8c0fbb9-af01-4874-b792-e84a17c6524c');
+      const updatePersonDto: UpdatePersonDto = {
+        name: 'teste',
+      };
 
-    await expect(service.delete(personId)).rejects.toThrowError(BadRequestException);
+      let person = ({
+        name: 'John Doe',
+        birthdate: new Date(),
+        phone: new Phone('+1', '123', '4567890'),
+        cpf: new Cpf('123.456.789-00'),
+        rg: '12.345.678-9',
+        address: new Address({ street: 'Test Street', zipCode: '12345', state: 'Test State', district: 'Test District', homeNumber: 123 }),
+        user: 'user-id',
+        id: id,
+      });
+
+      let expectedPerson = new Person(person);
+      expectedPerson.name = updatePersonDto.name;
+      updatePersonDto
+      jest.spyOn(personRepository, 'update').mockResolvedValue({ affected: 1 } as any);
+      jest.spyOn(service, 'findOneById').mockResolvedValue(expectedPerson); 
+      expect(await service.update(id.id, updatePersonDto)).toEqual(expectedPerson);
+    });
+
+    it('should throw BadRequestException if the person is not found', async () => {
+      const personId = 'person-id';
+      const updatePersonDto: CreatePersonDto = {
+        name: 'John Doe Updated',
+        birthdate: new Date(),
+        phone: new Phone('+1', '123', '4567890'),
+        cpf: new Cpf('123.456.789-00'),
+        rg: '12.345.678-9',
+        profilePicture: 'updated.png',
+        address: new Address({
+          street: 'Updated Street',
+          zipCode: '54321',
+          state: 'Updated State',
+          district: 'Updated District',
+          homeNumber: 321
+        }),
+      };
+
+      jest.spyOn(service, 'findOneById').mockRejectedValue(new Error('Person not found'));
+
+      await expect(service.update(personId, updatePersonDto)).rejects.toThrow(BadRequestException);
+    });
   });
-});
+
 });
