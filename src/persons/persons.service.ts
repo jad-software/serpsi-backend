@@ -26,7 +26,7 @@ export class PersonsService {
     private userService: UsersService,
     @Inject()
     private cloudinaryService: CloudinaryService
-  ) { }
+  ) {}
   async create(createPersonDto: CreatePersonDto, file?: Express.Multer.File) {
     let uploadedFileId: string | null = null;
     try {
@@ -147,11 +147,9 @@ export class PersonsService {
       if (fileSaved) {
         person.profilePicture = fileSaved.url;
         await this.personRepository.save(person);
-      
+
         if (oldProfilePicture) {
-          const publicID = this.cloudinaryService.searchData(
-            oldProfilePicture
-          );
+          const publicID = this.cloudinaryService.searchData(oldProfilePicture);
           if (publicID) {
             await this.cloudinaryService.deleteFile(publicID);
           }

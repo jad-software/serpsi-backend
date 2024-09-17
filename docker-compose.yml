@@ -13,7 +13,7 @@ services:
 
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:8:11.0
     restart: always
     container_name: nest-pgadmin4
     environment:

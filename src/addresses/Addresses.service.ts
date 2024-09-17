@@ -47,22 +47,18 @@ export class AddressesService {
   }
   async update(id: string, updateAddressDto: UpdateAddressDto): Promise<any> {
     try {
-      const updatedAddress = new Address({
-        state: updateAddressDto.state,
-        zipCode: updateAddressDto.zipCode,
-        street: updateAddressDto.street,
-        district: updateAddressDto.district,
-        homeNumber: updateAddressDto.homeNumber,
-        complement: updateAddressDto.complement,
-      });
-      await this.addressRepository.update(id, updatedAddress);
-      const personsAdress = await this.findById(id);
-      return personsAdress;
+      const foundAddress = await this.findById(id);
+      
+      Object.assign(foundAddress, updateAddressDto);
+      await this.addressRepository.update(id, foundAddress);
+
+      return foundAddress;
     } catch (err) {
       throw new NotFoundException(err?.message);
     }
   }
-
+  
+  
   async delete(id: string): Promise<any> {
     try {
       const address = await this.findById(id);
