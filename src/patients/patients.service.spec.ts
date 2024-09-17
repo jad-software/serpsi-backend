@@ -9,6 +9,11 @@ import { PaymentPlan } from './vo/PaymentPlan.enum';
 import { SchoolService } from './school.service';
 import { CreateSchoolDto } from './dto/school/create-school.dto';
 import { UpdateSchoolDto } from './dto/school/update-school.dto';
+import { CreateComorbidityDto } from './dto/comorbities/create-comorbidity.dto';
+import { ComorbiditiesService } from './comorbidities.service';
+import { MedicamentInfoService } from './medicament-info.service';
+import { CreateMedicamentInfoDto } from './dto/medicine/create-medicament-info.dto';
+import { MedicamentInfo } from './entities/medicament-info.entity';
 
 describe('PatientsService', () => {
   let service: PatientsService;
@@ -16,10 +21,12 @@ describe('PatientsService', () => {
   let mockQueryBuilder: Partial<{
     where: jest.Mock;
     select: jest.Mock;
+    leftJoinAndSelect: jest.Mock;
     getOneOrFail: jest.Mock;
   }> = {
     where: jest.fn().mockReturnThis(),
     select: jest.fn().mockReturnThis(),
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
     getOneOrFail: jest.fn(),
   };
   const mockSchoolService = {
@@ -44,6 +51,91 @@ describe('PatientsService', () => {
     remove: jest.fn((id: string) => ({ id })),
   };
 
+  const mockComorbiditiesService = {
+    create: jest.fn((dto: CreateComorbidityDto) => ({
+      id: '1',
+      ...dto,
+    })),
+    findAll: jest.fn(() => [
+      { id: '1', name: 'Buscopan' },
+      { id: '2', name: 'Loratadina' },
+    ]),
+    findByName: jest.fn((name: string) => ({
+      id: '1',
+      name: 'Buscopan',
+    })),
+    findOne: jest.fn((id: string) => ({
+      id: '1',
+      name: 'Buscopan',
+    })),
+    remove: jest.fn((id: string) => ({ id })),
+  };
+
+  const mockMedicamentInfoService = {
+    create: jest.fn((dto: CreateMedicamentInfoDto, patient: Patient) => ({
+      id: '1',
+      ...dto,
+    })),
+    findAll: jest.fn(() => [
+      {
+        patient_id: '1',
+        medicine_id: '1',
+        dosage: 250,
+        dosageUnity: 'mg',
+        frequency: 2,
+        firstTimeOfTheDay: '2024-01-01T08:00:00.000Z',
+        startDate: '2024-07-20T00:00:00.000Z',
+        observation: 'Tomar antes de comer',
+      },
+      {
+        patient_id: '1',
+        medicine_id: '2',
+        dosage: 250,
+        dosageUnity: 'mg',
+        frequency: 2,
+        firstTimeOfTheDay: '2024-01-01T08:00:00.000Z',
+        startDate: '2024-07-20T00:00:00.000Z',
+        observation: 'Tomar antes de comer',
+      },
+    ]),
+    findAllToPatient: jest.fn((Patient_id: string): MedicamentInfo[] => [
+      {
+        Patient_id: '1',
+        Medicine_id: '1',
+        dosage: 250,
+        dosageUnity: 'mg',
+        frequency: 2,
+        firstTimeOfTheDay: new Date('2024-01-01T08:00:00.000Z'),
+        startDate: new Date('2024-07-20T00:00:00.000Z'),
+        observation: 'Tomar antes de comer',
+      } as MedicamentInfo,
+      {
+        Patient_id: '1',
+        Medicine_id: '2',
+        dosage: 250,
+        dosageUnity: 'mg',
+        frequency: 2,
+        firstTimeOfTheDay: new Date('2024-01-01T08:00:00.000Z'),
+        startDate: new Date('2024-07-20T00:00:00.000Z'),
+        observation: 'Tomar antes de comer',
+      } as MedicamentInfo,
+    ]),
+    findOne: jest.fn((patient_id: string, medicament_id: string) => ({
+      patient_id: '1',
+      medicine_id: '2',
+      dosage: 250,
+      dosageUnity: 'mg',
+      frequency: 2,
+      firstTimeOfTheDay: '2024-01-01T08:00:00.000Z',
+      startDate: '2024-07-20T00:00:00.000Z',
+      observation: 'Tomar antes de comer',
+    })),
+    remove: jest.fn((patient_id: string, medicament_id: string) => ({
+      patient_id,
+      medicament_id,
+    })),
+  };
+
   beforeEach(async () => {
     mockRepository = {
       save: jest.fn(),
@@ -63,6 +155,14 @@ describe('PatientsService', () => {
         {
           provide: SchoolService,
           useValue: mockSchoolService,
+        },
+        {
+          provide: ComorbiditiesService,
+          useValue: mockComorbiditiesService,
+        },
+        {
+          provide: MedicamentInfoService,
+          useValue: mockMedicamentInfoService,
         },
       ],
     }).compile();
@@ -93,26 +193,24 @@ describe('PatientsService', () => {
     const patient: Patient = {
       id: new Id('f0846568-2bd9-450d-95e3-9a478e20e74b'),
     } as Patient;
-    mockRepository.findOneOrFail.mockResolvedValue(patient);
+    mockQueryBuilder.getOneOrFail.mockResolvedValue(patient);
 
     expect(
       await service.findOne('f0846568-2bd9-450d-95e3-9a478e20e74b')
     ).toEqual(patient);
-    expect(mockRepository.findOneOrFail).toHaveBeenCalledWith({
-      where: {
-        _id: {
-          _id: 'f0846568-2bd9-450d-95e3-9a478e20e74b',
-        },
-      },
+    expect(mockQueryBuilder.where).toHaveBeenCalledWith('patient.id = :id', {
+      id: 'f0846568-2bd9-450d-95e3-9a478e20e74b',
     });
   });
 
   it('should update a patient by id', async () => {
-    const updatePatientDTO: UpdatePatientDto = {};
-    const expectedPatient: Patient = new Patient({});
-
+    const updatePatientDTO: UpdatePatientDto = {
+      paymentPlan: PaymentPlan.BIMESTRAL
+    };
+    const expectedPatient: Patient = new Patient(updatePatientDTO);
+    expectedPatient.id = new Id('f0846568-2bd9-450d-95e3-9a478e20e74b');
     mockRepository.update.mockResolvedValue({ affected: 1 });
-    mockRepository.findOneOrFail.mockResolvedValue(expectedPatient);
+    mockQueryBuilder.getOneOrFail.mockResolvedValue(expectedPatient);
 
     expect(
       await service.update(
@@ -122,7 +220,7 @@ describe('PatientsService', () => {
     ).toEqual(expectedPatient);
     expect(mockRepository.update).toHaveBeenCalledWith(
       'f0846568-2bd9-450d-95e3-9a478e20e74b',
-      expectedPatient
+      new Patient(updatePatientDTO)
     );
   });
 

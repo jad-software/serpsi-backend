@@ -5,6 +5,7 @@ import { MedicamentInfo } from './entities/medicament-info.entity';
 import { Repository } from 'typeorm';
 import { UpdateMedicamentInfoDto } from './dto/medicine/update-medicament-info.dto';
 import { Id } from '../entity-base/vo/id.vo';
+import { MedicinesService } from './medicines.service';
 
 describe('MedicamentInfoService', () => {
   let service: MedicamentInfoService;
@@ -14,7 +15,9 @@ describe('MedicamentInfoService', () => {
   let mockQueryBuilder = {
     where: jest.fn().mockReturnThis(),
     select: jest.fn().mockReturnThis(),
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
     getOneOrFail: jest.fn(),
+    getMany: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -30,8 +33,13 @@ describe('MedicamentInfoService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MedicamentInfoService,
+        MedicinesService,
         {
           provide: data_providers.MEDICAMENTINFO_REPOSITORY,
+          useValue: mockRepository,
+        },
+        {
+          provide: data_providers.MEDICINE_REPOSITORY,
           useValue: mockRepository,
         },
       ],
@@ -47,7 +55,7 @@ describe('MedicamentInfoService', () => {
   it('should retrieve all medicines', async () => {
     const medicines: MedicamentInfo[] = [
       new MedicamentInfo({
-        medicament: {
+        medicine: {
           name: 'Buscopan dia a dia',
         },
         dosage: 250,
@@ -58,7 +66,7 @@ describe('MedicamentInfoService', () => {
         observation: 'só tomar em dias de verão',
       }),
       new MedicamentInfo({
-        medicament: {
+        medicine: {
           name: 'MINOXIDIL',
         },
         dosage: 1000,
@@ -75,61 +83,52 @@ describe('MedicamentInfoService', () => {
     expect(mockRepository.find).toHaveBeenCalled();
   });
 
-  it('should return a medicine by id', async () => {
-    const medicine: MedicamentInfo = {
-      id: new Id('f0846568-2bd9-450d-95e3-9a478e20e74b'),
-    } as MedicamentInfo;
-    mockRepository.findOneOrFail.mockResolvedValue(medicine);
+  it('should return all medicines by patientId ', async () => {
+    const medicament: MedicamentInfo = new MedicamentInfo({});
+    medicament.Patient_id = 'f0846568-2bd9-450d-95e3-9a478e20e74b';
+    mockQueryBuilder.getMany.mockResolvedValue([medicament]);
 
     expect(
-      await service.findOne('f0846568-2bd9-450d-95e3-9a478e20e74b')
-    ).toEqual(medicine);
-    expect(mockRepository.findOneOrFail).toHaveBeenCalledWith({
-      where: {
-        _id: {
-          _id: 'f0846568-2bd9-450d-95e3-9a478e20e74b',
-        },
-      },
-    });
+      await service.findAllToPatient(
+        'f0846568-2bd9-450d-95e3-9a478e20e74b'
+      )
+    ).toEqual([medicament]);
+    expect(mockQueryBuilder.where).toHaveBeenCalledWith(
+      'medicamentInfo.Patient_id = :Patient_id',
+      { Patient_id: 'f0846568-2bd9-450d-95e3-9a478e20e74b' }
+    );
   });
 
-  it('should update a medicine by id', async () => {
-    const updateMedicineDTO: UpdateMedicamentInfoDto = {
-      medicament: {
-        name: 'Buscopan dia a dia',
-      },
-      dosage: 250,
-      dosageUnity: 'mg',
-      frequency: 3,
-      firstTimeOfTheDay: new Date('2024-01-01T08:00:00.000Z'),
-      startDate: new Date('2024-09-09T00:00:00.000Z'),
-      observation: 'só tomar em dias de verão',
-    };
-    const expectedMedicine: MedicamentInfo = new MedicamentInfo(
-      updateMedicineDTO
-    );
-    mockRepository.findOneOrFail.mockResolvedValue(expectedMedicine);
-    mockRepository.update.mockResolvedValue({ affected: 1 });
+  it('should return a medicine by id', async () => {
+    const medicament: MedicamentInfo = new MedicamentInfo({});
+    medicament.Patient_id = 'f0846568-2bd9-450d-95e3-9a478e20e74b';
+    medicament.Medicine_id = '2d033352-67a5-404b-86f9-c0f0936308b7';
+    mockRepository.findOneOrFail.mockResolvedValue(medicament);
 
     expect(
-      await service.update(
+      await service.findOne(
         'f0846568-2bd9-450d-95e3-9a478e20e74b',
-        updateMedicineDTO
+        '2d033352-67a5-404b-86f9-c0f0936308b7'
       )
-    ).toEqual(expectedMedicine);
-    expect(mockRepository.findOneOrFail).toHaveBeenCalledTimes(1);
-    expect(mockRepository.update).toHaveBeenCalledWith(
-      'f0846568-2bd9-450d-95e3-9a478e20e74b',
-      expectedMedicine
-    );
+    ).toEqual(medicament);
+    expect(mockRepository.findOneOrFail).toHaveBeenCalledWith({
+      where: {
+        _medicine_id: '2d033352-67a5-404b-86f9-c0f0936308b7',
+        _patient_id: 'f0846568-2bd9-450d-95e3-9a478e20e74b',
+      },
+    });
   });
 
   it('should remove a medicine by id', async () => {
     mockRepository.delete.mockResolvedValue({ affected: 1 });
 
-    await service.remove('f0846568-2bd9-450d-95e3-9a478e20e74b');
-    expect(mockRepository.delete).toHaveBeenCalledWith(
-      'f0846568-2bd9-450d-95e3-9a478e20e74b'
+    await service.remove(
+      'f0846568-2bd9-450d-95e3-9a478e20e74b',
+      '2d033352-67a5-404b-86f9-c0f0936308b7'
     );
+    expect(mockRepository.delete).toHaveBeenCalledWith({
+      _medicine_id: '2d033352-67a5-404b-86f9-c0f0936308b7',
+      _patient_id: 'f0846568-2bd9-450d-95e3-9a478e20e74b',
+    });
   });
 });

@@ -148,7 +148,6 @@ export class PatientsService {
 
   async update(id: string, updatePatientDto: UpdatePatientDto) {
     let updatingPatient = new Patient(updatePatientDto);
-
     try {
       await this.patientRepository.update(id, updatingPatient);
       let patient = await this.findOne(id);
@@ -174,7 +173,7 @@ export class PatientsService {
   async remove(id: string) {
     return await this.patientRepository.delete(id);
   }
-  async removeMedicament(patientId: string, medicamentId: string){
+  async removeMedicament(patientId: string, medicamentId: string) {
     return await this.medicamentInfoService.remove(patientId, medicamentId);
   }
 }
