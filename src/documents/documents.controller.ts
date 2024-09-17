@@ -11,17 +11,18 @@ import {
   ParseFilePipe,
   FileTypeValidator,
   BadRequestException,
+  Put,
 } from '@nestjs/common';
 import { DocumentsService } from './documents.service';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { FormDataRequest } from 'nestjs-form-data';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { extname } from 'path'; 
+import { extname } from 'path';
 
 @Controller('documents')
 export class DocumentsController {
-  constructor(private readonly documentsService: DocumentsService) {}
+  constructor(private readonly documentsService: DocumentsService) { }
 
   @Post()
   @UseInterceptors(FileInterceptor('document'))
@@ -46,12 +47,15 @@ export class DocumentsController {
     return await this.documentsService.findOne(id);
   }
 
-  @Patch(':id')
-  update(
+  @Put(':id')
+  @UseInterceptors(FileInterceptor('document'))
+  async update(
     @Param('id') id: string,
-    @Body() updateDocumentDto: UpdateDocumentDto
+    @UploadedFile()
+    document?: Express.Multer.File,
+    @Body('title') updateDocumentDto?: string,
   ) {
-    return this.documentsService.update(+id, updateDocumentDto);
+    return await this.documentsService.update(id, updateDocumentDto, document);
   }
 
   @Delete(':id')

@@ -46,8 +46,33 @@ export class DocumentsService {
     }
   }
 
-  update(id: number, updateDocumentDto: UpdateDocumentDto) {
-    return `This action updates a #${id} document`;
+  async update(id: string, title?: string, documentFile?: Express.Multer.File) {
+    try{
+      const foundDocument = await this.findOne(id);
+      
+      if(title){
+        foundDocument.title = title;
+      }
+      if(documentFile){
+        const oldDocument = foundDocument.docLink;
+        if(oldDocument){
+          const publicID = oldDocument.split('/').slice(-1)[0];
+          await this.cloudinaryService.deleteFileOtherThanImage(publicID)
+        }
+        
+        const fileSaved = await this.cloudinaryService.uploadFile(documentFile);
+        if (fileSaved) {
+          const document = new Document({ title, docLink: fileSaved.url });
+          foundDocument.docLink = fileSaved.url;
+          
+        }
+      }
+      const createdDocument = await this.documentRepository.save(foundDocument);
+      return createdDocument;
+    }
+    catch (err) {
+      throw new BadRequestException(err?.message);
+    }
   }
 
   async remove(id: string) {

@@ -32,7 +32,6 @@ export class CloudinaryService {
   }
   async  deleteFileOtherThanImage(publicId: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      console.log(`Tentando deletar o arquivo com publicId: ${publicId}`);
       cloudinary.uploader.destroy(publicId, { resource_type: 'raw' }, (error, result) => {
         if (error) {
           return reject(error);
