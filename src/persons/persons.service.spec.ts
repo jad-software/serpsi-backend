@@ -1,16 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PersonsService } from './persons.service';
-import { Repository } from 'typeorm';
-import { Person } from './entities/person.enitiy';
-import { AddressesService } from '../addresses/addresses.service';
-import { UsersService } from '../users/users.service';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
-import { data_providers } from '../constants'; // Importar o token correto
-import { CreatePersonDto } from './dto/createPerson.dto';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { Cpf } from './vo/cpf.vo';
-import { Address } from '../addresses/entities/address.entity';
-import { Phone } from './vo/phone.vo';
+import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { CreatePersonDto } from "./dto/createPerson.dto";
+import { Person } from "./entities/person.enitiy";
+import { Id } from "../entity-base/vo/id.vo";
+import { Address } from "../addresses/entities/address.entity";
+import { Phone } from "./vo/phone.vo";
+import { Cpf } from "./vo/cpf.vo";
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { UsersService } from "../users/users.service";
+import { AddressesService } from "../addresses/Addresses.service";
+import { data_providers } from "../constants";
+import { PersonsService } from "./persons.service";
+import { Repository } from "typeorm";
+import { Test, TestingModule } from "@nestjs/testing";
+import { UpdatePersonDto } from "./dto/updatePerson.dto";
 
 describe('PersonsService', () => {
   let service: PersonsService;
@@ -24,8 +26,8 @@ describe('PersonsService', () => {
       providers: [
         PersonsService,
         {
-          provide: data_providers.PERSON_REPOSITORY, // Use o token personalizado
-          useClass: Repository,                     // Simule a classe do repositório
+          provide: data_providers.PERSON_REPOSITORY,
+          useClass: Repository,
         },
         {
           provide: AddressesService,
@@ -112,7 +114,7 @@ describe('PersonsService', () => {
     it('should throw BadRequestException if an error occurs', async () => {
       jest.spyOn(personRepository, 'find').mockRejectedValue(new Error('Repository error'));
 
-      await expect(service.findAll()).rejects.toThrowError(BadRequestException);
+      await expect(service.findAll()).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -139,6 +141,27 @@ describe('PersonsService', () => {
       await expect(service.findOneById('person-id')).rejects.toThrowError(NotFoundException);
     });
   });
+ 
+describe('delete', () => {
+  it('should delete a person', async () => {
+    const personId = new Id('person-id');
+    const person = new Person({ name: 'John Doe' });
+    person.id = personId; // Ajuste conforme a estrutura da entidade Person
 
-  // Outros testes como update, delete e savePersonPicture podem ser implementados da mesma forma.
+    jest.spyOn(service, 'findOneById').mockResolvedValue(person); // Mock do método findOneById
+    jest.spyOn(personRepository, 'delete').mockResolvedValue({ affected: 1 } as any); // Mock do método delete
+
+
+    await service.delete(personId.id);
+
+    expect(personRepository.delete).toHaveBeenCalledWith(personId.id);
+  });
+
+  it('should throw BadRequestException if an error occurs', async () => {
+    const personId = 'person-id';
+    jest.spyOn(service, 'findOneById').mockRejectedValue(new Error('Find error'));
+
+    await expect(service.delete(personId)).rejects.toThrowError(BadRequestException);
+  });
+});
 });
