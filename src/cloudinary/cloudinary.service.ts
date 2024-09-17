@@ -30,6 +30,20 @@ export class CloudinaryService {
       });
     });
   }
+  async  deleteFileOtherThanImage(publicId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      console.log(`Tentando deletar o arquivo com publicId: ${publicId}`);
+      cloudinary.uploader.destroy(publicId, { resource_type: 'raw' }, (error, result) => {
+        if (error) {
+          return reject(error);
+        }
+        if (result.result === 'ok') {
+          return resolve();
+        }
+        reject(new Error(`Arquivo ${publicId} não encontrado.`));
+      });
+    });
+  }
 
   private extractPublicIdFromUrl(url: string): string | null {
     const regex = /\/image\/upload\/v\d+\/([^\.\/]+)(\.[^\.\/]+)?$/;

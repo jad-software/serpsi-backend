@@ -50,7 +50,19 @@ export class DocumentsService {
     return `This action updates a #${id} document`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} document`;
+  async remove(id: string) {
+    try {
+      const foundDocument = await this.findOne(id);
+      
+      if (foundDocument) {
+        const publicID = foundDocument.docLink.split('/').slice(-1)[0];
+        await this.documentRepository.remove(foundDocument);
+        await this.cloudinaryService.deleteFileOtherThanImage(publicID)
+        
+      }
+    }
+    catch (err) {
+      throw new BadRequestException(err?.message);
+    }
   }
 }
