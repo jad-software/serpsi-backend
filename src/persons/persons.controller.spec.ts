@@ -49,7 +49,13 @@ describe('PersonsController', () => {
 
         rg: '12.345.678-9',
         profilePicture: 'teste.png',
-        address: new Address({ street: 'Test Street', zipCode: '12345', state: 'Test State', district: 'Test District', homeNumber: 123 }),
+        address: new Address({
+          street: 'Test Street',
+          zipCode: '12345',
+          state: 'Test State',
+          district: 'Test District',
+          homeNumber: 123,
+        }),
       };
       const person = new Person(createPersonDto);
       jest.spyOn(service, 'create').mockResolvedValue(person);
@@ -62,7 +68,6 @@ describe('PersonsController', () => {
   });
 
   describe('createWithPicture', () => {
-
     it('should throw BadRequestException if validation fails', async () => {
       const createPersonDto: CreatePersonDto = {
         name: 'John Doe',
@@ -70,15 +75,26 @@ describe('PersonsController', () => {
         phone: new Phone('+1', '123', '4567890'),
         cpf: new Cpf('invalid Cpf'), // Campo inválido para teste
         rg: '12.345.678-9',
-        address: new Address({ street: 'Test Street', zipCode: '12345', state: 'Test State', district: 'Test District', homeNumber: 123 }),
+        address: new Address({
+          street: 'Test Street',
+          zipCode: '12345',
+          state: 'Test State',
+          district: 'Test District',
+          homeNumber: 123,
+        }),
       };
 
-      const file = { originalname: 'test.png', buffer: Buffer.from('') } as Express.Multer.File;
-      jest.spyOn(service, 'create').mockRejectedValue(new BadRequestException('Validation Error'));
+      const file = {
+        originalname: 'test.png',
+        buffer: Buffer.from(''),
+      } as Express.Multer.File;
+      jest
+        .spyOn(service, 'create')
+        .mockRejectedValue(new BadRequestException('Validation Error'));
 
-      await expect(controller.createWithPicture(file, JSON.stringify(createPersonDto)))
-        .rejects
-        .toThrowError(BadRequestException);
+      await expect(
+        controller.createWithPicture(file, JSON.stringify(createPersonDto))
+      ).rejects.toThrowError(BadRequestException);
     });
   });
 
@@ -106,9 +122,13 @@ describe('PersonsController', () => {
     });
 
     it('should throw NotFoundException if no person is found', async () => {
-      jest.spyOn(service, 'findOneById').mockRejectedValue(new NotFoundException('Person not found'));
+      jest
+        .spyOn(service, 'findOneById')
+        .mockRejectedValue(new NotFoundException('Person not found'));
 
-      await expect(controller.findOneById('person-id')).rejects.toThrowError(NotFoundException);
+      await expect(controller.findOneById('person-id')).rejects.toThrowError(
+        NotFoundException
+      );
     });
   });
 
@@ -142,10 +162,13 @@ describe('PersonsController', () => {
 
     it('should throw BadRequestException if deletion fails', async () => {
       const personId = 'person-id';
-      jest.spyOn(service, 'delete').mockRejectedValue(new BadRequestException('Delete error'));
+      jest
+        .spyOn(service, 'delete')
+        .mockRejectedValue(new BadRequestException('Delete error'));
 
-      await expect(controller.delete(personId)).rejects.toThrowError(BadRequestException);
+      await expect(controller.delete(personId)).rejects.toThrowError(
+        BadRequestException
+      );
     });
   });
-
 });

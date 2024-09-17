@@ -60,7 +60,7 @@ describe('PersonsController (e2e)', () => {
 
     const response = await request(app.getHttpServer())
       .post('/persons/picture')
-      .attach('profilePicture', Buffer.from(''), 'test.png') 
+      .attach('profilePicture', Buffer.from(''), 'test.png')
       .field('personData', JSON.stringify(createPersonDto))
       .expect(201);
 

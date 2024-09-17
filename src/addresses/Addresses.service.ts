@@ -48,7 +48,7 @@ export class AddressesService {
   async update(id: string, updateAddressDto: UpdateAddressDto): Promise<any> {
     try {
       const foundAddress = await this.findById(id);
-      
+
       Object.assign(foundAddress, updateAddressDto);
       await this.addressRepository.update(id, foundAddress);
 
@@ -57,8 +57,7 @@ export class AddressesService {
       throw new NotFoundException(err?.message);
     }
   }
-  
-  
+
   async delete(id: string): Promise<any> {
     try {
       const address = await this.findById(id);

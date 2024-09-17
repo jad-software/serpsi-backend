@@ -1,18 +1,18 @@
-import { BadRequestException, NotFoundException } from "@nestjs/common";
-import { CreatePersonDto } from "./dto/createPerson.dto";
-import { Person } from "./entities/person.enitiy";
-import { Id } from "../entity-base/vo/id.vo";
-import { Address } from "../addresses/entities/address.entity";
-import { Phone } from "./vo/phone.vo";
-import { Cpf } from "./vo/cpf.vo";
-import { CloudinaryService } from "../cloudinary/cloudinary.service";
-import { UsersService } from "../users/users.service";
-import { AddressesService } from "../addresses/Addresses.service";
-import { data_providers } from "../constants";
-import { PersonsService } from "./persons.service";
-import { Repository } from "typeorm";
-import { Test, TestingModule } from "@nestjs/testing";
-import { UpdatePersonDto } from "./dto/updatePerson.dto";
+import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { CreatePersonDto } from './dto/createPerson.dto';
+import { Person } from './entities/person.enitiy';
+import { Id } from '../entity-base/vo/id.vo';
+import { Address } from '../addresses/entities/address.entity';
+import { Phone } from './vo/phone.vo';
+import { Cpf } from './vo/cpf.vo';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { UsersService } from '../users/users.service';
+import { AddressesService } from '../addresses/Addresses.service';
+import { data_providers } from '../constants';
+import { PersonsService } from './persons.service';
+import { Repository } from 'typeorm';
+import { Test, TestingModule } from '@nestjs/testing';
+import { UpdatePersonDto } from './dto/updatePerson.dto';
 
 describe('PersonsService', () => {
   let service: PersonsService;
@@ -39,13 +39,19 @@ describe('PersonsService', () => {
         },
         {
           provide: CloudinaryService,
-          useValue: { uploadFile: jest.fn(), deleteFile: jest.fn(), searchData: jest.fn() },
+          useValue: {
+            uploadFile: jest.fn(),
+            deleteFile: jest.fn(),
+            searchData: jest.fn(),
+          },
         },
       ],
     }).compile();
 
     service = module.get<PersonsService>(PersonsService);
-    personRepository = module.get<Repository<Person>>(data_providers.PERSON_REPOSITORY);
+    personRepository = module.get<Repository<Person>>(
+      data_providers.PERSON_REPOSITORY
+    );
     addressService = module.get<AddressesService>(AddressesService);
     userService = module.get<UsersService>(UsersService);
     cloudinaryService = module.get<CloudinaryService>(CloudinaryService);
@@ -69,7 +75,7 @@ describe('PersonsService', () => {
           zipCode: '12345',
           state: 'Test State',
           district: 'Test District',
-          homeNumber: 123
+          homeNumber: 123,
         }),
       };
 
@@ -91,13 +97,23 @@ describe('PersonsService', () => {
         phone: new Phone('+1', '123', '4567890'),
         cpf: new Cpf('123.456.789-00'),
         rg: '12.345.678-9',
-        address: new Address({ street: 'Test Street', zipCode: '12345', state: 'Test State', district: 'Test District', homeNumber: 123 }),
+        address: new Address({
+          street: 'Test Street',
+          zipCode: '12345',
+          state: 'Test State',
+          district: 'Test District',
+          homeNumber: 123,
+        }),
         user: 'user-id',
       };
 
-      jest.spyOn(personRepository, 'save').mockRejectedValue(new Error('Repository error'));
+      jest
+        .spyOn(personRepository, 'save')
+        .mockRejectedValue(new Error('Repository error'));
 
-      await expect(service.create(createPersonDto)).rejects.toThrow(BadRequestException);
+      await expect(service.create(createPersonDto)).rejects.toThrow(
+        BadRequestException
+      );
     });
   });
 
@@ -112,7 +128,9 @@ describe('PersonsService', () => {
     });
 
     it('should throw BadRequestException if an error occurs', async () => {
-      jest.spyOn(personRepository, 'find').mockRejectedValue(new Error('Repository error'));
+      jest
+        .spyOn(personRepository, 'find')
+        .mockRejectedValue(new Error('Repository error'));
 
       await expect(service.findAll()).rejects.toThrow(BadRequestException);
     });
@@ -138,7 +156,9 @@ describe('PersonsService', () => {
         getOneOrFail: jest.fn().mockRejectedValue(new Error('Not found')),
       } as any);
 
-      await expect(service.findOneById('person-id')).rejects.toThrow(NotFoundException);
+      await expect(service.findOneById('person-id')).rejects.toThrow(
+        NotFoundException
+      );
     });
   });
 
@@ -149,8 +169,9 @@ describe('PersonsService', () => {
       person.id = personId; // Ajuste conforme a estrutura da entidade Person
 
       jest.spyOn(service, 'findOneById').mockResolvedValue(person); // Mock do método findOneById
-      jest.spyOn(personRepository, 'delete').mockResolvedValue({ affected: 1 } as any); // Mock do método delete
-
+      jest
+        .spyOn(personRepository, 'delete')
+        .mockResolvedValue({ affected: 1 } as any); // Mock do método delete
 
       await service.delete(personId.id);
 
@@ -159,9 +180,13 @@ describe('PersonsService', () => {
 
     it('should throw BadRequestException if an error occurs', async () => {
       const personId = 'person-id';
-      jest.spyOn(service, 'findOneById').mockRejectedValue(new Error('Find error'));
+      jest
+        .spyOn(service, 'findOneById')
+        .mockRejectedValue(new Error('Find error'));
 
-      await expect(service.delete(personId)).rejects.toThrow(BadRequestException);
+      await expect(service.delete(personId)).rejects.toThrow(
+        BadRequestException
+      );
     });
   });
 
@@ -172,23 +197,33 @@ describe('PersonsService', () => {
         name: 'teste',
       };
 
-      let person = ({
+      let person = {
         name: 'John Doe',
         birthdate: new Date(),
         phone: new Phone('+1', '123', '4567890'),
         cpf: new Cpf('123.456.789-00'),
         rg: '12.345.678-9',
-        address: new Address({ street: 'Test Street', zipCode: '12345', state: 'Test State', district: 'Test District', homeNumber: 123 }),
+        address: new Address({
+          street: 'Test Street',
+          zipCode: '12345',
+          state: 'Test State',
+          district: 'Test District',
+          homeNumber: 123,
+        }),
         user: 'user-id',
         id: id,
-      });
+      };
 
       let expectedPerson = new Person(person);
       expectedPerson.name = updatePersonDto.name;
-      updatePersonDto
-      jest.spyOn(personRepository, 'update').mockResolvedValue({ affected: 1 } as any);
-      jest.spyOn(service, 'findOneById').mockResolvedValue(expectedPerson); 
-      expect(await service.update(id.id, updatePersonDto)).toEqual(expectedPerson);
+      updatePersonDto;
+      jest
+        .spyOn(personRepository, 'update')
+        .mockResolvedValue({ affected: 1 } as any);
+      jest.spyOn(service, 'findOneById').mockResolvedValue(expectedPerson);
+      expect(await service.update(id.id, updatePersonDto)).toEqual(
+        expectedPerson
+      );
     });
 
     it('should throw BadRequestException if the person is not found', async () => {
@@ -205,14 +240,17 @@ describe('PersonsService', () => {
           zipCode: '54321',
           state: 'Updated State',
           district: 'Updated District',
-          homeNumber: 321
+          homeNumber: 321,
         }),
       };
 
-      jest.spyOn(service, 'findOneById').mockRejectedValue(new Error('Person not found'));
+      jest
+        .spyOn(service, 'findOneById')
+        .mockRejectedValue(new Error('Person not found'));
 
-      await expect(service.update(personId, updatePersonDto)).rejects.toThrow(BadRequestException);
+      await expect(service.update(personId, updatePersonDto)).rejects.toThrow(
+        BadRequestException
+      );
     });
   });
-
 });

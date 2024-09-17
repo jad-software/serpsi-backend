@@ -102,24 +102,27 @@ describe('Addresses Service', () => {
       complement: 'Complement de Address teste',
     });
     address.id = id;
-    
+
     let expectedAddress = new Address(address);
     expectedAddress.district = updateAddressDto.district;
     expectedAddress.homeNumber = updateAddressDto.homeNumber;
-  
+
     mockRepository.update.mockResolvedValue({ affected: 1 });
     mockRepository.findOneOrFail.mockResolvedValue(expectedAddress);
-    
-    expect(await service.update(id.id, updateAddressDto)).toEqual(expectedAddress);
+
+    expect(await service.update(id.id, updateAddressDto)).toEqual(
+      expectedAddress
+    );
     expect(mockRepository.update).toHaveBeenCalledWith(
       'a8c0fbb9-af01-4874-b792-e84a17c6524c',
       expectedAddress
     );
   });
   it('Should delete an Address', async () => {
-    mockRepository.delete.mockResolvedValue({affected: 1});
+    mockRepository.delete.mockResolvedValue({ affected: 1 });
     await service.delete('a8c0fbb9-af01-4874-b792-e84a17c6524c');
-    expect(mockRepository.delete).toHaveBeenCalledWith('a8c0fbb9-af01-4874-b792-e84a17c6524c')
-  })
-  
+    expect(mockRepository.delete).toHaveBeenCalledWith(
+      'a8c0fbb9-af01-4874-b792-e84a17c6524c'
+    );
+  });
 });
