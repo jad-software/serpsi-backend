@@ -1,7 +1,8 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { IDocument } from '../interfaces/document.interface';
 import { CreateDocumentDto } from '../dto/create-document.dto';
 import { EntityBase } from 'src/entity-base/entities/entity-base';
+import { Patient } from 'src/patients/entities/patient.entity';
 
 @Entity()
 export class Document extends EntityBase implements IDocument {
@@ -16,6 +17,9 @@ export class Document extends EntityBase implements IDocument {
   @Column({ name: 'docLink' })
   private _docLink: string;
 
+  @ManyToOne(() => Patient, (patient) => patient.documents)
+  private _patient: Patient;
+
   get title(): string {
     return this._title;
   }
@@ -28,5 +32,11 @@ export class Document extends EntityBase implements IDocument {
   }
   set docLink(docLink: string) {
     this._docLink = docLink;
+  }
+  get patient(): Patient {
+    return this._patient;
+  }
+  set patient(patient: Patient) {
+    this._patient = patient;
   }
 }

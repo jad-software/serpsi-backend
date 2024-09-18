@@ -22,24 +22,25 @@ import { extname } from 'path';
 
 @Controller('documents')
 export class DocumentsController {
-  constructor(private readonly documentsService: DocumentsService) { }
+  constructor(private readonly documentsService: DocumentsService) {}
 
   @Post()
   @UseInterceptors(FileInterceptor('document'))
   async create(
     @Body('title') title: string,
+    @Body('personId') personId: string,
     @UploadedFile()
     document: Express.Multer.File
   ) {
     if (extname(document.originalname) !== '.md') {
       throw new BadRequestException('Only .md files are allowed!');
     }
-    return await this.documentsService.create(title, document);
+    return await this.documentsService.create(title,personId, document);
   }
 
-  @Get()
-  findAll() {
-    return this.documentsService.findAll();
+  @Get('/patients/:id')
+  async findAllByPatient(@Param('id') id: string) {
+    return await this.documentsService.findAllByPatient(id);
   }
 
   @Get(':id')
@@ -53,7 +54,7 @@ export class DocumentsController {
     @Param('id') id: string,
     @UploadedFile()
     document?: Express.Multer.File,
-    @Body('title') updateDocumentDto?: string,
+    @Body('title') updateDocumentDto?: string
   ) {
     return await this.documentsService.update(id, updateDocumentDto, document);
   }
