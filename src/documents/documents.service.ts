@@ -1,11 +1,11 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
-import { data_providers } from 'src/constants';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { data_providers } from '../constants';
 import { Repository } from 'typeorm';
 import { Document } from './entities/document.entity';
-import { PatientsService } from 'src/patients/patients.service';
+import { PatientsService } from '../patients/patients.service';
 
 @Injectable()
 export class DocumentsService {
@@ -56,7 +56,7 @@ export class DocumentsService {
     try {
       const document = await this.documentRepository
         .createQueryBuilder('document')
-        .where('document._id = :id ', { id })
+        .where('document._id = :id', { id })
         .getOneOrFail();
       return document;
     } catch (err) {
