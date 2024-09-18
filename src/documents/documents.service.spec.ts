@@ -6,6 +6,7 @@ import { PatientsService } from "../patients/patients.service";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { Id } from "../entity-base/vo/id.vo";
 import { Document } from "./entities/document.entity";
+import { Patient } from "../patients/entities/patient.entity";
 
 
 describe('Documents Services', () => {
@@ -19,11 +20,13 @@ describe('Documents Services', () => {
     select: jest.Mock;
     getOneOrFail: jest.Mock;
     getMany: jest.Mock;
+    leftJoinAndSelect: jest.Mock;
   }> = {
     where: jest.fn().mockReturnThis(),
     select: jest.fn().mockReturnThis(),
     getOneOrFail: jest.fn(),
-    getMany: jest.fn()
+    getMany: jest.fn().mockReturnThis(),
+    leftJoinAndSelect: jest.fn().mockReturnThis()
   };
   beforeEach(async () => {
     mockRepository = {
@@ -43,7 +46,7 @@ describe('Documents Services', () => {
         },
         {
           provide: PatientsService,
-          useValue:{
+          useValue: {
             findOne: jest.fn()
           }
         },
@@ -61,7 +64,7 @@ describe('Documents Services', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-  it('should Return one Document by Id', async() => {
+  it('should Return one Document by Id', async () => {
     const id = new Id('8be7ffed-d32a-4c2d-b456-9350b461cf8a');
     const document = new Document({
       title: 'Titulo do documento',
@@ -77,5 +80,34 @@ describe('Documents Services', () => {
     });
     expect(mockQueryBuilder.getOneOrFail).toHaveBeenCalled();
     expect(result).toEqual(document);
+  });
+  it('Should return all documents of an patient', async () => {
+    const patientId = new Id('2f3cf102-4bff-41c8-bcfe-417d52b60e0d');
+    const patient = new Patient({});
+    patient.id = patientId;
+    const documents: Document[] = [
+      new Document({
+        title: 'Documento da sessão 1',
+        docLink: 'Link1/link',
+        patient: patientId.id
+      }),
+      new Document({
+        title: 'Documento da sessão 2',
+        docLink: 'Link2/link',
+        patient: patientId.id
+      })
+    ];
+    documents[0].id = new Id('f6ce1411-c3bb-42d6-a719-b1b6a7d2e073');
+    documents[1].id = new Id('807af314-938c-48c1-8060-c23827beb41f');
+
+    mockQueryBuilder.getMany.mockReturnValue(documents);
+    const result = await service.findAllByPatient(patientId.id);
+
+    expect(mockRepository.createQueryBuilder).toHaveBeenCalledWith('document');
+    expect(mockQueryBuilder.where).toHaveBeenCalledWith('document.Patient_id = :patientId', 
+      { patientId: patientId.id });
+    expect(mockQueryBuilder.leftJoinAndSelect).toHaveBeenCalledWith('document._patient', 'patient');
+    expect(mockQueryBuilder.getMany).toHaveBeenCalled();
+    expect(result).toEqual(documents);
   })
 })
