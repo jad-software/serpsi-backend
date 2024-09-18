@@ -35,7 +35,7 @@ describe('Documents Services', () => {
       findOneOrFail: jest.fn(),
       createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
       update: jest.fn(),
-      delete: jest.fn(),
+      remove: jest.fn(),
     };
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -59,11 +59,13 @@ describe('Documents Services', () => {
       ],
     }).compile();
     service = module.get<DocumentsService>(DocumentsService);
+    cloudinaryService = module.get<CloudinaryService>(CloudinaryService);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
   it('should Return one Document by Id', async () => {
     const id = new Id('8be7ffed-d32a-4c2d-b456-9350b461cf8a');
     const document = new Document({
@@ -81,6 +83,7 @@ describe('Documents Services', () => {
     expect(mockQueryBuilder.getOneOrFail).toHaveBeenCalled();
     expect(result).toEqual(document);
   });
+
   it('Should return all documents of an patient', async () => {
     const patientId = new Id('2f3cf102-4bff-41c8-bcfe-417d52b60e0d');
     const patient = new Patient({});
@@ -109,5 +112,20 @@ describe('Documents Services', () => {
     expect(mockQueryBuilder.leftJoinAndSelect).toHaveBeenCalledWith('document._patient', 'patient');
     expect(mockQueryBuilder.getMany).toHaveBeenCalled();
     expect(result).toEqual(documents);
-  })
+  });
+
+  it('should remove a document By id', async() => {
+    const id = new Id('8be7ffed-d32a-4c2d-b456-9350b461cf8a');
+    const document = new Document({
+      title: 'Titulo do documento',
+      docLink: 'documento/link',
+    });
+    document.id = id;
+    const publicID = document.docLink.split('/').slice(-1)[0];
+    
+    mockRepository.remove.mockResolvedValue({ affected: 1 });
+    await service.remove(id.id);
+    expect(mockRepository.remove).toHaveBeenCalledWith(document);
+    expect(cloudinaryService.deleteFileOtherThanImage).toHaveBeenCalledWith(publicID);
+  });
 })
