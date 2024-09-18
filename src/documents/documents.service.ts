@@ -16,16 +16,15 @@ export class DocumentsService {
     private cloudinaryService: CloudinaryService,
     @Inject()
     private patientService: PatientsService
-  ) { }
+  ) {}
   async create(
     documentName: string,
     personId: string,
     documentFile: Express.Multer.File
   ): Promise<Document> {
     try {
-
-      const fileSaved = await this.cloudinaryService.uploadFile(documentFile);
       const patient = await this.patientService.findOne(personId);
+      const fileSaved = await this.cloudinaryService.uploadFile(documentFile);
       if (fileSaved) {
         const document = new Document({
           title: documentName,
@@ -43,13 +42,12 @@ export class DocumentsService {
   async findAllByPatient(patientId: string) {
     try {
       const documentsByPatientId = await this.documentRepository
-            .createQueryBuilder('document')
-            .where('document.Patient_id = :patientId',{patientId})
-            .leftJoinAndSelect("document._patient", "patient")
-            .getMany();
-        return documentsByPatientId;
-    }
-    catch(err){
+        .createQueryBuilder('document')
+        .where('document.Patient_id = :patientId', { patientId })
+        .leftJoinAndSelect('document._patient', 'patient')
+        .getMany();
+      return documentsByPatientId;
+    } catch (err) {
       throw new BadRequestException(err?.message);
     }
   }

@@ -6,7 +6,6 @@ export class CreateDocumentDto implements IDocument {
   @IsString()
   title: string;
 
-
   docLink?: string;
 
   @IsUUID()

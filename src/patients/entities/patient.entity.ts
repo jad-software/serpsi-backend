@@ -42,7 +42,9 @@ export class Patient extends EntityBase implements IPatient {
   @JoinTable()
   private _comorbidities: Comorbidity[];
 
-  @OneToMany(() => Document, (document) => document, { nullable: true })
+  @OneToMany(() => Document, (document) => document, {
+    nullable: true,
+  })
   private _documets?: Document[];
 
   @OneToOne(() => Person, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
