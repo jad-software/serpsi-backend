@@ -1,8 +1,8 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { IDocument } from '../interfaces/document.interface';
 import { CreateDocumentDto } from '../dto/create-document.dto';
-import { EntityBase } from 'src/entity-base/entities/entity-base';
-import { Patient } from 'src/patients/entities/patient.entity';
+import { EntityBase } from '../../entity-base/entities/entity-base';
+import { Patient } from '../../patients/entities/patient.entity';
 
 @Entity()
 export class Document extends EntityBase implements IDocument {

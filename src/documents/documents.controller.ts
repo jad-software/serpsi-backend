@@ -19,23 +19,42 @@ import { UpdateDocumentDto } from './dto/update-document.dto';
 import { FormDataRequest } from 'nestjs-form-data';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
+import { plainToClass } from 'class-transformer';
+import { validate } from 'class-validator';
 
 @Controller('documents')
 export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
+  
+  private async validateDocumentData(createDocumentDto: CreateDocumentDto) {
+    const errors = await validate(createDocumentDto);
+    if (errors.length > 0) {
+      throw new BadRequestException(`Validation Error in Field: ${errors[0].property}`);
+    }
+  }
+  
+  private validateUploadedFile(document: Express.Multer.File) {
+    if (!document) {
+      throw new BadRequestException('Document is required');
+    }
+    if (extname(document.originalname) !== '.md') {
+      throw new BadRequestException('Only .md files are allowed!');
+    }
+  }
 
   @Post()
   @UseInterceptors(FileInterceptor('document'))
   async create(
-    @Body('title') title: string,
-    @Body('personId') personId: string,
+    @Body() { title, patient }: { title: string, patient: string },
     @UploadedFile()
     document: Express.Multer.File
   ) {
-    if (extname(document.originalname) !== '.md') {
-      throw new BadRequestException('Only .md files are allowed!');
-    }
-    return await this.documentsService.create(title,personId, document);
+
+    const createDocumentDto = plainToClass(CreateDocumentDto, { title, patient });
+    await this.validateDocumentData(createDocumentDto);
+    this.validateUploadedFile(document);
+
+    return await this.documentsService.create(title,patient, document);
   }
 
   @Get('/patients/:id')

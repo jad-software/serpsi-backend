@@ -6,7 +6,7 @@ import { DatabaseModule } from '../database/database.module';
 import { MedicinesModule } from './medicines.module';
 import { SchoolModule } from './school.module';
 import { ComorbiditiesModule } from './comorbidities.module';
-import { PersonsModule } from 'src/persons/persons.module';
+import { PersonsModule } from '../persons/persons.module';
 
 @Module({
   imports: [

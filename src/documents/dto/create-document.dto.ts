@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 import { IDocument } from '../interfaces/document.interface';
 
 export class CreateDocumentDto implements IDocument {
@@ -6,5 +6,10 @@ export class CreateDocumentDto implements IDocument {
   @IsString()
   title: string;
 
-  docLink: string;
+
+  docLink?: string;
+
+  @IsUUID()
+  @IsNotEmpty()
+  patient: string;
 }

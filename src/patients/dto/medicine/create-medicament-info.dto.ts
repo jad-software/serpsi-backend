@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { CreateMedicineDto } from './create-medicine.dto';
 import { Type } from 'class-transformer';
-import { Patient } from 'src/patients/entities/patient.entity';
+import { Patient } from '../../../patients/entities/patient.entity';
 
 export class CreateMedicamentInfoDto {
   @ApiProperty({
