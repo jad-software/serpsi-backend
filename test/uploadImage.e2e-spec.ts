@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { INestApplication } from '@nestjs/common';
+import { BadRequestException, INestApplication, UnauthorizedException } from '@nestjs/common';
 import { AppModule } from '../src/app.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Person } from '../src/persons/entities/person.enitiy';
@@ -11,31 +11,49 @@ import { DataSource } from 'typeorm';
 import { Address } from '../src/addresses/entities/address.entity';
 import { Cpf } from '../src/persons/vo/cpf.vo';
 import { Phone } from '../src/persons/vo/phone.vo';
+import { PersonsModule } from '../src/persons/persons.module';
+import { CreatePersonDto } from 'src/persons/dto/createPerson.dto';
 
 describe('PersonsController (e2e)', () => {
   let app: INestApplication;
-  let dataSource: DataSource;
-  let personRepository: Repository<Person>;
+  let mockPersonService = {
+    create: jest.fn((createPersonDto) => {
+      return Promise.resolve({
+        name: 'John Doe',
+        birthdate: '1990-01-01',
+        phone: {
+          ddi: "+55",
+          ddd: "75",
+          number: "99981798"
+        },
+        rg: '12.345.678-9',
+        cpf:{
+          cpf:'111.184.119-50'
+        },
+        
+        address: {
+          street: 'Test Street',
+          zipCode: '12345',
+          state: 'Test State',
+          district: 'Test District',
+          homeNumber: 123,
+          complement: 'Test Complement'
+        },
+      });
+    })
+  }
+
 
   beforeAll(async () => {
-    const moduleRef: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-      controllers: [PersonsController],
-      providers: [
-        {
-          provide: PersonsService,
-          useValue: {
-            create: jest.fn(),
-          },
-        },
-      ],
-    }).compile();
+    const moduleRef = await Test.createTestingModule({
+      imports: [PersonsModule],
+    })
+      .overrideProvider(PersonsService)
+      .useValue(mockPersonService)
+      .compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
-
-    dataSource = moduleRef.get<DataSource>(DataSource);
-    personRepository = dataSource.getRepository(Person);
   });
 
   afterAll(async () => {
@@ -46,16 +64,24 @@ describe('PersonsController (e2e)', () => {
     const createPersonDto = {
       name: 'John Doe',
       birthdate: '1990-01-01',
-      phone: new Phone('+1', '123', '4567890'),
-      cpf: new Cpf('123.456.789-00'),
+      phone: {
+        ddi: "+55",
+        ddd: "75",
+        number: "99981798"
+      },
       rg: '12.345.678-9',
-      address: new Address({
+      cpf: {
+        cpf: '111.184.119-50'
+      },
+
+      address: {
         street: 'Test Street',
         zipCode: '12345',
         state: 'Test State',
         district: 'Test District',
         homeNumber: 123,
-      }),
+        complement: 'Test Complement'
+      },
     };
 
     const response = await request(app.getHttpServer())

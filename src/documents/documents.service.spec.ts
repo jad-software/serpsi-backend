@@ -1,13 +1,12 @@
-import { Repository } from "typeorm";
-import { DocumentsService } from "./documents.service"
-import { Test, TestingModule } from "@nestjs/testing";
-import { data_providers } from "../constants";
-import { PatientsService } from "../patients/patients.service";
-import { CloudinaryService } from "../cloudinary/cloudinary.service";
-import { Id } from "../entity-base/vo/id.vo";
-import { Document } from "./entities/document.entity";
-import { Patient } from "../patients/entities/patient.entity";
-
+import { Repository } from 'typeorm';
+import { DocumentsService } from './documents.service';
+import { Test, TestingModule } from '@nestjs/testing';
+import { data_providers } from '../constants';
+import { PatientsService } from '../patients/patients.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { Id } from '../entity-base/vo/id.vo';
+import { Document } from './entities/document.entity';
+import { Patient } from '../patients/entities/patient.entity';
 
 describe('Documents Services', () => {
   let service: DocumentsService;
@@ -26,7 +25,7 @@ describe('Documents Services', () => {
     select: jest.fn().mockReturnThis(),
     getOneOrFail: jest.fn(),
     getMany: jest.fn().mockReturnThis(),
-    leftJoinAndSelect: jest.fn().mockReturnThis()
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
   };
   beforeEach(async () => {
     mockRepository = {
@@ -47,15 +46,15 @@ describe('Documents Services', () => {
         {
           provide: PatientsService,
           useValue: {
-            findOne: jest.fn()
-          }
+            findOne: jest.fn(),
+          },
         },
         {
           provide: CloudinaryService,
           useValue: {
-            deleteFileOtherThanImage: jest.fn()
-          }
-        }
+            deleteFileOtherThanImage: jest.fn(),
+          },
+        },
       ],
     }).compile();
     service = module.get<DocumentsService>(DocumentsService);
@@ -70,7 +69,7 @@ describe('Documents Services', () => {
     const id = new Id('8be7ffed-d32a-4c2d-b456-9350b461cf8a');
     const document = new Document({
       title: 'Titulo do documento',
-      docLink: 'documento/link'
+      docLink: 'documento/link',
     });
     document.id = id;
     mockQueryBuilder.getOneOrFail.mockReturnValue(document);
@@ -78,7 +77,7 @@ describe('Documents Services', () => {
     const idID = id.id;
     expect(mockRepository.createQueryBuilder).toHaveBeenCalledWith('document');
     expect(mockQueryBuilder.where).toHaveBeenCalledWith('document._id = :id', {
-      id: idID
+      id: idID,
     });
     expect(mockQueryBuilder.getOneOrFail).toHaveBeenCalled();
     expect(result).toEqual(document);
@@ -92,13 +91,13 @@ describe('Documents Services', () => {
       new Document({
         title: 'Documento da sessão 1',
         docLink: 'Link1/link',
-        patient: patientId.id
+        patient: patientId.id,
       }),
       new Document({
         title: 'Documento da sessão 2',
         docLink: 'Link2/link',
-        patient: patientId.id
-      })
+        patient: patientId.id,
+      }),
     ];
     documents[0].id = new Id('f6ce1411-c3bb-42d6-a719-b1b6a7d2e073');
     documents[1].id = new Id('807af314-938c-48c1-8060-c23827beb41f');
@@ -107,14 +106,19 @@ describe('Documents Services', () => {
     const result = await service.findAllByPatient(patientId.id);
 
     expect(mockRepository.createQueryBuilder).toHaveBeenCalledWith('document');
-    expect(mockQueryBuilder.where).toHaveBeenCalledWith('document.Patient_id = :patientId', 
-      { patientId: patientId.id });
-    expect(mockQueryBuilder.leftJoinAndSelect).toHaveBeenCalledWith('document._patient', 'patient');
+    expect(mockQueryBuilder.where).toHaveBeenCalledWith(
+      'document.Patient_id = :patientId',
+      { patientId: patientId.id }
+    );
+    expect(mockQueryBuilder.leftJoinAndSelect).toHaveBeenCalledWith(
+      'document._patient',
+      'patient'
+    );
     expect(mockQueryBuilder.getMany).toHaveBeenCalled();
     expect(result).toEqual(documents);
   });
 
-  it('should remove a document By id', async() => {
+  it('should remove a document By id', async () => {
     const id = new Id('8be7ffed-d32a-4c2d-b456-9350b461cf8a');
     const document = new Document({
       title: 'Titulo do documento',
@@ -122,10 +126,12 @@ describe('Documents Services', () => {
     });
     document.id = id;
     const publicID = document.docLink.split('/').slice(-1)[0];
-    
+
     mockRepository.remove.mockResolvedValue({ affected: 1 });
     await service.remove(id.id);
     expect(mockRepository.remove).toHaveBeenCalledWith(document);
-    expect(cloudinaryService.deleteFileOtherThanImage).toHaveBeenCalledWith(publicID);
+    expect(cloudinaryService.deleteFileOtherThanImage).toHaveBeenCalledWith(
+      publicID
+    );
   });
-})
+});
