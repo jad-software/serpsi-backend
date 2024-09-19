@@ -21,10 +21,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
+import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @Controller('documents')
+@ApiTags('documents')
 export class DocumentsController {
-  constructor(private readonly documentsService: DocumentsService) {}
+  constructor(private readonly documentsService: DocumentsService) { }
 
   private async validateDocumentData(createDocumentDto: CreateDocumentDto) {
     const errors = await validate(createDocumentDto);
@@ -45,6 +47,30 @@ export class DocumentsController {
   }
 
   @Post()
+  @ApiOperation({
+    summary:
+      'Cria um documento com título, vinculo com paciente e arquivo',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        title: {
+          type: 'string',
+          example: 'título de documento de sessão',
+        },
+        patient: {
+          type: 'string',
+          example: '220fb404-4bf2-47c8-a20f-210f6e811620'
+        },
+        document: {
+          type: 'string',
+          format: 'binary',
+        },
+      }
+    }
+  })
   @UseInterceptors(FileInterceptor('document'))
   async create(
     @Body() { title, patient }: { title: string; patient: string },
@@ -62,16 +88,44 @@ export class DocumentsController {
   }
 
   @Get('/patients/:id')
+  @ApiOperation({
+    summary:
+      'Retorna todos os documentos de um paciente de acordo com o id do prórpio paciente',
+  })
   async findAllByPatient(@Param('id') id: string) {
     return await this.documentsService.findAllByPatient(id);
   }
 
   @Get(':id')
+  @ApiOperation({
+    summary:
+      'Retorna um documento de acordo com o id',
+  })
   async findOne(@Param('id') id: string) {
     return await this.documentsService.findOne(id);
   }
 
   @Put(':id')
+  @ApiOperation({
+    summary:
+      'Atualiza um documento',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        title: {
+          type: 'string',
+          example: 'atualização de título de documento de sessão',
+        },
+        document: {
+          type: 'string',
+          format: 'binary',
+        },
+      }
+    }
+  })
   @UseInterceptors(FileInterceptor('document'))
   async update(
     @Param('id') id: string,
@@ -83,6 +137,10 @@ export class DocumentsController {
   }
 
   @Delete(':id')
+  @ApiOperation({
+    summary:
+      'Deleta um documento de acordo com o id no banco e no cloudinary',
+  })
   async remove(@Param('id') id: string) {
     return await this.documentsService.remove(id);
   }
