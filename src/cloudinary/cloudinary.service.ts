@@ -9,7 +9,7 @@ export class CloudinaryService {
     return new Promise<CloudinaryResponse>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
-          // resource_type: 'auto',
+          resource_type: 'auto',
           // public_id: `${file.originalname.split('.')[0]}.pdf`, // Garante que tenha a extensão .pdf
           // format: 'pdf'
         },
@@ -28,6 +28,23 @@ export class CloudinaryService {
         if (error) return reject(error);
         resolve(result);
       });
+    });
+  }
+  async deleteFileOtherThanImage(publicId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader.destroy(
+        publicId,
+        { resource_type: 'raw' },
+        (error, result) => {
+          if (error) {
+            return reject(error);
+          }
+          if (result.result === 'ok') {
+            return resolve();
+          }
+          reject(new Error(`Arquivo ${publicId} não encontrado.`));
+        }
+      );
     });
   }
 

@@ -1,4 +1,5 @@
 import {
+  forwardRef,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -21,6 +22,9 @@ import { CreateComorbidityDto } from './dto/comorbities/create-comorbidity.dto';
 import { CreatePersonDto } from '../persons/dto/createPerson.dto';
 import { PersonsService } from '../persons/persons.service';
 import { CreateSchoolDto } from './dto/school/create-school.dto';
+import { DocumentsService } from '../documents/documents.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { School } from './entities/school.entity';
 
 @Injectable()
 export class PatientsService {
@@ -30,7 +34,11 @@ export class PatientsService {
     private readonly schoolService: SchoolService,
     private readonly comorbiditiesService: ComorbiditiesService,
     private readonly medicamentInfoService: MedicamentInfoService,
-    private readonly personsService: PersonsService
+    private readonly personsService: PersonsService,
+    @Inject(forwardRef(() => DocumentsService))
+    private documentService: DocumentsService,
+    @Inject()
+    private cloudinaryService: CloudinaryService
   ) {}
 
   async create(createPatientDto: CreatePatientDto) {
@@ -66,8 +74,12 @@ export class PatientsService {
   }
 
   private async setSchool(schoolDto: CreateSchoolDto) {
-    let school = await this.schoolService.findOneBy(schoolDto);
-    if (!school) school = await this.schoolService.create(schoolDto);
+    let school: School;
+    try {
+      school = await this.schoolService.findOneBy(schoolDto);
+    } catch {
+      school = await this.schoolService.create(schoolDto);
+    }
     return school;
   }
 
@@ -189,8 +201,19 @@ export class PatientsService {
 
   async remove(id: string) {
     let patient = await this.findOne(id);
+    const documents = await this.documentService.findAllByPatient(
+      patient.id.id
+    );
+
     await this.personsService.delete(patient.person.id.id);
-    return await this.patientRepository.delete(patient.id.id);
+    await this.patientRepository.delete(patient.id.id);
+    if (documents) {
+      documents.forEach(async (document) => {
+        const publicID = document.docLink.split('/').slice(-1)[0];
+
+        await this.cloudinaryService.deleteFileOtherThanImage(publicID);
+      });
+    }
   }
 
   async removeMedicament(patientId: string, medicamentId: string) {

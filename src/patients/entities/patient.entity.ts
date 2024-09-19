@@ -16,6 +16,7 @@ import { MedicamentInfo } from './medicament-info.entity';
 import { School } from './school.entity';
 import { Comorbidity } from './comorbidity.entity';
 import { Person } from '../../persons/entities/person.enitiy';
+import { Document } from '../../documents/entities/document.entity';
 
 @Entity()
 export class Patient extends EntityBase implements IPatient {
@@ -41,9 +42,22 @@ export class Patient extends EntityBase implements IPatient {
   @JoinTable()
   private _comorbidities: Comorbidity[];
 
+  @OneToMany(() => Document, (document) => document, {
+    nullable: true,
+  })
+  private _previewFollowUps?: Document[];
+
   @OneToOne(() => Person, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn()
   private _person: Person;
+
+  get previewFollowUps(): Document[] {
+    return this._previewFollowUps;
+  }
+
+  set previewFollowUps(previewFollowUps: Document[]) {
+    this._previewFollowUps = previewFollowUps;
+  }
 
   get paymentPlan(): PaymentPlan {
     return this._paymentPlan;

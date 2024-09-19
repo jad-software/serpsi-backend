@@ -16,9 +16,13 @@ import { CreateMedicamentInfoDto } from './dto/medicine/create-medicament-info.d
 import { MedicamentInfo } from './entities/medicament-info.entity';
 import { PersonsService } from '../persons/persons.service';
 import { Person } from '../persons/entities/person.enitiy';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { DocumentsService } from '../documents/documents.service';
 
 describe('PatientsService', () => {
   let service: PatientsService;
+  let cloudinaryService: CloudinaryService;
+  let documentService: DocumentsService;
   let mockRepository: Partial<Record<keyof Repository<Patient>, jest.Mock>>;
   let mockQueryBuilder: Partial<{
     where: jest.Mock;
@@ -174,6 +178,18 @@ describe('PatientsService', () => {
         {
           provide: PersonsService,
           useValue: mockPersonsService,
+        },
+        {
+          provide: CloudinaryService,
+          useValue: {
+            deleteFileOtherThanImage: jest.fn(),
+          },
+        },
+        {
+          provide: DocumentsService,
+          useValue: {
+            findAllByPatient: jest.fn(),
+          },
         },
       ],
     }).compile();
