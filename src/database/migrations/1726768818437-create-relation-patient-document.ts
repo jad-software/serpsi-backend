@@ -1,9 +1,9 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateRelationPatientDocument1726671446144
+export class CreateRelationPatientDocument1726768818437
   implements MigrationInterface
 {
-  name = 'CreateRelationPatientDocument1726671446144';
+  name = 'CreateRelationPatientDocument1726768818437';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`ALTER TABLE "document" ADD "Patient_id" uuid`);

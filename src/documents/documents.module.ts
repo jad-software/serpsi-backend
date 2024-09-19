@@ -8,11 +8,9 @@ import { DatabaseModule } from '../database/database.module';
 import { PatientsModule } from '../patients/patients.module';
 
 @Module({
-  imports: [CloudinaryModule, DatabaseModule,
-    forwardRef(() => PatientsModule)
-  ],
+  imports: [CloudinaryModule, DatabaseModule, forwardRef(() => PatientsModule)],
   controllers: [DocumentsController],
   providers: [...documentProvider, DocumentsService],
-  exports: [DocumentsService]
+  exports: [DocumentsService],
 })
-export class DocumentsModule { }
+export class DocumentsModule {}

@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { BadRequestException, INestApplication, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  INestApplication,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AppModule } from '../src/app.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Person } from '../src/persons/entities/person.enitiy';
@@ -22,13 +26,13 @@ describe('PersonsController (e2e)', () => {
         name: 'John Doe',
         birthdate: '1990-01-01',
         phone: {
-          ddi: "+55",
-          ddd: "75",
-          number: "99981798"
+          ddi: '+55',
+          ddd: '75',
+          number: '99981798',
         },
         rg: '12.345.678-9',
         cpf: {
-          cpf: '111.184.119-50'
+          cpf: '111.184.119-50',
         },
 
         address: {
@@ -37,12 +41,11 @@ describe('PersonsController (e2e)', () => {
           state: 'Test State',
           district: 'Test District',
           homeNumber: 123,
-          complement: 'Test Complement'
+          complement: 'Test Complement',
         },
       });
-    })
-  }
-
+    }),
+  };
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -65,13 +68,13 @@ describe('PersonsController (e2e)', () => {
       name: 'John Doe',
       birthdate: '1990-01-01',
       phone: {
-        ddi: "+55",
-        ddd: "75",
-        number: "99981798"
+        ddi: '+55',
+        ddd: '75',
+        number: '99981798',
       },
       rg: '12.345.678-9',
       cpf: {
-        cpf: '111.184.119-50'
+        cpf: '111.184.119-50',
       },
 
       address: {
@@ -80,7 +83,7 @@ describe('PersonsController (e2e)', () => {
         state: 'Test State',
         district: 'Test District',
         homeNumber: 123,
-        complement: 'Test Complement'
+        complement: 'Test Complement',
       },
     };
 
@@ -93,19 +96,18 @@ describe('PersonsController (e2e)', () => {
     expect(response.body).toEqual(expect.objectContaining(createPersonDto));
   });
 
-
   it('should not create a person with missing field', async () => {
     const createPersonDto = {
       // name: 'John Doe',
       birthdate: '1990-01-01',
       phone: {
-        ddi: "+55",
-        ddd: "75",
-        number: "99981798"
+        ddi: '+55',
+        ddd: '75',
+        number: '99981798',
       },
       rg: '12.345.678-9',
       cpf: {
-        cpf: '111.184.119-50'
+        cpf: '111.184.119-50',
       },
 
       address: {
@@ -114,7 +116,7 @@ describe('PersonsController (e2e)', () => {
         state: 'Test State',
         district: 'Test District',
         homeNumber: 123,
-        complement: 'Test Complement'
+        complement: 'Test Complement',
       },
     };
 
@@ -124,10 +126,10 @@ describe('PersonsController (e2e)', () => {
       .field('personData', JSON.stringify(createPersonDto))
       .expect(400);
     const error = {
-      error: "Bad Request",
-      message: "Validation Error in Field: name",
+      error: 'Bad Request',
+      message: 'Validation Error in Field: name',
       statusCode: 400,
-    }
+    };
     expect(response.body).toEqual(expect.objectContaining(error));
   });
 
@@ -136,13 +138,13 @@ describe('PersonsController (e2e)', () => {
       name: 'John Doe',
       birthdate: '1990-01-01',
       phone: {
-        ddi: "+55",
-        ddd: "75",
-        number: "99981798"
+        ddi: '+55',
+        ddd: '75',
+        number: '99981798',
       },
       rg: '12.345.678-9',
       cpf: {
-        cpf: '111.184.119-50'
+        cpf: '111.184.119-50',
       },
 
       address: {
@@ -151,7 +153,7 @@ describe('PersonsController (e2e)', () => {
         state: 'Test State',
         district: 'Test District',
         homeNumber: 123,
-        complement: 'Test Complement'
+        complement: 'Test Complement',
       },
     };
 
@@ -161,10 +163,10 @@ describe('PersonsController (e2e)', () => {
       .field('personData', JSON.stringify(createPersonDto))
       .expect(400);
     const error = {
-      error: "Bad Request",
-      message: "Validation failed (expected type is /(jpeg|png)$/)",
+      error: 'Bad Request',
+      message: 'Validation failed (expected type is /(jpeg|png)$/)',
       statusCode: 400,
-    }
+    };
     expect(response.body).toEqual(expect.objectContaining(error));
   });
 });

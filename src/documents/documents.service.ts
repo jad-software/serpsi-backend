@@ -1,4 +1,9 @@
-import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
@@ -14,7 +19,7 @@ export class DocumentsService {
     private documentRepository: Repository<Document>,
     @Inject()
     private cloudinaryService: CloudinaryService,
-    @Inject(forwardRef( () => PatientsService))
+    @Inject(forwardRef(() => PatientsService))
     private patientService: PatientsService
   ) {}
   async create(

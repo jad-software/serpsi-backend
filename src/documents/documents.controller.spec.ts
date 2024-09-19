@@ -1,9 +1,9 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { DocumentsController } from "./documents.controller"
-import { DocumentsService } from "./documents.service";
-import { Document } from "./entities/document.entity";
-import { CreateDocumentDto } from "./dto/create-document.dto";
-import { Id } from "../entity-base/vo/id.vo";
+import { Test, TestingModule } from '@nestjs/testing';
+import { DocumentsController } from './documents.controller';
+import { DocumentsService } from './documents.service';
+import { Document } from './entities/document.entity';
+import { CreateDocumentDto } from './dto/create-document.dto';
+import { Id } from '../entity-base/vo/id.vo';
 
 describe('Documents Controller', () => {
   let controller: DocumentsController;
@@ -21,10 +21,10 @@ describe('Documents Controller', () => {
             findOne: jest.fn(),
             update: jest.fn(),
             remove: jest.fn(),
-            findAllByPatient: jest.fn()
-          }
-        }
-      ]
+            findAllByPatient: jest.fn(),
+          },
+        },
+      ],
     }).compile();
     controller = module.get<DocumentsController>(DocumentsController);
     service = module.get<DocumentsService>(DocumentsService);
@@ -45,15 +45,19 @@ describe('Documents Controller', () => {
       jest.spyOn(service, 'create').mockResolvedValue(document);
 
       let file = {
-        originalname: 'teste.md'
+        originalname: 'teste.md',
       } as Express.Multer.File;
 
       const result = await controller.create(createDocumentDto, file);
 
       expect(result).toEqual(document);
-      expect(service.create).toHaveBeenCalledWith(document.title, document.patient, file);
+      expect(service.create).toHaveBeenCalledWith(
+        document.title,
+        document.patient,
+        file
+      );
     });
-  })
+  });
 
   describe('findOne', () => {
     it('should return a single document by ID', async () => {
@@ -71,7 +75,7 @@ describe('Documents Controller', () => {
     it('should return all documents for a given patient', async () => {
       const id = new Id('123');
       const result = [new Document({ title: 'doc1' })];
-      result[0].id = id
+      result[0].id = id;
       jest.spyOn(service, 'findAllByPatient').mockResolvedValue(result);
 
       expect(await controller.findAllByPatient(id.id)).toBe(result);
@@ -98,4 +102,4 @@ describe('Documents Controller', () => {
       expect(service.remove).toHaveBeenCalledWith(id);
     });
   });
-})
+});

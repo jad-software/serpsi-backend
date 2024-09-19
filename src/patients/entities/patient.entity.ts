@@ -45,18 +45,18 @@ export class Patient extends EntityBase implements IPatient {
   @OneToMany(() => Document, (document) => document, {
     nullable: true,
   })
-  private _documets?: Document[];
+  private _previewFollowUps?: Document[];
 
   @OneToOne(() => Person, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn()
   private _person: Person;
 
-  get documents(): Document[] {
-    return this._documets;
+  get previewFollowUps(): Document[] {
+    return this._previewFollowUps;
   }
 
-  set documents(documents: Document[]) {
-    this._documets = documents;
+  set previewFollowUps(previewFollowUps: Document[]) {
+    this._previewFollowUps = previewFollowUps;
   }
 
   get paymentPlan(): PaymentPlan {

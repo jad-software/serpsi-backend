@@ -26,7 +26,7 @@ import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 @Controller('documents')
 @ApiTags('documents')
 export class DocumentsController {
-  constructor(private readonly documentsService: DocumentsService) { }
+  constructor(private readonly documentsService: DocumentsService) {}
 
   private async validateDocumentData(createDocumentDto: CreateDocumentDto) {
     const errors = await validate(createDocumentDto);
@@ -48,8 +48,7 @@ export class DocumentsController {
 
   @Post()
   @ApiOperation({
-    summary:
-      'Cria um documento com título, vinculo com paciente e arquivo',
+    summary: 'Cria um documento com título, vinculo com paciente e arquivo',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -62,14 +61,14 @@ export class DocumentsController {
         },
         patient: {
           type: 'string',
-          example: '220fb404-4bf2-47c8-a20f-210f6e811620'
+          example: '220fb404-4bf2-47c8-a20f-210f6e811620',
         },
         document: {
           type: 'string',
           format: 'binary',
         },
-      }
-    }
+      },
+    },
   })
   @UseInterceptors(FileInterceptor('document'))
   async create(
@@ -98,8 +97,7 @@ export class DocumentsController {
 
   @Get(':id')
   @ApiOperation({
-    summary:
-      'Retorna um documento de acordo com o id',
+    summary: 'Retorna um documento de acordo com o id',
   })
   async findOne(@Param('id') id: string) {
     return await this.documentsService.findOne(id);
@@ -107,8 +105,7 @@ export class DocumentsController {
 
   @Put(':id')
   @ApiOperation({
-    summary:
-      'Atualiza um documento',
+    summary: 'Atualiza um documento',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -123,8 +120,8 @@ export class DocumentsController {
           type: 'string',
           format: 'binary',
         },
-      }
-    }
+      },
+    },
   })
   @UseInterceptors(FileInterceptor('document'))
   async update(
@@ -138,8 +135,7 @@ export class DocumentsController {
 
   @Delete(':id')
   @ApiOperation({
-    summary:
-      'Deleta um documento de acordo com o id no banco e no cloudinary',
+    summary: 'Deleta um documento de acordo com o id no banco e no cloudinary',
   })
   async remove(@Param('id') id: string) {
     return await this.documentsService.remove(id);

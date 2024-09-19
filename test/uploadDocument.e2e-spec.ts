@@ -9,18 +9,21 @@ describe('Upload Documenr (e2e)', () => {
   let app: INestApplication;
   let mockDocumentService = {
     create: jest.fn((title, patient, document) => {
-      if (title === undefined || patient === undefined || document === undefined) {
+      if (
+        title === undefined ||
+        patient === undefined ||
+        document === undefined
+      ) {
         return Promise.reject(new BadRequestException('Required fields'));
-
-      }
-      else if (extname(document.originalname) !== '.md') {
-        return Promise.reject(new BadRequestException('Only .md files are allowed!'));
-      }
-      else {
+      } else if (extname(document.originalname) !== '.md') {
+        return Promise.reject(
+          new BadRequestException('Only .md files are allowed!')
+        );
+      } else {
         return Promise.resolve();
       }
-    })
-  }
+    }),
+  };
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -46,8 +49,8 @@ describe('Upload Documenr (e2e)', () => {
       .field('title', 'Titulo do documento')
       .expect(201);
   });
-  
-  it('Should not create an Document if field is missing', async() => {
+
+  it('Should not create an Document if field is missing', async () => {
     const response = await request(app.getHttpServer())
       .post('/documents')
       .attach('document', Buffer.from(''), 'teste.md')

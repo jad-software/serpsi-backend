@@ -17,7 +17,7 @@ export class Document extends EntityBase implements IDocument {
   @Column({ name: 'docLink' })
   private _docLink: string;
 
-  @ManyToOne(() => Patient, (patient) => patient.documents, {
+  @ManyToOne(() => Patient, (patient) => patient.previewFollowUps, {
     onDelete: 'CASCADE',
   })
   private _patient: Patient;

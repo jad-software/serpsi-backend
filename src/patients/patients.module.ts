@@ -18,7 +18,7 @@ import { CloudinaryModule } from '../cloudinary/cloudinary.module';
     ComorbiditiesModule,
     PersonsModule,
     forwardRef(() => DocumentsModule),
-    CloudinaryModule
+    CloudinaryModule,
   ],
   controllers: [PatientsController],
   providers: [PatientsService, ...patientProvider],
