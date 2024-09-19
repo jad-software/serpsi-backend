@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { PatientsService } from './patients.service';
 import { PatientsController } from './patients.controller';
 import { patientProvider } from './providers/patient.provider';
@@ -7,6 +7,8 @@ import { MedicinesModule } from './medicines.module';
 import { SchoolModule } from './school.module';
 import { ComorbiditiesModule } from './comorbidities.module';
 import { PersonsModule } from '../persons/persons.module';
+import { DocumentsModule } from '../documents/documents.module';
+import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { PersonsModule } from '../persons/persons.module';
     SchoolModule,
     ComorbiditiesModule,
     PersonsModule,
+    forwardRef(() => DocumentsModule),
+    CloudinaryModule
   ],
   controllers: [PatientsController],
   providers: [PatientsService, ...patientProvider],
