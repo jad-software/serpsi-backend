@@ -27,6 +27,14 @@ export class CreatePatientDto implements IPatient {
   person: CreatePersonDto;
 
   @ApiProperty({
+    type: [OmitType(CreatePersonDto, ['user'] as const)],
+    description: 'Dados pessoais do paciente',
+  })
+  @ValidateNested()
+  @Type(() => OmitType(CreatePersonDto, ['user'] as const))
+  parents: CreatePersonDto[];
+
+  @ApiProperty({
     type: CreateSchoolDto,
     description: 'Dados da escola do paciente',
   })

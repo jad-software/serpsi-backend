@@ -25,6 +25,7 @@ import { CreateSchoolDto } from './dto/school/create-school.dto';
 import { DocumentsService } from '../documents/documents.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { School } from './entities/school.entity';
+import { Person } from 'src/persons/entities/person.enitiy';
 
 @Injectable()
 export class PatientsService {
@@ -42,18 +43,26 @@ export class PatientsService {
   ) {}
 
   async create(createPatientDto: CreatePatientDto) {
+    const patient = this.patientRepository.create(
+      new Patient({ ...createPatientDto, medicines: [], parents: [] })
+    );
+    const queryRunner =
+      this.patientRepository.manager.connection.createQueryRunner();
+    await queryRunner.startTransaction();
+
     try {
-      const patient = this.patientRepository.create(
-        new Patient({ ...createPatientDto, medicines: [] })
-      );
       let person = await this.setPerson(createPatientDto.person);
       let school = await this.setSchool(createPatientDto.school);
       let comorbidities: Comorbidity[] = await this.setComorbities(
         createPatientDto.comorbidities
       );
+      let parents = await this.setParents(createPatientDto.parents);
+
       patient.person = person;
       patient.school = school;
       patient.comorbidities = comorbidities;
+      patient.parents = parents;
+
       let savedPatient = await this.patientRepository.save(patient);
 
       let medicines = await this.setMedicines(
@@ -61,9 +70,10 @@ export class PatientsService {
         savedPatient
       );
       savedPatient.medicines = medicines;
-
+      await queryRunner.commitTransaction();
       return savedPatient;
     } catch (err) {
+      await queryRunner.rollbackTransaction();
       throw new InternalServerErrorException(err);
     }
   }
@@ -71,6 +81,23 @@ export class PatientsService {
   private async setPerson(createPersondto: CreatePersonDto) {
     let person = await this.personsService.create(createPersondto);
     return person;
+  }
+
+  private async setParents(parents: CreatePersonDto[]) {
+    let setParents = [];
+    for (let personDto of parents) {
+      let parent: Person;
+      try{
+        console.log('tentando achar por cpf')
+        parent = await this.personsService.findOneByCPF(personDto.cpf);
+      }
+      catch {
+        console.log('criando pai')
+        parent = await this.personsService.create(personDto);
+      }
+      setParents.push(parent);
+    }
+    return setParents;
   }
 
   private async setSchool(schoolDto: CreateSchoolDto) {
@@ -114,7 +141,7 @@ export class PatientsService {
 
   async findAll() {
     return await this.patientRepository.find({
-      relations: ['_school', '_comorbidities', '_person'],
+      relations: ['_school', '_comorbidities', '_person', '_parents'],
     });
   }
 

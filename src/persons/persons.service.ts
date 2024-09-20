@@ -89,6 +89,18 @@ export class PersonsService {
     }
   }
 
+  async findOneByCPF(cpf: Cpf): Promise<Person> {
+    try {
+      return await this.personRepository
+        .createQueryBuilder('person')
+        .where('person._cpf = :cpf', { cpf: cpf.cpf })
+        .getOneOrFail();
+    } catch (err) {
+      console.log('deu erro em achar por cpf')
+      throw new NotFoundException(err?.message);
+    }
+  }
+
   async update(id: string, updatePersonDto: UpdatePersonDto) {
     try {
       const person = new Person(updatePersonDto);

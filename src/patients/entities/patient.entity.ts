@@ -51,6 +51,14 @@ export class Patient extends EntityBase implements IPatient {
   @JoinColumn()
   private _person: Person;
 
+  @ManyToMany(() => Person, (person) => person.children, {
+    nullable: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinTable()
+  private _parents: Person[];
+
   get previewFollowUps(): Document[] {
     return this._previewFollowUps;
   }
@@ -72,6 +80,14 @@ export class Patient extends EntityBase implements IPatient {
 
   set person(person: Person) {
     this._person = person;
+  }
+
+  get parents(): Person[] {
+    return this._parents;
+  }
+
+  set parents(parents: Person[]) {
+    this._parents = parents;
   }
 
   get medicines(): MedicamentInfo[] {
