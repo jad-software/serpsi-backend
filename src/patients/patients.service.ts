@@ -145,6 +145,13 @@ export class PatientsService {
     });
   }
 
+// Rota a ser alterada quando tiver vinculos de psicólogo
+  async findAllByPsychologist() {
+    return await this.patientRepository.createQueryBuilder('patient')
+    .leftJoinAndSelect('patient._person', 'person')
+    .getMany();
+  }
+
   async findOne(id: string) {
     try {
       let patient = await this.patientRepository
