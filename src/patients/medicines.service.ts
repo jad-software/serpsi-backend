@@ -19,10 +19,15 @@ export class MedicinesService {
     private medicineRepository: Repository<Medicine>
   ) {}
 
-  async create(createMedicineDto: CreateMedicineDto) {
+  async create(
+    createMedicineDto: CreateMedicineDto,
+    hasTransaction: boolean = false
+  ) {
     try {
       const medicine = new Medicine(createMedicineDto);
-      return await this.medicineRepository.save(medicine);
+      return await this.medicineRepository.save(medicine, {
+        transaction: !hasTransaction,
+      });
     } catch (err) {
       throw new InternalServerErrorException(err);
     }

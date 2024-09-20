@@ -160,7 +160,7 @@ export class PersonsController {
         `Validation Error in Field: ${errors[0].property}`
       );
     }
-    return this.personsService.create(createPersonDto, file);
+    return this.personsService.create(createPersonDto, false, file);
   }
 
   @Get()

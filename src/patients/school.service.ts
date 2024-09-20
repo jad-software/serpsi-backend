@@ -20,11 +20,16 @@ export class SchoolService {
     private readonly schoolRepository: Repository<School>
   ) {}
 
-  async create(createSchoolDto: CreateSchoolDto) {
+  async create(
+    createSchoolDto: CreateSchoolDto,
+    hasTransaction: boolean = false
+  ) {
     try {
       const school = new School(createSchoolDto);
       school.CNPJ = new CNPJ(createSchoolDto.CNPJ);
-      return await this.schoolRepository.save(school);
+      return await this.schoolRepository.save(school, {
+        transaction: !hasTransaction,
+      });
     } catch (err) {
       throw new InternalServerErrorException(err);
     }
