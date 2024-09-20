@@ -48,12 +48,12 @@ export class PatientsService {
     );
 
     try {
-      let person = await this.setPerson(createPatientDto.person);
-      let school = await this.setSchool(createPatientDto.school);
-      let comorbidities: Comorbidity[] = await this.setComorbities(
-        createPatientDto.comorbidities
-      );
-      let parents = await this.setParents(createPatientDto.parents);
+      let [person, school, comorbidities, parents] = await Promise.all([
+        this.setPerson(createPatientDto.person),
+        this.setSchool(createPatientDto.school),
+        this.setComorbities(createPatientDto.comorbidities),
+        this.setParents(createPatientDto.parents),
+      ]);
 
       patient.person = person;
       patient.school = school;
@@ -67,6 +67,7 @@ export class PatientsService {
         savedPatient
       );
       savedPatient.medicines = medicines;
+      
       return savedPatient;
     } catch (err) {
       throw new InternalServerErrorException(err);
@@ -82,12 +83,9 @@ export class PatientsService {
     let setParents = [];
     for (let personDto of parents) {
       let parent: Person;
-      try{
-        console.log('tentando achar por cpf')
+      try {
         parent = await this.personsService.findOneByCPF(personDto.cpf);
-      }
-      catch {
-        console.log('criando pai')
+      } catch {
         parent = await this.personsService.create(personDto);
       }
       setParents.push(parent);
@@ -140,11 +138,12 @@ export class PatientsService {
     });
   }
 
-// Rota a ser alterada quando tiver vinculos de psicólogo
+  // Rota a ser alterada quando tiver vinculos de psicólogo
   async findAllByPsychologist() {
-    return await this.patientRepository.createQueryBuilder('patient')
-    .leftJoinAndSelect('patient._person', 'person')
-    .getMany();
+    return await this.patientRepository
+      .createQueryBuilder('patient')
+      .leftJoinAndSelect('patient._person', 'person')
+      .getMany();
   }
 
   async findOne(id: string) {

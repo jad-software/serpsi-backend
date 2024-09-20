@@ -96,7 +96,6 @@ export class PersonsService {
         .where('person._cpf = :cpf', { cpf: cpf.cpf })
         .getOneOrFail();
     } catch (err) {
-      console.log('deu erro em achar por cpf')
       throw new NotFoundException(err?.message);
     }
   }
