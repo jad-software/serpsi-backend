@@ -154,7 +154,8 @@ export class PatientsService {
     return await this.patientRepository
       .createQueryBuilder('patient')
       .leftJoinAndSelect('patient._person', 'person')
-      .getMany();
+      .select(['patient.id', 'person.name', 'patient.payment_plan', 'person.cpf'])
+      .getRawMany();
   }
 
   async findOne(id: string) {
