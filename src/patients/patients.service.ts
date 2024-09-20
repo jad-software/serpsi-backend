@@ -46,9 +46,6 @@ export class PatientsService {
     const patient = this.patientRepository.create(
       new Patient({ ...createPatientDto, medicines: [], parents: [] })
     );
-    const queryRunner =
-      this.patientRepository.manager.connection.createQueryRunner();
-    await queryRunner.startTransaction();
 
     try {
       let person = await this.setPerson(createPatientDto.person);
@@ -70,10 +67,8 @@ export class PatientsService {
         savedPatient
       );
       savedPatient.medicines = medicines;
-      await queryRunner.commitTransaction();
       return savedPatient;
     } catch (err) {
-      await queryRunner.rollbackTransaction();
       throw new InternalServerErrorException(err);
     }
   }
