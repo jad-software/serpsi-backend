@@ -22,10 +22,11 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
-import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-@Controller('documents')
+@ApiBearerAuth()
 @ApiTags('documents')
+@Controller('documents')
 export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) { }
 
@@ -88,19 +89,35 @@ export class DocumentsController {
   }
 
   @Post('/followups')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        patient: {
+          type: 'string',
+          example: 'f35f827e-0899-4d63-976a-2b9aac7fb3ff',
+        },
+        document: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @UseInterceptors(FilesInterceptor('documents'))
   async createFollowups(
     @Body() { patient }: { patient: string },
     @UploadedFiles()
     documents: Express.Multer.File[]
   ) {
-    if(patient === undefined){
+    if (patient === undefined) {
       throw new BadRequestException(
         `Patient is required`
       );
     }
     documents.map(doc => {
-      this.validateUploadedFile(doc,  'pdf');
+      this.validateUploadedFile(doc, 'pdf');
     })
     return await this.documentsService.createFollowUps(patient, documents);
   }
