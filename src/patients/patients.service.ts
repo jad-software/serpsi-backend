@@ -162,9 +162,12 @@ export class PatientsService {
     try {
       let patient = await this.patientRepository
         .createQueryBuilder('patient')
-        .leftJoinAndSelect('patient._school', '_school')
+        .leftJoinAndSelect('patient._school', 'school')
+        .leftJoinAndSelect('school._address', 'school_address')
         .leftJoinAndSelect('patient._comorbidities', '_comorbidities')
         .leftJoinAndSelect('patient._person', '_person')
+        .leftJoinAndSelect('_person.address', '_address')
+        .leftJoinAndSelect('patient._parents', '_parents')
         .where('patient.id = :id', { id })
         .getOneOrFail();
 
