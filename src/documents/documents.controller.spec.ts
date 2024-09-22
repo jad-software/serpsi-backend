@@ -20,6 +20,7 @@ describe('Documents Controller', () => {
             findAll: jest.fn(),
             findOne: jest.fn(),
             update: jest.fn(),
+            createFollowUps: jest.fn(),
             remove: jest.fn(),
             findAllByPatient: jest.fn(),
           },
@@ -59,6 +60,45 @@ describe('Documents Controller', () => {
     });
   });
 
+  describe('create a follow Up', () => {
+    it('Should create a follow up Document', async () => {
+      let documents: Document[] = [];
+      let patient = '65a588f1-0174-4e2c-b620-05b7c55adea5';
+      const createDocumentDto: CreateDocumentDto[] = [
+        {
+          title: 'Title Controller teste',
+          patient,
+        },
+        {
+          title: 'Title Controller teste2',
+          patient,
+        },
+      ];
+      createDocumentDto.map(previusFollowUps => {
+        documents.push(new Document(previusFollowUps));
+      }) 
+
+      jest.spyOn(service, 'createFollowUps').mockResolvedValue(documents);
+
+      let files = [
+        {
+        originalname: 'Title Controller teste.pdf',
+      },
+      {
+        originalname: 'Title Controller teste2.pdf'
+      }
+    ] as Express.Multer.File[];
+
+      const result = await controller.createFollowups({patient}, files);
+
+      expect(result).toEqual(documents);
+      expect(service.createFollowUps).toHaveBeenCalledWith(
+        
+        patient,
+        files
+      );
+    });
+  });
   describe('findOne', () => {
     it('should return a single document by ID', async () => {
       const id = new Id('1');

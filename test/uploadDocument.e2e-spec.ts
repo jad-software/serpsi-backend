@@ -23,6 +23,14 @@ describe('Upload Documenr (e2e)', () => {
         return Promise.resolve();
       }
     }),
+    createFollowUps: jest.fn((patient, documents) => {
+      if (patient === undefined) {
+        return Promise.reject(new BadRequestException('Required fields'));
+      }
+      else {
+        return Promise.resolve();
+      }
+    })
   };
 
   beforeAll(async () => {
@@ -50,6 +58,17 @@ describe('Upload Documenr (e2e)', () => {
       .expect(201);
   });
 
+
+  it('Should create an followUp Document', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/documents/followups')
+      .attach('documents', Buffer.from(''), 'document1.pdf')
+      .attach('documents', Buffer.from(''), 'document2.pdf') // caso queira testar múltiplos arquivos
+      .field('patient', '44a1fc2c-7679-4237-ba10-547891a64aac')
+      .expect(201);
+
+  });
+
   it('Should not create an Document if field is missing', async () => {
     const response = await request(app.getHttpServer())
       .post('/documents')
@@ -66,4 +85,15 @@ describe('Upload Documenr (e2e)', () => {
       .field('title', 'Titulo do documento')
       .expect(400);
   });
+
+  it('Should not create an FollowUp Document if files are not a .pdf', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/documents/followups')
+      .attach('documents', Buffer.from(''), 'teste.pdf')
+      .attach('documents', Buffer.from(''), 'teste2.md')
+      .field('patient', '44a1fc2c-7679-4237-ba10-547891a64aac')
+      .field('title', 'Titulo do documento')
+      .expect(400);
+  });
+  
 });
