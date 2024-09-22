@@ -10,6 +10,8 @@ export class Address extends EntityBase implements IAddress {
     super();
     Object.assign(this, partial);
   }
+  @Column({ name: 'city' })
+  private _city: string;
 
   @Column({ name: 'zipCode' })
   private _zipCode: string;
@@ -46,6 +48,13 @@ export class Address extends EntityBase implements IAddress {
   }
   set district(district: string) {
     this._district = district;
+  }
+
+  get city(): string {
+    return this._city;
+  }
+  set city(city: string) {
+    this._city = city;
   }
 
   get state(): string {
