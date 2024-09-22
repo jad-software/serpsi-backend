@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryResponse } from './cloudnary-response';
+
 const streamifier = require('streamifier');
 
 @Injectable()
 export class CloudinaryService {
-  uploadFile(file: Express.Multer.File): Promise<CloudinaryResponse> {
+  uploadFile(file: Express.Multer.File, isPdf = false): Promise<CloudinaryResponse> {
     return new Promise<CloudinaryResponse>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
-          resource_type: 'auto',
+          resource_type: isPdf ? 'raw' : 'auto',
           // public_id: `${file.originalname.split('.')[0]}.pdf`, // Garante que tenha a extensão .pdf
           // format: 'pdf'
         },
@@ -59,3 +60,4 @@ export class CloudinaryService {
     return publicId;
   }
 }
+

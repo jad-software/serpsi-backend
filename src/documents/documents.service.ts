@@ -21,7 +21,7 @@ export class DocumentsService {
     private cloudinaryService: CloudinaryService,
     @Inject(forwardRef(() => PatientsService))
     private patientService: PatientsService
-  ) {}
+  ) { }
   async create(
     documentName: string,
     personId: string,
@@ -40,6 +40,34 @@ export class DocumentsService {
         return createdDocument;
       }
     } catch (err) {
+      throw new BadRequestException(err?.message);
+    }
+  }
+
+  async createFollowUps(patientId: string, followUps: Express.Multer.File[]): Promise<Document[]> {
+    let publicsIds: string[];
+    try {
+      let returnedFollowUps: Document[] = [];
+      const patient = await this.patientService.findOne(patientId);
+      for (const documentFile of followUps) {
+
+        documentFile.originalname = Buffer
+          .from(documentFile.originalname, 'latin1').toString('utf8');
+
+        const fileSaved = await this.cloudinaryService.uploadFile(documentFile, true);
+        if (fileSaved) {
+          const document = new Document({
+            title: documentFile.originalname,
+            docLink: fileSaved.url,
+          });
+          document.patient = patient;
+          
+          returnedFollowUps.push(await this.documentRepository.save(document));
+        }
+      }
+      return returnedFollowUps;
+    }
+    catch (err) {
       throw new BadRequestException(err?.message);
     }
   }
