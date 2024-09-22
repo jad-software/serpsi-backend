@@ -208,11 +208,11 @@ export class PatientsService {
     await this.personsService.delete(patient.person.id.id);
     await this.patientRepository.delete(patient.id.id);
     if (documents) {
-      documents.forEach(async (document) => {
+      for(const document of documents) {
         const publicID = document.docLink.split('/').slice(-1)[0];
 
         await this.cloudinaryService.deleteFileOtherThanImage(publicID);
-      });
+      }
     }
   }
 

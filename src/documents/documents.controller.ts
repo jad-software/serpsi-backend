@@ -12,21 +12,23 @@ import {
   FileTypeValidator,
   BadRequestException,
   Put,
+  UploadedFiles,
 } from '@nestjs/common';
 import { DocumentsService } from './documents.service';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { FormDataRequest } from 'nestjs-form-data';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
-import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-@Controller('documents')
+@ApiBearerAuth()
 @ApiTags('documents')
+@Controller('documents')
 export class DocumentsController {
-  constructor(private readonly documentsService: DocumentsService) {}
+  constructor(private readonly documentsService: DocumentsService) { }
 
   private async validateDocumentData(createDocumentDto: CreateDocumentDto) {
     const errors = await validate(createDocumentDto);
@@ -37,12 +39,12 @@ export class DocumentsController {
     }
   }
 
-  private validateUploadedFile(document: Express.Multer.File) {
+  private validateUploadedFile(document: Express.Multer.File, typeOfExtention: string) {
     if (!document) {
       throw new BadRequestException('Document is required');
     }
-    if (extname(document.originalname) !== '.md') {
-      throw new BadRequestException('Only .md files are allowed!');
+    if (extname(document.originalname) !== `.${typeOfExtention}`) {
+      throw new BadRequestException(`Only .${typeOfExtention} files are allowed!`);
     }
   }
 
@@ -81,9 +83,43 @@ export class DocumentsController {
       patient,
     });
     await this.validateDocumentData(createDocumentDto);
-    this.validateUploadedFile(document);
+    this.validateUploadedFile(document, 'md');
 
     return await this.documentsService.create(title, patient, document);
+  }
+
+  @Post('/followups')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        patient: {
+          type: 'string',
+          example: 'f35f827e-0899-4d63-976a-2b9aac7fb3ff',
+        },
+        document: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FilesInterceptor('documents'))
+  async createFollowups(
+    @Body() { patient }: { patient: string },
+    @UploadedFiles()
+    documents: Express.Multer.File[]
+  ) {
+    if (patient === undefined) {
+      throw new BadRequestException(
+        `Patient is required`
+      );
+    }
+    documents.map(doc => {
+      this.validateUploadedFile(doc, 'pdf');
+    })
+    return await this.documentsService.createFollowUps(patient, documents);
   }
 
   @Get('/patients/:id')
