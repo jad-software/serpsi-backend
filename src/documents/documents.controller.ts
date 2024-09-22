@@ -94,13 +94,6 @@ export class DocumentsController {
     @UploadedFiles()
     documents: Express.Multer.File[]
   ) {
-    // const createDocumentDto = plainToClass(CreateDocumentDto, {
-
-    //   patient,
-    // });
-    // await this.validateDocumentData(createDocumentDto);
-    // this.validateUploadedFile(document);
-    // console.log('teste');
     if(patient === undefined){
       throw new BadRequestException(
         `Patient is required`

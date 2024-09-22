@@ -45,8 +45,12 @@ export class DocumentsService {
   }
 
   async createFollowUps(patientId: string, followUps: Express.Multer.File[]): Promise<Document[]> {
-    let publicsIds: string[];
+    const queryRunner = this.documentRepository
+          .manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    let publicsIds: string[] = [];
     try {
+      await queryRunner.startTransaction();
       let returnedFollowUps: Document[] = [];
       const patient = await this.patientService.findOne(patientId);
       for (const documentFile of followUps) {
@@ -61,14 +65,24 @@ export class DocumentsService {
             docLink: fileSaved.url,
           });
           document.patient = patient;
+          publicsIds.push(document.docLink.split('/').slice(-1)[0]);
           
-          returnedFollowUps.push(await this.documentRepository.save(document));
+          returnedFollowUps.push(await queryRunner.manager.save(document));
         }
       }
+      await queryRunner.commitTransaction();
       return returnedFollowUps;
     }
     catch (err) {
+      await queryRunner.rollbackTransaction();
+      publicsIds.forEach(async publicID => {
+        await this.cloudinaryService.deleteFileOtherThanImage(publicID);
+      });
+      
       throw new BadRequestException(err?.message);
+    }
+    finally{
+      await queryRunner.release();
     }
   }
 
