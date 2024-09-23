@@ -17,7 +17,7 @@ export class AddressesService {
     private addressRepository: Repository<Address>
   ) {}
 
-  async create(createAddressDto: CreateAddressDto): Promise<Address> {
+  async create(createAddressDto: CreateAddressDto, hasTransaction: boolean = false): Promise<Address> {
     try {
       const address = new Address({
         state: createAddressDto.state,
@@ -27,7 +27,9 @@ export class AddressesService {
         homeNumber: createAddressDto.homeNumber,
         complement: createAddressDto.complement,
       });
-      await this.addressRepository.save(address);
+      await this.addressRepository.save(address, {
+        transaction: !hasTransaction,
+      });
       return address;
     } catch (err) {
       throw new BadRequestException(err?.message);

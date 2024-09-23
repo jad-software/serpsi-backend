@@ -22,7 +22,8 @@ export class MedicamentInfoService {
 
   async create(
     createMedicamentInfoDto: CreateMedicamentInfoDto,
-    patient: Patient
+    patient: Patient,
+    hasTransaction: boolean = false
   ): Promise<MedicamentInfo> {
     const medicamentInfo = new MedicamentInfo(createMedicamentInfoDto);
     try {
@@ -37,7 +38,9 @@ export class MedicamentInfoService {
         );
       medicamentInfo.medicine = medicine;
       medicamentInfo.patient = patient;
-      return await this.medicamentInfoRepository.save(medicamentInfo);
+      return await this.medicamentInfoRepository.save(medicamentInfo, {
+        transaction: !hasTransaction,
+      });
     } catch (err) {
       throw new InternalServerErrorException(err);
     }

@@ -25,6 +25,7 @@ import { CreateSchoolDto } from './dto/school/create-school.dto';
 import { DocumentsService } from '../documents/documents.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { School } from './entities/school.entity';
+import { Person } from 'src/persons/entities/person.enitiy';
 
 @Injectable()
 export class PatientsService {
@@ -42,35 +43,61 @@ export class PatientsService {
   ) {}
 
   async create(createPatientDto: CreatePatientDto) {
+    const queryRunner =
+      this.patientRepository.manager.connection.createQueryRunner();
+    await queryRunner.startTransaction();
+
     try {
       const patient = this.patientRepository.create(
-        new Patient({ ...createPatientDto, medicines: [] })
+        new Patient({ ...createPatientDto, medicines: [], parents: [] })
       );
-      let person = await this.setPerson(createPatientDto.person);
-      let school = await this.setSchool(createPatientDto.school);
-      let comorbidities: Comorbidity[] = await this.setComorbities(
-        createPatientDto.comorbidities
-      );
+
+      let [person, school, comorbidities, parents] = await Promise.all([
+        this.setPerson(createPatientDto.person),
+        this.setSchool(createPatientDto.school),
+        this.setComorbities(createPatientDto.comorbidities),
+        this.setParents(createPatientDto.parents),
+      ]);
+
       patient.person = person;
       patient.school = school;
       patient.comorbidities = comorbidities;
-      let savedPatient = await this.patientRepository.save(patient);
+      patient.parents = parents;
+
+      let savedPatient = await this.patientRepository.save(patient, {
+        transaction: false,
+      });
 
       let medicines = await this.setMedicines(
         createPatientDto.medicines,
         savedPatient
       );
       savedPatient.medicines = medicines;
-
+      await queryRunner.commitTransaction();
       return savedPatient;
     } catch (err) {
+      await queryRunner.rollbackTransaction();
       throw new InternalServerErrorException(err);
     }
   }
 
   private async setPerson(createPersondto: CreatePersonDto) {
-    let person = await this.personsService.create(createPersondto);
+    let person = await this.personsService.create(createPersondto, true);
     return person;
+  }
+
+  private async setParents(parents: CreatePersonDto[]) {
+    let setParents = [];
+    for (let personDto of parents) {
+      let parent: Person;
+      try {
+        parent = await this.personsService.findOneByCPF(personDto.cpf);
+      } catch {
+        parent = await this.personsService.create(personDto, true);
+      }
+      setParents.push(parent);
+    }
+    return setParents;
   }
 
   private async setSchool(schoolDto: CreateSchoolDto) {
@@ -78,7 +105,7 @@ export class PatientsService {
     try {
       school = await this.schoolService.findOneBy(schoolDto);
     } catch {
-      school = await this.schoolService.create(schoolDto);
+      school = await this.schoolService.create(schoolDto, true);
     }
     return school;
   }
@@ -91,7 +118,8 @@ export class PatientsService {
     for (let medicamentDto of medicinesDto) {
       let medicament = await this.medicamentInfoService.create(
         medicamentDto,
-        patient
+        patient,
+        true
       );
       medicament.patient = undefined;
       medicines.push(medicament);
@@ -106,7 +134,10 @@ export class PatientsService {
         await this.comorbiditiesService.findByName(comorbidityDto.name)
       ).at(0);
       if (!comorbidity)
-        comorbidity = await this.comorbiditiesService.create(comorbidityDto);
+        comorbidity = await this.comorbiditiesService.create(
+          comorbidityDto,
+          true
+        );
       setComorbidities.push(comorbidity);
     }
     return setComorbidities;
@@ -114,17 +145,29 @@ export class PatientsService {
 
   async findAll() {
     return await this.patientRepository.find({
-      relations: ['_school', '_comorbidities', '_person'],
+      relations: ['_school', '_comorbidities', '_person', '_parents'],
     });
+  }
+
+  // Rota a ser alterada quando tiver vinculos de psicólogo
+  async findAllByPsychologist() {
+    return await this.patientRepository
+      .createQueryBuilder('patient')
+      .leftJoinAndSelect('patient._person', 'person')
+      .select(['patient.id', 'person.name', 'patient.payment_plan', 'person.cpf'])
+      .getRawMany();
   }
 
   async findOne(id: string) {
     try {
       let patient = await this.patientRepository
         .createQueryBuilder('patient')
-        .leftJoinAndSelect('patient._school', '_school')
+        .leftJoinAndSelect('patient._school', 'school')
+        .leftJoinAndSelect('school._address', 'school_address')
         .leftJoinAndSelect('patient._comorbidities', '_comorbidities')
         .leftJoinAndSelect('patient._person', '_person')
+        .leftJoinAndSelect('_person.address', '_address')
+        .leftJoinAndSelect('patient._parents', '_parents')
         .where('patient.id = :id', { id })
         .getOneOrFail();
 

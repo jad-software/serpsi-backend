@@ -7,6 +7,7 @@ import { Type } from 'class-transformer';
 import { CreateComorbidityDto } from './comorbities/create-comorbidity.dto';
 import { CreateMedicamentInfoDto } from './medicine/create-medicament-info.dto';
 import { CreatePersonDto } from '../../persons/dto/createPerson.dto';
+import { CreateParentsDto } from 'src/persons/dto/createParents.dto';
 
 export class CreatePatientDto implements IPatient {
   @ApiProperty({
@@ -25,6 +26,14 @@ export class CreatePatientDto implements IPatient {
   @ValidateNested()
   @Type(() => OmitType(CreatePersonDto, ['user'] as const))
   person: CreatePersonDto;
+
+  @ApiProperty({
+    type: [CreateParentsDto],
+    description: 'Dados dos responsáveis do paciente',
+  })
+  @ValidateNested()
+  @Type(() => CreateParentsDto)
+  parents: CreatePersonDto[];
 
   @ApiProperty({
     type: CreateSchoolDto,

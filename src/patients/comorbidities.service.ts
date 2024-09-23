@@ -18,10 +18,15 @@ export class ComorbiditiesService {
     private readonly comorbiditiesRepository: Repository<Comorbidity>
   ) {}
 
-  async create(createComorbidityDto: CreateComorbidityDto) {
+  async create(
+    createComorbidityDto: CreateComorbidityDto,
+    hasTransaction: boolean = false
+  ) {
     const comorbidity = new Comorbidity(createComorbidityDto);
     try {
-      return await this.comorbiditiesRepository.save(comorbidity);
+      return await this.comorbiditiesRepository.save(comorbidity, {
+        transaction: !hasTransaction,
+      });
     } catch (err) {
       throw new InternalServerErrorException(err.message);
     }

@@ -3,10 +3,18 @@ import { EntityBase } from '../../entity-base/entities/entity-base';
 import { CreatePersonDto } from '../dto/createPerson.dto';
 import { Phone } from '../vo/phone.vo';
 import { Cpf } from '../vo/cpf.vo';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToMany,
+  ManyToOne,
+  OneToOne,
+} from 'typeorm';
 import { IPerson } from '../interfaces/person.interface';
 import { UpdatePersonDto } from '../dto/updatePerson.dto';
 import { User } from '../../users/entities/user.entity';
+import { Patient } from '../../patients/entities/patient.entity';
 
 @Entity()
 export class Person extends EntityBase implements IPerson {
@@ -42,6 +50,13 @@ export class Person extends EntityBase implements IPerson {
   @OneToOne(() => User, (user) => user.person, { nullable: true })
   @JoinColumn()
   user: User;
+
+  @ManyToMany(() => Patient, (patient) => patient.parents, {
+    nullable: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  children: Patient[];
 
   get name(): string {
     return this._name;

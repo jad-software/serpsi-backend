@@ -1,30 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PatientsService } from './patients.service';
-import { Repository } from 'typeorm';
 import { Patient } from './entities/patient.entity';
 import { data_providers } from '../constants';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { Id } from '../entity-base/vo/id.vo';
 import { PaymentPlan } from './vo/PaymentPlan.enum';
 import { SchoolService } from './school.service';
-import { CreateSchoolDto } from './dto/school/create-school.dto';
-import { UpdateSchoolDto } from './dto/school/update-school.dto';
-import { CreateComorbidityDto } from './dto/comorbities/create-comorbidity.dto';
 import { ComorbiditiesService } from './comorbidities.service';
 import { MedicamentInfoService } from './medicament-info.service';
-import { CreateMedicamentInfoDto } from './dto/medicine/create-medicament-info.dto';
-import { MedicamentInfo } from './entities/medicament-info.entity';
 import { PersonsService } from '../persons/persons.service';
 import { Person } from '../persons/entities/person.enitiy';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { DocumentsService } from '../documents/documents.service';
+import { CreatePatientDto } from './dto/create-patient.dto';
 
 describe('PatientsService', () => {
   let service: PatientsService;
-  let cloudinaryService: CloudinaryService;
-  let documentService: DocumentsService;
-  let mockRepository: Partial<Record<keyof Repository<Patient>, jest.Mock>>;
+
   let mockQueryBuilder: Partial<{
+    save: jest.Mock;
     where: jest.Mock;
     select: jest.Mock;
     leftJoinAndSelect: jest.Mock;
@@ -35,127 +29,48 @@ describe('PatientsService', () => {
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     getOneOrFail: jest.fn(),
   };
+
+  const mockRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    find: jest.fn(),
+    findOneOrFail: jest.fn(),
+    createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
+    update: jest.fn(),
+    delete: jest.fn(),
+  };
+
   const mockSchoolService = {
-    create: jest.fn((dto: CreateSchoolDto) => ({
-      id: '1',
-      ...dto,
-    })),
-    findAll: jest.fn(() => [
-      { id: '1', name: 'ativa idade', CNPJ: '00.000.0000/0001-00' },
-      { id: '2', name: 'coperil', CNPJ: '00.000.0000/0001-01' },
-    ]),
-    findOneBy: jest.fn((search: UpdateSchoolDto) => ({
-      id: '1',
-      name: 'ativa idade',
-      CNPJ: '00.000.0000/0001-00',
-    })),
-    findOne: jest.fn((id: string) => ({
-      id: '1',
-      name: 'ativa idade',
-      CNPJ: '00.000.0000/0001-00',
-    })),
-    remove: jest.fn((id: string) => ({ id })),
+    findOneBy: jest.fn(),
+    create: jest.fn(),
   };
 
   const mockComorbiditiesService = {
-    create: jest.fn((dto: CreateComorbidityDto) => ({
-      id: '1',
-      ...dto,
-    })),
-    findAll: jest.fn(() => [
-      { id: '1', name: 'Buscopan' },
-      { id: '2', name: 'Loratadina' },
-    ]),
-    findByName: jest.fn((name: string) => ({
-      id: '1',
-      name: 'Buscopan',
-    })),
-    findOne: jest.fn((id: string) => ({
-      id: '1',
-      name: 'Buscopan',
-    })),
-    remove: jest.fn((id: string) => ({ id })),
+    findByName: jest.fn(),
+    create: jest.fn(),
   };
 
   const mockMedicamentInfoService = {
-    create: jest.fn((dto: CreateMedicamentInfoDto, patient: Patient) => ({
-      id: '1',
-      ...dto,
-    })),
-    findAll: jest.fn(() => [
-      {
-        patient_id: '1',
-        medicine_id: '1',
-        dosage: 250,
-        dosageUnity: 'mg',
-        frequency: 2,
-        firstTimeOfTheDay: '2024-01-01T08:00:00.000Z',
-        startDate: '2024-07-20T00:00:00.000Z',
-        observation: 'Tomar antes de comer',
-      },
-      {
-        patient_id: '1',
-        medicine_id: '2',
-        dosage: 250,
-        dosageUnity: 'mg',
-        frequency: 2,
-        firstTimeOfTheDay: '2024-01-01T08:00:00.000Z',
-        startDate: '2024-07-20T00:00:00.000Z',
-        observation: 'Tomar antes de comer',
-      },
-    ]),
-    findAllToPatient: jest.fn((Patient_id: string): MedicamentInfo[] => [
-      {
-        Patient_id: '1',
-        Medicine_id: '1',
-        dosage: 250,
-        dosageUnity: 'mg',
-        frequency: 2,
-        firstTimeOfTheDay: new Date('2024-01-01T08:00:00.000Z'),
-        startDate: new Date('2024-07-20T00:00:00.000Z'),
-        observation: 'Tomar antes de comer',
-      } as MedicamentInfo,
-      {
-        Patient_id: '1',
-        Medicine_id: '2',
-        dosage: 250,
-        dosageUnity: 'mg',
-        frequency: 2,
-        firstTimeOfTheDay: new Date('2024-01-01T08:00:00.000Z'),
-        startDate: new Date('2024-07-20T00:00:00.000Z'),
-        observation: 'Tomar antes de comer',
-      } as MedicamentInfo,
-    ]),
-    findOne: jest.fn((patient_id: string, medicament_id: string) => ({
-      patient_id: '1',
-      medicine_id: '2',
-      dosage: 250,
-      dosageUnity: 'mg',
-      frequency: 2,
-      firstTimeOfTheDay: '2024-01-01T08:00:00.000Z',
-      startDate: '2024-07-20T00:00:00.000Z',
-      observation: 'Tomar antes de comer',
-    })),
-    remove: jest.fn((patient_id: string, medicament_id: string) => ({
-      patient_id,
-      medicament_id,
-    })),
+    create: jest.fn(),
+    findAllToPatient: jest.fn(),
+    remove: jest.fn(),
   };
+
   const mockPersonsService = {
     create: jest.fn(),
     update: jest.fn(),
-    delete: jest.fn().mockResolvedValue({}), // Ajuste aqui, se necessário
+    delete: jest.fn(),
+  };
+
+  const mockDocumentsService = {
+    findAllByPatient: jest.fn(),
+  };
+
+  const mockCloudinaryService = {
+    deleteFileOtherThanImage: jest.fn(),
   };
 
   beforeEach(async () => {
-    mockRepository = {
-      save: jest.fn(),
-      find: jest.fn(),
-      findOneOrFail: jest.fn(),
-      createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
-      update: jest.fn(),
-      delete: jest.fn(),
-    };
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PatientsService,
@@ -181,15 +96,11 @@ describe('PatientsService', () => {
         },
         {
           provide: CloudinaryService,
-          useValue: {
-            deleteFileOtherThanImage: jest.fn(),
-          },
+          useValue: mockCloudinaryService,
         },
         {
           provide: DocumentsService,
-          useValue: {
-            findAllByPatient: jest.fn(),
-          },
+          useValue: mockDocumentsService,
         },
       ],
     }).compile();
@@ -199,6 +110,48 @@ describe('PatientsService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  it('should create and save a new patient', async () => {
+    const createPatientDto: CreatePatientDto = {
+      paymentPlan: PaymentPlan.MENSAL,
+      person: {
+        rg: '',
+        birthdate: undefined,
+        name: '',
+        phone: undefined,
+        cpf: undefined,
+        address: {
+          zipCode: '',
+          street: '',
+          district: '',
+          state: '',
+          homeNumber: 0,
+          complement: '',
+        },
+      },
+      school: {
+        name: '',
+        CNPJ: '',
+      },
+      comorbidities: [],
+      medicines: [],
+      parents: [],
+    };
+    const mockPatient = new Patient({});
+
+    mockRepository.create.mockReturnValue(mockPatient);
+    mockPersonsService.create.mockResolvedValue({});
+    mockSchoolService.findOneBy.mockResolvedValue({});
+    mockComorbiditiesService.create.mockResolvedValue({});
+    mockMedicamentInfoService.create.mockResolvedValue({});
+    mockRepository.save.mockResolvedValue(mockPatient);
+
+    const result = await service.create(createPatientDto);
+
+    expect(result).toEqual(mockPatient);
+    expect(mockRepository.create).toHaveBeenCalledWith(expect.any(Patient));
+    expect(mockRepository.save).toHaveBeenCalledWith(mockPatient);
   });
 
   it('should retrieve all patient', async () => {

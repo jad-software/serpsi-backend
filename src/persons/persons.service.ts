@@ -14,6 +14,7 @@ import { UpdatePersonDto } from './dto/updatePerson.dto';
 import { AddressesService } from '../addresses/Addresses.service';
 import { UsersService } from '../users/users.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { Address } from 'src/addresses/entities/address.entity';
 
 @Injectable()
 export class PersonsService {
@@ -27,8 +28,13 @@ export class PersonsService {
     @Inject()
     private cloudinaryService: CloudinaryService
   ) {}
-  async create(createPersonDto: CreatePersonDto, file?: Express.Multer.File) {
+  async create(
+    createPersonDto: CreatePersonDto,
+    hasTransaction: boolean = false,
+    file?: Express.Multer.File
+  ) {
     let uploadedFileId: string | null = null;
+    let addressID: string = undefined;
     try {
       const phone = new Phone(
         createPersonDto.phone.ddi,
@@ -48,8 +54,14 @@ export class PersonsService {
         const user = await this.userService.findOneById(createPersonDto.user);
         person.user = user;
       }
-      const address = await this.addressService.create(createPersonDto.address);
-      person.address = address;
+      if (createPersonDto.address) {
+        const address = await this.addressService.create(
+          createPersonDto.address,
+          hasTransaction
+        );
+        person.address = address;
+        addressID = address.id.id;
+      }
       if (file) {
         const fileSaved = await this.cloudinaryService.uploadFile(file);
         if (fileSaved) {
@@ -57,11 +69,17 @@ export class PersonsService {
           person.profilePicture = fileSaved.url;
         }
       }
-      await this.personRepository.save(person);
+
+      await this.personRepository.save(person, {
+        transaction: !hasTransaction,
+      });
       return person;
     } catch (err) {
       if (uploadedFileId) {
         await this.cloudinaryService.deleteFile(uploadedFileId); // Remova a imagem do Cloudinary
+      }
+      if (addressID) {
+        await this.addressService.delete(addressID);
       }
       throw new BadRequestException(err?.message);
     }
@@ -84,6 +102,17 @@ export class PersonsService {
         .where('person._id = :id', { id })
         .getOneOrFail();
       return person;
+    } catch (err) {
+      throw new NotFoundException(err?.message);
+    }
+  }
+
+  async findOneByCPF(cpf: Cpf): Promise<Person> {
+    try {
+      return await this.personRepository
+        .createQueryBuilder('person')
+        .where('person._cpf = :cpf', { cpf: cpf.cpf })
+        .getOneOrFail();
     } catch (err) {
       throw new NotFoundException(err?.message);
     }
