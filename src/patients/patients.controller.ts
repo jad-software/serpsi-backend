@@ -42,10 +42,12 @@ export class PatientsController {
 
   private validateUploadedFile(
     document: Express.Multer.File,
-    allowedFileTypes: string[]
+    allowedFileTypes: string[],
+    isRequired = true
   ) {
-    if (!document) {
-      throw new BadRequestException('Document is required');
+
+    if (!document && isRequired) {
+      throw new BadRequestException('Profile Picture is required');
     }
     const fileExtension = extname(document.originalname);
     const validExtensions = allowedFileTypes.map((ext) => `.${ext}`);
@@ -331,7 +333,6 @@ export class PatientsController {
   async create(
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body('patientData') patientData: string,
-    // @Body() patientDto2: CreatePatientDto
   ) {
     const parsedData = JSON.parse(patientData);
     const createPatientDto = plainToClass(CreatePatientDto, parsedData);
@@ -342,7 +343,7 @@ export class PatientsController {
     }
     const documents = files.filter((file) => file.fieldname === 'documents');
     documents.map((doc) => {
-      this.validateUploadedFile(doc, ['pdf']);
+      this.validateUploadedFile(doc, ['pdf'], false);
     });
     const profilePicture = files.filter(
       (file) => file.fieldname === 'profilePicture'
