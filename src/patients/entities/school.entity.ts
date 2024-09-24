@@ -3,8 +3,8 @@ import { ISchool } from '../interfaces/school.interface';
 import { CreateSchoolDto } from '../dto/school/create-school.dto';
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { CNPJ } from '../vo/CNPJ.vo';
-import { Address } from 'src/addresses/entities/address.entity';
-import { Phone } from 'src/persons/vo/phone.vo';
+import { Address } from '../../addresses/entities/address.entity';
+import { Phone } from '../../persons/vo/phone.vo';
 
 @Entity()
 export class School extends EntityBase implements ISchool {

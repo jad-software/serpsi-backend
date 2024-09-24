@@ -9,8 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CreateSchoolDto } from './dto/school/create-school.dto';
-import { UpdateSchoolDto } from './dto/school/update-school.dto';
+import { FindSchoolDto } from './dto/school/find-school.dto';
 import { SchoolService } from './school.service';
 
 @ApiTags('school')
@@ -21,7 +20,7 @@ export class SchoolController {
 
   @ApiOperation({ summary: 'retorna uma escola pelo nome ou cnpj' })
   @Post('/search')
-  async findOneSchool(@Query() search?: UpdateSchoolDto) {
+  async findOneSchool(@Query() search?: FindSchoolDto) {
     return await this.schoolService.findOneBy(search);
   }
 }

@@ -6,6 +6,7 @@ import { UpdatePatientDto } from './dto/update-patient.dto';
 import { PaymentPlan } from './vo/PaymentPlan.enum';
 import { Cpf } from '../persons/vo/cpf.vo';
 import { Phone } from '../persons/vo/phone.vo';
+import { Address } from '../addresses/entities/address.entity';
 
 describe('PatientsController', () => {
   let controller: PatientsController;
@@ -54,17 +55,28 @@ describe('PatientsController', () => {
         school: {
           name: 'ativa idade',
           CNPJ: '00.000.0000/0001-00',
+          phone: new Phone({ddi:'+1', ddd:'123', number: '4567890'}),
+          address: new Address({
+            zipCode: '44444-44',
+            state: 'BA',
+            street: 'Rua de Address teste',
+            city: 'cidade',
+            district: 'District de Address teste',
+            homeNumber: 10,
+            complement: 'Complement de Address teste',
+          }),
         },
         person: {
           rg: '',
           birthdate: new Date('2000-01-01'),
           name: '',
           cpf: new Cpf('123.456.798-00'),
-          phone: new Phone('+55', '71', '1234567890'),
+          phone: new Phone({ddi:'+1', ddd:'123', number: '4567890'}),
           address: {
             zipCode: '44444-44',
             state: 'BA',
             street: 'Rua de Address teste',
+            city: 'cidade',
             district: 'District de Address teste',
             homeNumber: 10,
             complement: 'Complement de Address teste',

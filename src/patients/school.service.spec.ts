@@ -5,6 +5,7 @@ import { School } from './entities/school.entity';
 import { data_providers } from '../constants';
 import { Id } from '../entity-base/vo/id.vo';
 import { UpdateSchoolDto } from './dto/school/update-school.dto';
+import { AddressesService } from '../addresses/Addresses.service';
 
 describe('SchoolService', () => {
   let service: SchoolService;
@@ -13,6 +14,11 @@ describe('SchoolService', () => {
     where: jest.fn().mockReturnThis(),
     select: jest.fn().mockReturnThis(),
     getOneOrFail: jest.fn(),
+  };
+
+  const mockAddressesService = {
+    findOneBy: jest.fn(),
+    create: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -31,6 +37,10 @@ describe('SchoolService', () => {
         {
           provide: data_providers.SCHOOL_REPOSITORY,
           useValue: mockRepository,
+        },
+        {
+          provide: AddressesService,
+          useValue: mockAddressesService,
         },
       ],
     }).compile();
