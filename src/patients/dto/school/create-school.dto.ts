@@ -3,9 +3,9 @@ import { ISchool } from '../../interfaces/school.interface';
 import { ApiProperty } from '@nestjs/swagger';
 import { CNPJ } from '../../../constants';
 import { Transform, Type } from 'class-transformer';
-import { Address } from 'src/addresses/entities/address.entity';
-import { Phone } from 'src/persons/vo/phone.vo';
-import { CreateAddressDto } from 'src/addresses/dto/createAddress.dto';
+import { Address } from '../../../addresses/entities/address.entity';
+import { Phone } from '../../../persons/vo/phone.vo';
+import { CreateAddressDto } from '../../../addresses/dto/createAddress.dto';
 
 export class CreateSchoolDto implements ISchool {
   @ApiProperty({

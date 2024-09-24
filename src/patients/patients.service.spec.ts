@@ -31,6 +31,15 @@ describe('PatientsService', () => {
   };
 
   const mockRepository = {
+    manager: {
+      connection: {
+        createQueryRunner: jest.fn().mockReturnValue({
+          startTransaction: jest.fn(),
+          commitTransaction: jest.fn(),
+          rollbackTransaction: jest.fn(),
+        }),
+      },
+    },
     create: jest.fn(),
     save: jest.fn(),
     find: jest.fn(),
@@ -125,6 +134,7 @@ describe('PatientsService', () => {
           zipCode: '',
           street: '',
           district: '',
+          city: '',
           state: '',
           homeNumber: 0,
           complement: '',
@@ -133,13 +143,14 @@ describe('PatientsService', () => {
       school: {
         name: '',
         CNPJ: '',
+        address: undefined,
+        phone: undefined,
       },
       comorbidities: [],
       medicines: [],
       parents: [],
     };
     const mockPatient = new Patient({});
-
     mockRepository.create.mockReturnValue(mockPatient);
     mockPersonsService.create.mockResolvedValue({});
     mockSchoolService.findOneBy.mockResolvedValue({});
@@ -151,7 +162,9 @@ describe('PatientsService', () => {
 
     expect(result).toEqual(mockPatient);
     expect(mockRepository.create).toHaveBeenCalledWith(expect.any(Patient));
-    expect(mockRepository.save).toHaveBeenCalledWith(mockPatient);
+    expect(mockRepository.save).toHaveBeenCalledWith(mockPatient, {
+      transaction: false,
+    });
   });
 
   it('should retrieve all patient', async () => {

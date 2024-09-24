@@ -35,10 +35,9 @@ export class PersonsService {
   ) {
     let uploadedFileId: string | null = null;
     let addressID: string = undefined;
-    try {
-      const phone = new Phone(createPersonDto.phone);
-      const cpf = new Cpf(createPersonDto.cpf.cpf);
-      const person = new Person({
+    const phone = new Phone(createPersonDto.phone);
+    const cpf = new Cpf(createPersonDto.cpf.cpf);
+    const person = new Person({
         birthdate: createPersonDto.birthdate,
         phone: phone,
         profilePicture: createPersonDto.profilePicture || '',
@@ -65,11 +64,12 @@ export class PersonsService {
           person.profilePicture = fileSaved.url;
         }
       }
-
+      
       await this.personRepository.save(person, {
         transaction: !hasTransaction,
       });
       return person;
+      try {
     } catch (err) {
       if (uploadedFileId) {
         await this.cloudinaryService.deleteFile(uploadedFileId); // Remova a imagem do Cloudinary

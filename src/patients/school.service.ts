@@ -13,8 +13,8 @@ import { School } from './entities/school.entity';
 import { Id } from '../entity-base/vo/id.vo';
 import { CNPJ } from './vo/CNPJ.vo';
 import { FindSchoolDto } from './dto/school/find-school.dto';
-import { Phone } from 'src/persons/vo/phone.vo';
-import { AddressesService } from 'src/addresses/Addresses.service';
+import { Phone } from '../persons/vo/phone.vo';
+import { AddressesService } from '../addresses/Addresses.service';
 
 @Injectable()
 export class SchoolService {

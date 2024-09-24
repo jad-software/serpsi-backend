@@ -66,27 +66,33 @@ describe('PersonsService', () => {
       const createPersonDto: CreatePersonDto = {
         name: 'John Doe',
         birthdate: new Date(),
-        phone: new Phone('+1', '123', '4567890'),
+        phone: new Phone({ ddi: '+1', ddd: '123', number: '4567890' }),
         cpf: new Cpf('123.456.789-00'),
         rg: '12.345.678-9',
         profilePicture: 'teste.png',
-        address: new Address({
+        address: {
           street: 'Test Street',
           zipCode: '12345',
           state: 'Test State',
+          city: 'cidade',
           district: 'Test District',
           homeNumber: 123,
-        }),
+          complement: 'nenhum'
+        },
       };
 
       const person = new Person(createPersonDto);
       const address = new Address(createPersonDto.address);
+      address.id = new Id('1');
+      person.address = address;
       jest.spyOn(personRepository, 'save').mockResolvedValue(person);
       jest.spyOn(addressService, 'create').mockResolvedValue(address);
 
       const result = await service.create(createPersonDto);
 
-      expect(personRepository.save).toHaveBeenCalledWith(person);
+      expect(personRepository.save).toHaveBeenCalledWith(person, {
+        transaction: true,
+      });
       expect(result).toEqual(person);
     });
 
@@ -94,7 +100,7 @@ describe('PersonsService', () => {
       const createPersonDto: CreatePersonDto = {
         name: 'John Doe',
         birthdate: new Date(),
-        phone: new Phone('+1', '123', '4567890'),
+        phone: new Phone({ ddi: '+1', ddd: '123', number: '4567890' }),
         cpf: new Cpf('123.456.789-00'),
         rg: '12.345.678-9',
         address: new Address({
@@ -200,7 +206,7 @@ describe('PersonsService', () => {
       let person = {
         name: 'John Doe',
         birthdate: new Date(),
-        phone: new Phone('+1', '123', '4567890'),
+        phone: new Phone({ ddi: '+1', ddd: '123', number: '4567890' }),
         cpf: new Cpf('123.456.789-00'),
         rg: '12.345.678-9',
         address: new Address({
@@ -231,7 +237,7 @@ describe('PersonsService', () => {
       const updatePersonDto: CreatePersonDto = {
         name: 'John Doe Updated',
         birthdate: new Date(),
-        phone: new Phone('+1', '123', '4567890'),
+        phone: new Phone({ ddi: '+1', ddd: '123', number: '4567890' }),
         cpf: new Cpf('123.456.789-00'),
         rg: '12.345.678-9',
         profilePicture: 'updated.png',
