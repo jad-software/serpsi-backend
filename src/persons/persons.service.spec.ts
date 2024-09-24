@@ -103,13 +103,15 @@ describe('PersonsService', () => {
         phone: new Phone({ ddi: '+1', ddd: '123', number: '4567890' }),
         cpf: new Cpf('123.456.789-00'),
         rg: '12.345.678-9',
-        address: new Address({
+        address: {
           street: 'Test Street',
           zipCode: '12345',
           state: 'Test State',
+          city: 'cidade',
           district: 'Test District',
           homeNumber: 123,
-        }),
+          complement: 'nenhum'
+        },
         user: 'user-id',
       };
 
