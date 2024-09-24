@@ -32,11 +32,30 @@ import {
 } from '@nestjs/platform-express';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
+import { extname } from 'path';
+
 @ApiTags('patients')
 @ApiBearerAuth()
 @Controller('patients')
 export class PatientsController {
-  constructor(private readonly patientsService: PatientsService) {}
+  constructor(private readonly patientsService: PatientsService) { }
+
+  private validateUploadedFile(
+    document: Express.Multer.File,
+    allowedFileTypes: string[]
+  ) {
+    if (!document) {
+      throw new BadRequestException('Document is required');
+    }
+    const fileExtension = extname(document.originalname);
+    const validExtensions = allowedFileTypes.map(ext => `.${ext}`);
+
+    if (!validExtensions.includes(fileExtension)) {
+      const allowedExts = validExtensions.join(', ');
+      throw new BadRequestException(`Only the following file types are allowed: ${allowedExts}`);
+    }
+  }
+
 
   @ApiOperation({ summary: 'Criação de um novo paciente' })
   @ApiConsumes('multipart/form-data')
@@ -57,8 +76,11 @@ export class PatientsController {
       );
     }
     const documents = files.filter((file) => file.fieldname === 'documents');
-    const profilePicture =  files.filter((file) => file.fieldname === 'profilePicture')[0];
-
+    documents.map((doc) => {
+      this.validateUploadedFile(doc,[ 'pdf']);
+    });
+    const profilePicture = files.filter((file) => file.fieldname === 'profilePicture')[0];
+    this.validateUploadedFile(profilePicture, ['jpg', 'png'])
     return await this.patientsService.create(createPatientDto, profilePicture, documents);
   }
 

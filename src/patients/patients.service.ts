@@ -71,9 +71,9 @@ export class PatientsService {
       let savedPatient = await this.patientRepository.save(patient, {
         transaction: false,
       });
-      
+
       if (previusFollowUps) {
-        this.documentService.createFollowUps(savedPatient.id.id, previusFollowUps);
+        await this.documentService.createFollowUps(savedPatient.id.id, previusFollowUps);
       }
 
       let medicines = await this.setMedicines(
