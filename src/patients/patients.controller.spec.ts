@@ -72,7 +72,7 @@ describe('PatientsController', () => {
         },
         comorbidities: [],
         medicines: [],
-        parents: []
+        parents: [],
       };
       expect(await controller.create(dto)).toEqual({ id: '1', ...dto });
       expect(service.create).toHaveBeenCalledWith(dto);

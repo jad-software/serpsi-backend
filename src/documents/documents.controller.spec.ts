@@ -74,29 +74,25 @@ describe('Documents Controller', () => {
           patient,
         },
       ];
-      createDocumentDto.map(previusFollowUps => {
+      createDocumentDto.map((previusFollowUps) => {
         documents.push(new Document(previusFollowUps));
-      }) 
+      });
 
       jest.spyOn(service, 'createFollowUps').mockResolvedValue(documents);
 
       let files = [
         {
-        originalname: 'Title Controller teste.pdf',
-      },
-      {
-        originalname: 'Title Controller teste2.pdf'
-      }
-    ] as Express.Multer.File[];
+          originalname: 'Title Controller teste.pdf',
+        },
+        {
+          originalname: 'Title Controller teste2.pdf',
+        },
+      ] as Express.Multer.File[];
 
-      const result = await controller.createFollowups({patient}, files);
+      const result = await controller.createFollowups({ patient }, files);
 
       expect(result).toEqual(documents);
-      expect(service.createFollowUps).toHaveBeenCalledWith(
-        
-        patient,
-        files
-      );
+      expect(service.createFollowUps).toHaveBeenCalledWith(patient, files);
     });
   });
   describe('findOne', () => {

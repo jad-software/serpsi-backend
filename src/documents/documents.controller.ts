@@ -22,13 +22,19 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiBearerAuth()
 @ApiTags('documents')
 @Controller('documents')
 export class DocumentsController {
-  constructor(private readonly documentsService: DocumentsService) { }
+  constructor(private readonly documentsService: DocumentsService) {}
 
   private async validateDocumentData(createDocumentDto: CreateDocumentDto) {
     const errors = await validate(createDocumentDto);
@@ -39,12 +45,17 @@ export class DocumentsController {
     }
   }
 
-  private validateUploadedFile(document: Express.Multer.File, typeOfExtention: string) {
+  private validateUploadedFile(
+    document: Express.Multer.File,
+    typeOfExtention: string
+  ) {
     if (!document) {
       throw new BadRequestException('Document is required');
     }
     if (extname(document.originalname) !== `.${typeOfExtention}`) {
-      throw new BadRequestException(`Only .${typeOfExtention} files are allowed!`);
+      throw new BadRequestException(
+        `Only .${typeOfExtention} files are allowed!`
+      );
     }
   }
 
@@ -112,13 +123,11 @@ export class DocumentsController {
     documents: Express.Multer.File[]
   ) {
     if (patient === undefined) {
-      throw new BadRequestException(
-        `Patient is required`
-      );
+      throw new BadRequestException(`Patient is required`);
     }
-    documents.map(doc => {
+    documents.map((doc) => {
       this.validateUploadedFile(doc, 'pdf');
-    })
+    });
     return await this.documentsService.createFollowUps(patient, documents);
   }
 

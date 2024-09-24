@@ -11,7 +11,7 @@ export class CreateAddressDto implements IAddress {
   @IsNotEmpty()
   @IsString()
   zipCode: string;
-  
+
   @ApiProperty({
     type: String,
     description: 'Rua do endereço da pessoa',
@@ -20,7 +20,7 @@ export class CreateAddressDto implements IAddress {
   @IsNotEmpty()
   @IsString()
   street: string;
-  
+
   @ApiProperty({
     type: String,
     description: 'Bairro do endereço da pessoa',
@@ -29,7 +29,7 @@ export class CreateAddressDto implements IAddress {
   @IsNotEmpty()
   @IsString()
   district: string;
-  
+
   @ApiProperty({
     type: String,
     description: 'Cidade do endereço da pessoa',
@@ -38,7 +38,7 @@ export class CreateAddressDto implements IAddress {
   @IsNotEmpty()
   @IsString()
   city: string;
-  
+
   @ApiProperty({
     type: String,
     description: 'Estado do endereço da pessoa',

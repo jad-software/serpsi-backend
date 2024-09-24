@@ -77,7 +77,7 @@ export class PatientsService {
       return savedPatient;
     } catch (err) {
       await queryRunner.rollbackTransaction();
-      throw new InternalServerErrorException(err);
+      throw new InternalServerErrorException(err?.message);
     }
   }
 
@@ -154,7 +154,12 @@ export class PatientsService {
     return await this.patientRepository
       .createQueryBuilder('patient')
       .leftJoinAndSelect('patient._person', 'person')
-      .select(['patient.id', 'person.name', 'patient.payment_plan', 'person.cpf'])
+      .select([
+        'patient.id',
+        'person.name',
+        'patient.payment_plan',
+        'person.cpf',
+      ])
       .getRawMany();
   }
 
@@ -251,7 +256,7 @@ export class PatientsService {
     await this.personsService.delete(patient.person.id.id);
     await this.patientRepository.delete(patient.id.id);
     if (documents) {
-      for(const document of documents) {
+      for (const document of documents) {
         const publicID = document.docLink.split('/').slice(-1)[0];
 
         await this.cloudinaryService.deleteFileOtherThanImage(publicID);

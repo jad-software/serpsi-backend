@@ -7,22 +7,59 @@ import {
   Delete,
   Put,
   Query,
+  UseInterceptors,
+  UploadedFiles,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
 import { PatientsService } from './patients.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { UpdateSchoolDto } from './dto/school/update-school.dto';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateComorbidityDto } from './dto/comorbities/create-comorbidity.dto';
 import { CreateMedicamentInfoDto } from './dto/medicine/create-medicament-info.dto';
+import {
+  AnyFilesInterceptor,
+  FileInterceptor,
+  FilesInterceptor,
+} from '@nestjs/platform-express';
+import { plainToClass } from 'class-transformer';
+import { validate } from 'class-validator';
 @ApiTags('patients')
 @ApiBearerAuth()
 @Controller('patients')
 export class PatientsController {
   constructor(private readonly patientsService: PatientsService) {}
+
   @ApiOperation({ summary: 'Criação de um novo paciente' })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(AnyFilesInterceptor())
   @Post()
-  async create(@Body() createPatientDto: CreatePatientDto) {
+  async create(
+    @UploadedFiles() files: Array<Express.Multer.File>, // All files combined 
+    @Body('patientData') patientData: string,
+    // @Body() createPatientDto?: CreatePatientDto
+  ) {
+    const parsedData = JSON.parse(patientData);
+    const createPatientDto = plainToClass(CreatePatientDto, parsedData);
+    console.log(createPatientDto);
+    const errors = await validate(createPatientDto);
+    if (errors.length > 0) {
+      throw new BadRequestException(
+        `Validation Error in Field: ${errors[0].property}`
+      );
+    }
+    const documents = files.filter((file) => file.fieldname === 'documents');
+    const profilePicture =  files.filter((file) => file.fieldname === 'profilePicture');
+    console.log('documents', documents);
+    console.log('profilePicture', profilePicture);
     return await this.patientsService.create(createPatientDto);
   }
 

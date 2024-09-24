@@ -21,7 +21,7 @@ export class DocumentsService {
     private cloudinaryService: CloudinaryService,
     @Inject(forwardRef(() => PatientsService))
     private patientService: PatientsService
-  ) { }
+  ) {}
   async create(
     documentName: string,
     personId: string,
@@ -44,9 +44,12 @@ export class DocumentsService {
     }
   }
 
-  async createFollowUps(patientId: string, followUps: Express.Multer.File[]): Promise<Document[]> {
-    const queryRunner = this.documentRepository
-          .manager.connection.createQueryRunner();
+  async createFollowUps(
+    patientId: string,
+    followUps: Express.Multer.File[]
+  ): Promise<Document[]> {
+    const queryRunner =
+      this.documentRepository.manager.connection.createQueryRunner();
     await queryRunner.connect();
     let publicsIds: string[] = [];
     try {
@@ -54,11 +57,15 @@ export class DocumentsService {
       let returnedFollowUps: Document[] = [];
       const patient = await this.patientService.findOne(patientId);
       for (const documentFile of followUps) {
+        documentFile.originalname = Buffer.from(
+          documentFile.originalname,
+          'latin1'
+        ).toString('utf8');
 
-        documentFile.originalname = Buffer
-          .from(documentFile.originalname, 'latin1').toString('utf8');
-
-        const fileSaved = await this.cloudinaryService.uploadFile(documentFile, true);
+        const fileSaved = await this.cloudinaryService.uploadFile(
+          documentFile,
+          true
+        );
         if (fileSaved) {
           const document = new Document({
             title: documentFile.originalname,
@@ -66,22 +73,20 @@ export class DocumentsService {
           });
           document.patient = patient;
           publicsIds.push(document.docLink.split('/').slice(-1)[0]);
-          
+
           returnedFollowUps.push(await queryRunner.manager.save(document));
         }
       }
       await queryRunner.commitTransaction();
       return returnedFollowUps;
-    }
-    catch (err) {
+    } catch (err) {
       await queryRunner.rollbackTransaction();
-      publicsIds.forEach(async publicID => {
+      publicsIds.forEach(async (publicID) => {
         await this.cloudinaryService.deleteFileOtherThanImage(publicID);
       });
-      
+
       throw new BadRequestException(err?.message);
-    }
-    finally{
+    } finally {
       await queryRunner.release();
     }
   }
