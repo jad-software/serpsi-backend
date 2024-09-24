@@ -40,7 +40,7 @@ export class PatientsService {
     private documentService: DocumentsService,
     @Inject()
     private cloudinaryService: CloudinaryService
-  ) { }
+  ) {}
 
   async create(
     createPatientDto: CreatePatientDto,
@@ -73,7 +73,10 @@ export class PatientsService {
       });
 
       if (previusFollowUps) {
-        await this.documentService.createFollowUps(savedPatient.id.id, previusFollowUps);
+        await this.documentService.createFollowUps(
+          savedPatient.id.id,
+          previusFollowUps
+        );
       }
 
       let medicines = await this.setMedicines(
@@ -89,8 +92,15 @@ export class PatientsService {
     }
   }
 
-  private async setPerson(createPersondto: CreatePersonDto, profilePicture?: Express.Multer.File) {
-    let person = await this.personsService.create(createPersondto, true, profilePicture);
+  private async setPerson(
+    createPersondto: CreatePersonDto,
+    profilePicture?: Express.Multer.File
+  ) {
+    let person = await this.personsService.create(
+      createPersondto,
+      true,
+      profilePicture
+    );
     return person;
   }
 
