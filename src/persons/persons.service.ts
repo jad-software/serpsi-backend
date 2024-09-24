@@ -27,7 +27,7 @@ export class PersonsService {
     private userService: UsersService,
     @Inject()
     private cloudinaryService: CloudinaryService
-  ) {}
+  ) { }
   async create(
     createPersonDto: CreatePersonDto,
     hasTransaction: boolean = false,
@@ -36,11 +36,7 @@ export class PersonsService {
     let uploadedFileId: string | null = null;
     let addressID: string = undefined;
     try {
-      const phone = new Phone(
-        createPersonDto.phone.ddi,
-        createPersonDto.phone.ddd,
-        createPersonDto.phone.number
-      );
+      const phone = new Phone(createPersonDto.phone);
       const cpf = new Cpf(createPersonDto.cpf.cpf);
       const person = new Person({
         birthdate: createPersonDto.birthdate,
@@ -126,9 +122,7 @@ export class PersonsService {
 
       if (updatePersonDto.phone) {
         person.phone = new Phone(
-          updatePersonDto.phone.ddi || foundPerson.phone.ddi,
-          updatePersonDto.phone.ddd || foundPerson.phone.ddd,
-          updatePersonDto.phone.number || foundPerson.phone.number
+          updatePersonDto.phone || foundPerson.phone
         );
       }
       if (updatePersonDto.cpf) {

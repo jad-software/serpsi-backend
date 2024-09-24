@@ -12,12 +12,16 @@ import { Repository } from 'typeorm';
 import { School } from './entities/school.entity';
 import { Id } from '../entity-base/vo/id.vo';
 import { CNPJ } from './vo/CNPJ.vo';
+import { FindSchoolDto } from './dto/school/find-school.dto';
+import { Phone } from 'src/persons/vo/phone.vo';
+import { AddressesService } from 'src/addresses/Addresses.service';
 
 @Injectable()
 export class SchoolService {
   constructor(
     @Inject(data_providers.SCHOOL_REPOSITORY)
-    private readonly schoolRepository: Repository<School>
+    private readonly schoolRepository: Repository<School>,
+    private readonly addressService: AddressesService
   ) {}
 
   async create(
@@ -27,6 +31,8 @@ export class SchoolService {
     try {
       const school = new School(createSchoolDto);
       school.CNPJ = new CNPJ(createSchoolDto.CNPJ);
+      school.phone = new Phone(createSchoolDto.phone)
+      school.address = await this.addressService.create(createSchoolDto.address, true);
       return await this.schoolRepository.save(school, {
         transaction: !hasTransaction,
       });
@@ -51,7 +57,7 @@ export class SchoolService {
     }
   }
 
-  async findOneBy(search: UpdateSchoolDto) {
+  async findOneBy(search: FindSchoolDto) {
     let requestedSchool = new School({ ...search });
     try {
       if (search.name)
@@ -59,6 +65,7 @@ export class SchoolService {
 
       return await this.schoolRepository
         .createQueryBuilder('school')
+        .leftJoinAndSelect('school._address', 'address')
         .where('LOWER(school.name) LIKE LOWER(:name)', {
           name: `%${requestedSchool.name}%`,
         })
