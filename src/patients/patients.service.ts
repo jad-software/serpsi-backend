@@ -42,7 +42,11 @@ export class PatientsService {
     private cloudinaryService: CloudinaryService
   ) {}
 
-  async create(createPatientDto: CreatePatientDto) {
+  async create(
+    createPatientDto: CreatePatientDto,
+    profilePicture: Express.Multer.File,
+    previusFollowUps?: Express.Multer.File[]
+  ) {
     const queryRunner =
       this.patientRepository.manager.connection.createQueryRunner();
     await queryRunner.startTransaction();
@@ -53,7 +57,7 @@ export class PatientsService {
       );
 
       let [person, school, comorbidities, parents] = await Promise.all([
-        this.setPerson(createPatientDto.person),
+        this.setPerson(createPatientDto.person, profilePicture),
         this.setSchool(createPatientDto.school),
         this.setComorbities(createPatientDto.comorbidities),
         this.setParents(createPatientDto.parents),
@@ -68,6 +72,13 @@ export class PatientsService {
         transaction: false,
       });
 
+      if (previusFollowUps) {
+        await this.documentService.createFollowUps(
+          savedPatient.id.id,
+          previusFollowUps
+        );
+      }
+
       let medicines = await this.setMedicines(
         createPatientDto.medicines,
         savedPatient
@@ -77,12 +88,19 @@ export class PatientsService {
       return savedPatient;
     } catch (err) {
       await queryRunner.rollbackTransaction();
-      throw new InternalServerErrorException(err);
+      throw new InternalServerErrorException(err?.message);
     }
   }
 
-  private async setPerson(createPersondto: CreatePersonDto) {
-    let person = await this.personsService.create(createPersondto, true);
+  private async setPerson(
+    createPersondto: CreatePersonDto,
+    profilePicture?: Express.Multer.File
+  ) {
+    let person = await this.personsService.create(
+      createPersondto,
+      true,
+      profilePicture
+    );
     return person;
   }
 
@@ -154,7 +172,12 @@ export class PatientsService {
     return await this.patientRepository
       .createQueryBuilder('patient')
       .leftJoinAndSelect('patient._person', 'person')
-      .select(['patient.id', 'person.name', 'patient.payment_plan', 'person.cpf'])
+      .select([
+        'patient.id',
+        'person.name',
+        'patient.payment_plan',
+        'person.cpf',
+      ])
       .getRawMany();
   }
 
@@ -251,7 +274,7 @@ export class PatientsService {
     await this.personsService.delete(patient.person.id.id);
     await this.patientRepository.delete(patient.id.id);
     if (documents) {
-      for(const document of documents) {
+      for (const document of documents) {
         const publicID = document.docLink.split('/').slice(-1)[0];
 
         await this.cloudinaryService.deleteFileOtherThanImage(publicID);

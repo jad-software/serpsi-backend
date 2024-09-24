@@ -55,5 +55,4 @@ export class CreateSchoolDto implements ISchool {
   })
   @IsNotEmpty()
   phone: Phone;
-  
 }

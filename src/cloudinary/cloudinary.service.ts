@@ -6,7 +6,10 @@ const streamifier = require('streamifier');
 
 @Injectable()
 export class CloudinaryService {
-  uploadFile(file: Express.Multer.File, isPdf = false): Promise<CloudinaryResponse> {
+  uploadFile(
+    file: Express.Multer.File,
+    isPdf = false
+  ): Promise<CloudinaryResponse> {
     return new Promise<CloudinaryResponse>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
@@ -60,4 +63,3 @@ export class CloudinaryService {
     return publicId;
   }
 }
-

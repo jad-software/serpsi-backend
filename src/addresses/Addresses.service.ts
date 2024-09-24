@@ -17,7 +17,10 @@ export class AddressesService {
     private addressRepository: Repository<Address>
   ) {}
 
-  async create(createAddressDto: CreateAddressDto, hasTransaction: boolean = false): Promise<Address> {
+  async create(
+    createAddressDto: CreateAddressDto,
+    hasTransaction: boolean = false
+  ): Promise<Address> {
     try {
       const address = new Address({
         state: createAddressDto.state,
