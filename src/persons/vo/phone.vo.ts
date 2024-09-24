@@ -1,10 +1,8 @@
 import { Column } from 'typeorm';
 
 export class Phone {
-  constructor(ddi: string, ddd: string, number: string) {
-    this._ddi = ddi;
-    this._ddd = ddd;
-    this._number = number;
+  constructor(partial: Partial<Phone>) {
+    Object.assign(this, partial);
   }
   @Column({ default: () => '+55', name: 'ddi' })
   private _ddi: string;
