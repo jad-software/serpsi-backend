@@ -42,7 +42,7 @@ export class PatientsService {
     private cloudinaryService: CloudinaryService
   ) {}
 
-  async create(createPatientDto: CreatePatientDto) {
+  async create(createPatientDto: CreatePatientDto, profilePicture: Express.Multer.File) {
     const queryRunner =
       this.patientRepository.manager.connection.createQueryRunner();
     await queryRunner.startTransaction();
@@ -53,7 +53,7 @@ export class PatientsService {
       );
 
       let [person, school, comorbidities, parents] = await Promise.all([
-        this.setPerson(createPatientDto.person),
+        this.setPerson(createPatientDto.person, profilePicture),
         this.setSchool(createPatientDto.school),
         this.setComorbities(createPatientDto.comorbidities),
         this.setParents(createPatientDto.parents),
@@ -81,8 +81,8 @@ export class PatientsService {
     }
   }
 
-  private async setPerson(createPersondto: CreatePersonDto) {
-    let person = await this.personsService.create(createPersondto, true);
+  private async setPerson(createPersondto: CreatePersonDto, profilePicture?: Express.Multer.File) {
+    let person = await this.personsService.create(createPersondto, true, profilePicture);
     return person;
   }
 

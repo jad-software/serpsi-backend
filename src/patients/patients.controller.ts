@@ -49,7 +49,7 @@ export class PatientsController {
   ) {
     const parsedData = JSON.parse(patientData);
     const createPatientDto = plainToClass(CreatePatientDto, parsedData);
-    console.log(createPatientDto);
+
     const errors = await validate(createPatientDto);
     if (errors.length > 0) {
       throw new BadRequestException(
@@ -57,10 +57,9 @@ export class PatientsController {
       );
     }
     const documents = files.filter((file) => file.fieldname === 'documents');
-    const profilePicture =  files.filter((file) => file.fieldname === 'profilePicture');
-    console.log('documents', documents);
-    console.log('profilePicture', profilePicture);
-    return await this.patientsService.create(createPatientDto);
+    const profilePicture =  files.filter((file) => file.fieldname === 'profilePicture')[0];
+
+    return await this.patientsService.create(createPatientDto, profilePicture);
   }
 
   @ApiOperation({ summary: 'lista todos os pacientes' })
