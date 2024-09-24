@@ -158,7 +158,11 @@ describe('PatientsService', () => {
     mockMedicamentInfoService.create.mockResolvedValue({});
     mockRepository.save.mockResolvedValue(mockPatient);
 
-    const result = await service.create(createPatientDto);
+    let profilePicture = {
+      originalname: 'teste.png',
+    } as Express.Multer.File;
+
+    const result = await service.create(createPatientDto, profilePicture);
 
     expect(result).toEqual(mockPatient);
     expect(mockRepository.create).toHaveBeenCalledWith(expect.any(Patient));

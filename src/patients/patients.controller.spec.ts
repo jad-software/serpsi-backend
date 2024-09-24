@@ -50,28 +50,33 @@ describe('PatientsController', () => {
 
   describe('create', () => {
     it('should create a Patient', async () => {
+      const cpf = {
+        cpf: '123.456.789-00'
+      } as Cpf;
+
+      const schoolAddress = {
+        zipCode: '44444-44',
+        state: 'BA',
+        street: 'Rua de Address teste',
+        city: 'cidade',
+        district: 'District de Address teste',
+        homeNumber: 10,
+        complement: 'Complement de Address teste',
+      } as Address;
       const dto: CreatePatientDto = {
         paymentPlan: PaymentPlan.BIMESTRAL,
         school: {
           name: 'ativa idade',
-          CNPJ: '00.000.0000/0001-00',
-          phone: new Phone({ddi:'+1', ddd:'123', number: '4567890'}),
-          address: new Address({
-            zipCode: '44444-44',
-            state: 'BA',
-            street: 'Rua de Address teste',
-            city: 'cidade',
-            district: 'District de Address teste',
-            homeNumber: 10,
-            complement: 'Complement de Address teste',
-          }),
+          CNPJ: '00.000.000/0001-00',
+          phone: new Phone({ ddi: '+1', ddd: '123', number: '4567890' }),
+          address: schoolAddress,
         },
         person: {
-          rg: '',
+          rg: '98.747.153-7',
           birthdate: new Date('2000-01-01'),
-          name: '',
-          cpf: new Cpf('123.456.798-00'),
-          phone: new Phone({ddi:'+1', ddd:'123', number: '4567890'}),
+          name: 'name de teste',
+          cpf,
+          phone: new Phone({ ddi: '+1', ddd: '123', number: '4567890' }),
           address: {
             zipCode: '44444-44',
             state: 'BA',
@@ -86,8 +91,31 @@ describe('PatientsController', () => {
         medicines: [],
         parents: [],
       };
-      expect(await controller.create(dto)).toEqual({ id: '1', ...dto });
-      expect(service.create).toHaveBeenCalledWith(dto);
+
+      let previusFollowUps = [
+        {
+          originalname: 'Title Controller teste.pdf',
+          fieldname: 'documents',
+        },
+        {
+          originalname: 'Title Controller teste2.pdf',
+          fieldname: 'documents',
+        },
+        {
+          originalname: 'teste.png',
+          fieldname: 'profilePicture', 
+        },
+      ] as Express.Multer.File[];
+
+      const profilePicture = previusFollowUps.find(
+        (file) => file.fieldname === 'profilePicture',
+      );
+      const documents = previusFollowUps.filter(
+        (file) => file.fieldname === 'documents',
+      );
+
+      expect(await controller.create(previusFollowUps, JSON.stringify(dto))).toEqual({ id: '1', ...dto });
+      expect(service.create).toHaveBeenCalledWith(dto, profilePicture, documents);
     });
   });
 
