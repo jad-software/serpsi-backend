@@ -59,7 +59,7 @@ export class PatientsController {
     const documents = files.filter((file) => file.fieldname === 'documents');
     const profilePicture =  files.filter((file) => file.fieldname === 'profilePicture')[0];
 
-    return await this.patientsService.create(createPatientDto, profilePicture);
+    return await this.patientsService.create(createPatientDto, profilePicture, documents);
   }
 
   @ApiOperation({ summary: 'lista todos os pacientes' })
