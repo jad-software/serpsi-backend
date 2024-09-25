@@ -24,14 +24,14 @@ import { RolesGuard } from './guards/roles.guards';
     AuthService,
     LocalStrategy,
     JwtStrategy,
-    // {  //Descomentar quando for usar todas as rotas protegidas
-    //   provide: APP_GUARD,
-    //   useClass: JwtAuthGuard,
-    // },
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: RolesGuard,
-    // },
+    {  //Descomentar quando for usar todas as rotas protegidas
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
   ],
   controllers: [AuthController],
 })
