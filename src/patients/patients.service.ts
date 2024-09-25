@@ -55,6 +55,9 @@ export class PatientsService {
       const patient = this.patientRepository.create(
         new Patient({ ...createPatientDto, medicines: [], parents: [] })
       );
+      if(createPatientDto.parents.map((parent) => parent.cpf.cpf).includes(createPatientDto.person.cpf.cpf)){
+        throw  new InternalServerErrorException('cpf repetido entre pais e filhos');
+      }
 
       let [person, school, comorbidities, parents] = await Promise.all([
         this.setPerson(createPatientDto.person, profilePicture),
@@ -88,6 +91,7 @@ export class PatientsService {
       return savedPatient;
     } catch (err) {
       await queryRunner.rollbackTransaction();
+      
       throw new InternalServerErrorException(err?.message);
     }
   }
