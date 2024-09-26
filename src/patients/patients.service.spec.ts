@@ -13,6 +13,7 @@ import { Person } from '../persons/entities/person.enitiy';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { DocumentsService } from '../documents/documents.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
+import { Cpf } from 'src/persons/vo/cpf.vo';
 
 describe('PatientsService', () => {
   let service: PatientsService;
@@ -122,6 +123,9 @@ describe('PatientsService', () => {
   });
 
   it('should create and save a new patient', async () => {
+    const cpf = {
+      cpf: '',
+    } as Cpf;
     const createPatientDto: CreatePatientDto = {
       paymentPlan: PaymentPlan.MENSAL,
       person: {
@@ -129,7 +133,7 @@ describe('PatientsService', () => {
         birthdate: undefined,
         name: '',
         phone: undefined,
-        cpf: undefined,
+        cpf,
         address: {
           zipCode: '',
           street: '',
