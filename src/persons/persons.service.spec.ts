@@ -77,7 +77,7 @@ describe('PersonsService', () => {
           city: 'cidade',
           district: 'Test District',
           homeNumber: 123,
-          complement: 'nenhum'
+          complement: 'nenhum',
         },
       };
 
@@ -110,7 +110,7 @@ describe('PersonsService', () => {
           city: 'cidade',
           district: 'Test District',
           homeNumber: 123,
-          complement: 'nenhum'
+          complement: 'nenhum',
         },
         user: 'user-id',
       };

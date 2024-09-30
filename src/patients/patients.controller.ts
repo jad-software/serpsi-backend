@@ -45,7 +45,6 @@ export class PatientsController {
     allowedFileTypes: string[],
     isRequired = true
   ) {
-
     if (!document && isRequired) {
       throw new BadRequestException('Profile Picture is required');
     }
@@ -323,16 +322,16 @@ export class PatientsController {
         },
         document: {
           type: 'string',
-          format: 'binary'
-        }
+          format: 'binary',
+        },
       },
     },
-  })  
+  })
   @UseInterceptors(AnyFilesInterceptor())
   @Post()
   async create(
     @UploadedFiles() files: Array<Express.Multer.File>,
-    @Body('patientData') patientData: string,
+    @Body('patientData') patientData: string
   ) {
     const parsedData = JSON.parse(patientData);
     const createPatientDto = plainToClass(CreatePatientDto, parsedData);

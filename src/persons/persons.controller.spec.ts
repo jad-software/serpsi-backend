@@ -44,7 +44,7 @@ describe('PersonsController', () => {
       const createPersonDto: CreatePersonDto = {
         name: 'John Doe',
         birthdate: new Date(),
-        phone: new Phone({ddi:'+1', ddd:'123', number: '4567890'}),
+        phone: new Phone({ ddi: '+1', ddd: '123', number: '4567890' }),
         cpf: new Cpf('123.456.789-00'),
 
         rg: '12.345.678-9',
@@ -72,7 +72,7 @@ describe('PersonsController', () => {
       const createPersonDto: CreatePersonDto = {
         name: 'John Doe',
         birthdate: new Date(),
-        phone: new Phone({ddi:'+1', ddd:'123', number: '4567890'}),
+        phone: new Phone({ ddi: '+1', ddd: '123', number: '4567890' }),
         cpf: new Cpf('invalid Cpf'), // Campo inválido para teste
         rg: '12.345.678-9',
         address: new Address({
@@ -136,7 +136,7 @@ describe('PersonsController', () => {
     it('should update a person', async () => {
       const personId = 'person-id';
       const updatePersonDto: UpdatePersonDto = {
-        phone: new Phone({ddi:'+1', ddd:'123', number: '4567890'}),
+        phone: new Phone({ ddi: '+1', ddd: '123', number: '4567890' }),
         cpf: new Cpf('123.456.789-01'),
       };
       const updatedPerson = new Person({ ...updatePersonDto });

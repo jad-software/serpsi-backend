@@ -27,7 +27,7 @@ export class PersonsService {
     private userService: UsersService,
     @Inject()
     private cloudinaryService: CloudinaryService
-  ) { }
+  ) {}
   async create(
     createPersonDto: CreatePersonDto,
     hasTransaction: boolean = false,
@@ -121,9 +121,7 @@ export class PersonsService {
       let foundPerson = await this.findOneById(id);
 
       if (updatePersonDto.phone) {
-        person.phone = new Phone(
-          updatePersonDto.phone || foundPerson.phone
-        );
+        person.phone = new Phone(updatePersonDto.phone || foundPerson.phone);
       }
       if (updatePersonDto.cpf) {
         person.cpf = new Cpf(updatePersonDto.cpf.cpf);
