@@ -1,9 +1,8 @@
 import { Column } from 'typeorm';
 
 export class Crp {
-  constructor(crp: string, crpLink: string) {
-    this._crp = crp;
-    this._crpLink = crpLink;
+  constructor(partial: Partial<Crp>) {
+    Object.assign(this, partial);
   }
 
   @Column({
@@ -25,11 +24,11 @@ export class Crp {
     this._crp = crp;
   }
 
-  get crpFileLink(): string {
+  get crpLink(): string {
     return this._crpLink;
   }
 
-  set crpFileLink(crpLink) {
+  set crpLink(crpLink: string) {
     this._crpLink = crpLink;
   }
 }

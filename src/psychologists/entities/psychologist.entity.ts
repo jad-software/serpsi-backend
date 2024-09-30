@@ -1,9 +1,15 @@
 import { Column, Entity } from 'typeorm';
 import { EntityBase } from '../../entity-base/entities/entity-base';
 import { Crp } from '../vo/crp.vo';
+import { CreatePsychologistDto } from '../dto/create-psychologist.dto';
 
 @Entity()
 export class Psychologist extends EntityBase {
+  constructor(partial: Partial<Psychologist>) {
+    super();
+    Object.assign(this, partial);
+  }
+
   @Column(() => Crp, {
     prefix: false,
   })
@@ -27,7 +33,7 @@ export class Psychologist extends EntityBase {
     return this._identifyLink;
   }
 
-  set identifyLink(identifyLink) {
+  set identifyLink(identifyLink: string) {
     this._identifyLink = identifyLink;
   }
 
@@ -35,7 +41,7 @@ export class Psychologist extends EntityBase {
     return this._degreeLink;
   }
 
-  set degreeLink(degreeLink) {
+  set degreeLink(degreeLink: string) {
     this._degreeLink = degreeLink;
   }
 }

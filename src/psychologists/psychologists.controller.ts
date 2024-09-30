@@ -17,6 +17,7 @@ export class PsychologistsController {
 
   @Post()
   create(@Body() createPsychologistDto: CreatePsychologistDto) {
+    console.log(createPsychologistDto);
     return this.psychologistsService.create(createPsychologistDto);
   }
 
