@@ -59,6 +59,7 @@ describe('Addresses Service', () => {
       state: 'BA',
       street: 'Rua de Address teste',
       district: 'District de Address teste',
+      city: 'cidade',
       homeNumber: 10,
       complement: 'Complement de Address teste',
     });
