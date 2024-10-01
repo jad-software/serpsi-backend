@@ -116,8 +116,6 @@ export class PersonsService {
     }
   }
 
-  
-
   async findOneByCPF(cpf: Cpf): Promise<Person> {
     try {
       return await this.personRepository

@@ -1,9 +1,9 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreatePsychologistsUserRelation1727740533718
+export class CreatePsychologistsUserRelation1727748829459
   implements MigrationInterface
 {
-  name = 'CreatePsychologistsUserRelation1727740533718';
+  name = 'CreatePsychologistsUserRelation1727748829459';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`ALTER TABLE "psychologist" ADD "user_id" uuid`);
@@ -17,7 +17,7 @@ export class CreatePsychologistsUserRelation1727740533718
       `ALTER TABLE "person" ALTER COLUMN "ddi" SET DEFAULT +55`
     );
     await queryRunner.query(
-      `ALTER TABLE "psychologist" ADD CONSTRAINT "FK_3d01d3c4088f492ee26c2eef2ff" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`
+      `ALTER TABLE "psychologist" ADD CONSTRAINT "FK_3d01d3c4088f492ee26c2eef2ff" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`
     );
   }
 

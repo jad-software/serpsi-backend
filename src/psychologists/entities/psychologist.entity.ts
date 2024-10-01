@@ -22,9 +22,11 @@ export class Psychologist extends EntityBase {
   @Column({ name: 'degreeLink' })
   private _degreeLink: string;
 
-  @OneToOne(() => User)
+  @OneToOne(() => User, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
-   user: User;
+  user: User;
 
   get crp(): Crp {
     return this._crp;

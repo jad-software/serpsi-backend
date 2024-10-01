@@ -36,12 +36,12 @@ export class PsychologistsController {
   update(
     @Param('id') id: string,
     @Body() updatePsychologistDto: UpdatePsychologistDto
-  ) { 
+  ) {
     return this.psychologistsService.update(id, updatePsychologistDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.psychologistsService.remove(+id);
+    return this.psychologistsService.remove(id);
   }
 }

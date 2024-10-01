@@ -17,13 +17,15 @@ export class PsychologistsService {
     private usersService: UsersService,
     @Inject()
     private personsService: PersonsService
-  ) { }
+  ) {}
 
   async create(createPsychologistDto: CreatePsychologistDto) {
     try {
       const user = await this.usersService.create(createPsychologistDto.user);
       createPsychologistDto.person.user = user.id.id;
-      const person = await this.personsService.create(createPsychologistDto.person);
+      const person = await this.personsService.create(
+        createPsychologistDto.person
+      );
       const crp = new Crp(createPsychologistDto.crp);
       const psychologist = new Psychologist({
         crp,
@@ -44,31 +46,33 @@ export class PsychologistsService {
     try {
       const psychologists = await this.psychologistsRepository
         .createQueryBuilder('psychologist')
-        .leftJoinAndSelect("psychologist.user", "user")
+        .leftJoinAndSelect('psychologist.user', 'user')
         .getMany();
       for (let psy of psychologists) {
-        if(psy.user) {
-          psy.user.person = await this.personsService.findOneByUserId(psy.user.id.id);
+        if (psy.user) {
+          psy.user.person = await this.personsService.findOneByUserId(
+            psy.user.id.id
+          );
         }
       }
       return psychologists;
     } catch (err) {
       throw new BadRequestException(err?.message);
     }
-
   }
 
   async findOne(id: string) {
     try {
       const psychologist = await this.psychologistsRepository
         .createQueryBuilder('psychologist')
-        .leftJoinAndSelect("psychologist.user", "user")
+        .leftJoinAndSelect('psychologist.user', 'user')
         .where('psychologist.id = :id', { id })
         .getOneOrFail();
-      psychologist.user.person = await this.personsService.findOneByUserId(psychologist.user.id.id);
+      psychologist.user.person = await this.personsService.findOneByUserId(
+        psychologist.user.id.id
+      );
       return psychologist;
-    }
-    catch (err) {
+    } catch (err) {
       throw new BadRequestException(err?.message);
     }
   }
@@ -96,25 +100,31 @@ export class PsychologistsService {
         delete updatePsychologistDto.user;
       }
       if (updatePsychologistDto.crp) {
-        foundPsychologist.crp = new Crp(updatePsychologistDto.crp || foundPsychologist.crp);
+        foundPsychologist.crp = new Crp(
+          updatePsychologistDto.crp || foundPsychologist.crp
+        );
         delete updatePsychologistDto.crp;
       }
       Object.assign(foundPsychologist, updatePsychologistDto);
-      await Promise.all(
-        [
-          this.psychologistsRepository.update(id, foundPsychologist),
-          ...updateTasks
-        ]
-      );
+      await Promise.all([
+        this.psychologistsRepository.update(id, foundPsychologist),
+        ...updateTasks,
+      ]);
       foundPsychologist = await this.findOne(id);
       return foundPsychologist;
-    }
-    catch (err) {
+    } catch (err) {
       throw new BadRequestException(err?.message);
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} psychologist`;
+  async remove(id: string) {
+    try {
+      const foundPsychologist = await this.findOne(id);
+      await this.psychologistsRepository.remove(foundPsychologist);
+      await this.personsService.delete(foundPsychologist.user.person.id.id);
+      await this.usersService.remove(foundPsychologist.user.id.id);
+    } catch (err) {
+      throw new BadRequestException(err?.message);
+    }
   }
 }
