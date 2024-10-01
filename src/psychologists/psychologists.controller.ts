@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { PsychologistsService } from './psychologists.service';
 import { CreatePsychologistDto } from './dto/create-psychologist.dto';
@@ -31,12 +32,12 @@ export class PsychologistsController {
     return this.psychologistsService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id') id: string,
     @Body() updatePsychologistDto: UpdatePsychologistDto
-  ) {
-    return this.psychologistsService.update(+id, updatePsychologistDto);
+  ) { 
+    return this.psychologistsService.update(id, updatePsychologistDto);
   }
 
   @Delete(':id')

@@ -59,8 +59,35 @@ export class PsychologistsService {
     }
   }
 
-  update(id: number, updatePsychologistDto: UpdatePsychologistDto) {
-    return `This action updates a #${id} psychologist`;
+  async update(id: string, updatePsychologistDto: UpdatePsychologistDto) {
+    try {
+      let foundPsychologist = await this.findOne(id);
+      if (updatePsychologistDto.person) {
+        await this.personsService.update(
+          foundPsychologist.user.person.id.id,
+          updatePsychologistDto.person
+        );
+        delete updatePsychologistDto.person;
+      }
+      if(updatePsychologistDto.user) { 
+        await this.usersService.update(
+          foundPsychologist.user.id.id,
+          updatePsychologistDto.user
+        );
+        delete updatePsychologistDto.user;
+      }
+      if (updatePsychologistDto.crp) {
+        foundPsychologist.crp = new Crp(updatePsychologistDto.crp || foundPsychologist.crp);
+        delete updatePsychologistDto.crp;
+      }
+      Object.assign(foundPsychologist, updatePsychologistDto);
+      await this.psychologistsRepository.update(id, foundPsychologist);
+      foundPsychologist = await this.findOne(id);
+      return foundPsychologist;
+    }
+    catch (err) {
+      throw new BadRequestException(err?.message);
+    }
   }
 
   remove(id: number) {
