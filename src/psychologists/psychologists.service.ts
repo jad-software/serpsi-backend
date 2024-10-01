@@ -40,8 +40,22 @@ export class PsychologistsService {
     }
   }
 
-  findAll() {
-    return `This action returns all psychologists`;
+  async findAll() {
+    try {
+      const psychologists = await this.psychologistsRepository
+        .createQueryBuilder('psychologist')
+        .leftJoinAndSelect("psychologist.user", "user")
+        .getMany();
+      for (let psy of psychologists) {
+        if(psy.user) {
+          psy.user.person = await this.personsService.findOneByUserId(psy.user.id.id);
+        }
+      }
+      return psychologists;
+    } catch (err) {
+      throw new BadRequestException(err?.message);
+    }
+
   }
 
   async findOne(id: string) {
