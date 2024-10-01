@@ -28,7 +28,7 @@ export class PsychologistsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.psychologistsService.findOne(+id);
+    return this.psychologistsService.findOne(id);
   }
 
   @Patch(':id')

@@ -1,7 +1,8 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { EntityBase } from '../../entity-base/entities/entity-base';
 import { Crp } from '../vo/crp.vo';
 import { CreatePsychologistDto } from '../dto/create-psychologist.dto';
+import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class Psychologist extends EntityBase {
@@ -20,6 +21,10 @@ export class Psychologist extends EntityBase {
 
   @Column({ name: 'degreeLink' })
   private _degreeLink: string;
+
+  @OneToOne(() => User)
+  @JoinColumn()
+   user: User;
 
   get crp(): Crp {
     return this._crp;

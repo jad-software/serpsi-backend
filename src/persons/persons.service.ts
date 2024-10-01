@@ -103,6 +103,21 @@ export class PersonsService {
     }
   }
 
+  async findOneByUserId(id: string): Promise<Person> {
+    try {
+      const person = await this.personRepository
+        .createQueryBuilder('person')
+        .leftJoinAndSelect('person.address', 'address')
+        .where('person.user = :id', { id })
+        .getOneOrFail();
+      return person;
+    } catch (err) {
+      throw new NotFoundException(err?.message);
+    }
+  }
+
+  
+
   async findOneByCPF(cpf: Cpf): Promise<Person> {
     try {
       return await this.personRepository
