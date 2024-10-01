@@ -62,17 +62,22 @@ export class PsychologistsService {
   async update(id: string, updatePsychologistDto: UpdatePsychologistDto) {
     try {
       let foundPsychologist = await this.findOne(id);
+      const updateTasks = [];
       if (updatePsychologistDto.person) {
-        await this.personsService.update(
-          foundPsychologist.user.person.id.id,
-          updatePsychologistDto.person
+        updateTasks.push(
+          this.personsService.update(
+            foundPsychologist.user.person.id.id,
+            updatePsychologistDto.person
+          )
         );
         delete updatePsychologistDto.person;
       }
-      if(updatePsychologistDto.user) { 
-        await this.usersService.update(
-          foundPsychologist.user.id.id,
-          updatePsychologistDto.user
+      if (updatePsychologistDto.user) {
+        updateTasks.push(
+          this.usersService.update(
+            foundPsychologist.user.id.id,
+            updatePsychologistDto.user
+          )
         );
         delete updatePsychologistDto.user;
       }
@@ -81,7 +86,12 @@ export class PsychologistsService {
         delete updatePsychologistDto.crp;
       }
       Object.assign(foundPsychologist, updatePsychologistDto);
-      await this.psychologistsRepository.update(id, foundPsychologist);
+      await Promise.all(
+        [
+          this.psychologistsRepository.update(id, foundPsychologist),
+          ...updateTasks
+        ]
+      );
       foundPsychologist = await this.findOne(id);
       return foundPsychologist;
     }
