@@ -30,23 +30,22 @@ export class PsychologistsService {
     degreeFile?: Express.Multer.File,
   ) {
     try {
-      const crp = new Crp({});
       const user = await this.usersService.create(createPsychologistDto.user);
       createPsychologistDto.person.user = user.id.id;
-      const person = await this.personsService.create(
-        createPsychologistDto.person,
-        true,
-        profilePicture,
-      );
-      const crpSaved = await this.cloudinaryService.uploadFile(crpFile, true);
-      if (crpSaved) {
-        console.log(crpSaved);
-        crp.crpLink = crpSaved.url;
-        crp.crp = createPsychologistDto.crp.crp
-      }
-      const identifySaved = await this.cloudinaryService.uploadFile(identifyfile, true);
-      const degreeSaved = await this.cloudinaryService.uploadFile(degreeFile, true);
-
+      const [person, crpSaved, identifySaved, degreeSaved] = await Promise.all([
+        this.personsService.create(
+          createPsychologistDto.person,
+          true,
+          profilePicture,
+        ),
+        this.cloudinaryService.uploadFile(crpFile, true),
+        this.cloudinaryService.uploadFile(identifyfile, true),
+        this.cloudinaryService.uploadFile(degreeFile, true)
+      ]);
+      const crp = new Crp({
+        crp: createPsychologistDto.crp.crp,
+        crpLink: crpSaved.url
+      });
       const psychologist = new Psychologist({
         crp,
         identifyLink: identifySaved.url,
@@ -148,9 +147,9 @@ export class PsychologistsService {
       const degreePublicId = foundPsychologist.degreeLink.split('/').slice(-1)[0];
       await Promise.all(
         [
-           this.cloudinaryService.deleteFileOtherThanImage(crpPublicID),
-           this.cloudinaryService.deleteFileOtherThanImage(identifyPublicId),
-           this.cloudinaryService.deleteFileOtherThanImage(degreePublicId),
+          this.cloudinaryService.deleteFileOtherThanImage(crpPublicID),
+          this.cloudinaryService.deleteFileOtherThanImage(identifyPublicId),
+          this.cloudinaryService.deleteFileOtherThanImage(degreePublicId),
 
         ]
       )
