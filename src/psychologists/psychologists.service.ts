@@ -7,6 +7,7 @@ import { Psychologist } from './entities/psychologist.entity';
 import { UsersService } from '../users/users.service';
 import { PersonsService } from '../persons/persons.service';
 import { Crp } from './vo/crp.vo';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class PsychologistsService {
@@ -16,21 +17,40 @@ export class PsychologistsService {
     @Inject()
     private usersService: UsersService,
     @Inject()
-    private personsService: PersonsService
-  ) {}
+    private personsService: PersonsService,
+    @Inject()
+    private cloudinaryService: CloudinaryService
+  ) { }
 
-  async create(createPsychologistDto: CreatePsychologistDto) {
+  async create(
+    createPsychologistDto: CreatePsychologistDto,
+    profilePicture: Express.Multer.File,
+    crpFile?: Express.Multer.File,
+    identifyfile?: Express.Multer.File,
+    degreeFile?: Express.Multer.File,
+  ) {
     try {
+      const crp = new Crp({});
       const user = await this.usersService.create(createPsychologistDto.user);
       createPsychologistDto.person.user = user.id.id;
       const person = await this.personsService.create(
-        createPsychologistDto.person
+        createPsychologistDto.person,
+        true,
+        profilePicture,
       );
-      const crp = new Crp(createPsychologistDto.crp);
+      const crpSaved = await this.cloudinaryService.uploadFile(crpFile, true);
+      if (crpSaved) {
+        console.log(crpSaved);
+        crp.crpLink = crpSaved.url;
+        crp.crp = createPsychologistDto.crp.crp
+      }
+      const identifySaved = await this.cloudinaryService.uploadFile(identifyfile, true);
+      const degreeSaved = await this.cloudinaryService.uploadFile(degreeFile, true);
+
       const psychologist = new Psychologist({
         crp,
-        identifyLink: createPsychologistDto.identifyLink,
-        degreeLink: createPsychologistDto.degreeLink,
+        identifyLink: identifySaved.url,
+        degreeLink: degreeSaved.url,
       });
       psychologist.user = user;
       const savedPsychologist =
@@ -123,6 +143,19 @@ export class PsychologistsService {
       await this.psychologistsRepository.remove(foundPsychologist);
       await this.personsService.delete(foundPsychologist.user.person.id.id);
       await this.usersService.remove(foundPsychologist.user.id.id);
+      const crpPublicID = foundPsychologist.crp.crpLink.split('/').slice(-1)[0];
+      const identifyPublicId = foundPsychologist.identifyLink.split('/').slice(-1)[0];
+      const degreePublicId = foundPsychologist.degreeLink.split('/').slice(-1)[0];
+      await Promise.all(
+        [
+           this.cloudinaryService.deleteFileOtherThanImage(crpPublicID),
+           this.cloudinaryService.deleteFileOtherThanImage(identifyPublicId),
+           this.cloudinaryService.deleteFileOtherThanImage(degreePublicId),
+
+        ]
+      )
+
+
     } catch (err) {
       throw new BadRequestException(err?.message);
     }
