@@ -41,8 +41,15 @@ export class AgendasService {
 
   }
 
-  findAll() {
-    return `This action returns all agendas`;
+  async findAll(): Promise<Agenda[]> {
+    try{
+      const agendas = await this.agendaRepository.createQueryBuilder('agenda').getMany();
+      return agendas;
+    }
+    catch (err) {
+      throw new BadRequestException(err?.message);
+    }
+
   }
 
   findOne(id: number) {
