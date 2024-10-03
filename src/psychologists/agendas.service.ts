@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateAgendaDto } from './dto/create-agenda.dto';
 import { UpdateAgendaDto } from './dto/update-agenda.dto';
 import { Repository } from 'typeorm';
@@ -6,15 +6,23 @@ import { Agenda } from './entities/agenda.entity';
 import { data_providers } from 'src/constants';
 import { TimeOfDay } from './dto/TimeOfDay.dto';
 import { Day } from './vo/days.enum';
+import { PsychologistsService } from './psychologists.service';
+import { Psychologist } from './entities/psychologist.entity';
 
 @Injectable()
 export class AgendasService {
   constructor(
-    @Inject(data_providers.AGENDA_REPOSITORY) private agendaRepository: Repository<Agenda>
-  ) { }
+    @Inject(data_providers.AGENDA_REPOSITORY)
+    private agendaRepository: Repository<Agenda>,
+    @Inject(data_providers.PSYCHOLOGISTS_REPOSITORY)
+    private psycologistRepository: Repository<Psychologist>,
+    @Inject(forwardRef(() => PsychologistsService))
+    private psychologistService: PsychologistsService
+  ) {}
   async create(createAgendaDto: CreateAgendaDto) {
     const operations = [];
     try {
+      const psychologist = await this.psychologistService.findOne(createAgendaDto.psychologistId);
       for (const day in createAgendaDto.days) {
         if (Object.prototype.hasOwnProperty.call(createAgendaDto.days, day)) {
           const timeSlots: TimeOfDay[] = createAgendaDto.days[day];
@@ -24,36 +32,42 @@ export class AgendasService {
             const agenda = new Agenda({
               day: day as Day,
               startTime: slot.initialTime,
-              endTime: slot.endTime
+              endTime: slot.endTime,
             });
-            operations.push(this.agendaRepository.save(agenda))
-
+            operations.push(this.agendaRepository.save(agenda));
           });
         }
       }
-      const allPromises =  Promise.all(operations);
+      const allPromises = Promise.all(operations);
       const savedDays = await allPromises;
+      psychologist.agendas = savedDays;
+      this.psycologistRepository.save(psychologist);
       return savedDays;
-    }
-    catch (err) {
+    } catch (err) {
       throw new BadRequestException(err?.message);
     }
-
   }
 
   async findAll(): Promise<Agenda[]> {
-    try{
-      const agendas = await this.agendaRepository.createQueryBuilder('agenda').getMany();
+    try {
+      const agendas = await this.agendaRepository
+        .createQueryBuilder('agenda')
+        .getMany();
       return agendas;
+    } catch (err) {
+      throw new BadRequestException(err?.message);
+    }
+  }
+
+  async findAllFromPsychologist(id: string) {
+    try{
+      const psychologist = await this.psychologistService.findOne(id);
+      return psychologist.agendas;
     }
     catch (err) {
       throw new BadRequestException(err?.message);
     }
 
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} agenda`;
   }
 
   update(id: number, updateAgendaDto: UpdateAgendaDto) {

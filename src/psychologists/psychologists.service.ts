@@ -115,6 +115,7 @@ export class PsychologistsService {
       const psychologist = await this.psychologistsRepository
         .createQueryBuilder('psychologist')
         .leftJoinAndSelect('psychologist.user', 'user')
+        .leftJoinAndSelect('psychologist.agendas', 'agendas')
         .where('psychologist.id = :id', { id })
         .getOneOrFail();
       psychologist.user.person = await this.personsService.findOneByUserId(

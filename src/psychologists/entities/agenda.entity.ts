@@ -6,7 +6,6 @@ import { CreateAgendaDto } from '../dto/create-agenda.dto';
 
 @Entity()
 export class Agenda extends EntityBase implements IAgenda {
-
   constructor(partial: Partial<Agenda>) {
     super();
     Object.assign(this, partial);

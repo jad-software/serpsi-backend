@@ -1,4 +1,4 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty } from 'class-validator';
 
 export class TimeOfDay {
   @IsNotEmpty({ message: 'O horário inicial é obrigatório' })

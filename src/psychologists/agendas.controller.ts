@@ -27,7 +27,7 @@ export class AgendasController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.agendasService.findOne(+id);
+    return this.agendasService.findAllFromPsychologist(id);
   }
 
   @Patch(':id')

@@ -1,8 +1,9 @@
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne } from 'typeorm';
 import { EntityBase } from '../../entity-base/entities/entity-base';
 import { Crp } from '../vo/crp.vo';
 import { CreatePsychologistDto } from '../dto/create-psychologist.dto';
 import { User } from '../../users/entities/user.entity';
+import { Agenda } from './agenda.entity';
 
 @Entity()
 export class Psychologist extends EntityBase {
@@ -27,6 +28,10 @@ export class Psychologist extends EntityBase {
   })
   @JoinColumn()
   user: User;
+
+  @ManyToMany(() => Agenda)
+  @JoinTable()
+  agendas: Agenda[];
 
   get crp(): Crp {
     return this._crp;
