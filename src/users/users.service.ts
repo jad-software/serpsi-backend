@@ -18,9 +18,12 @@ export class UsersService {
   constructor(
     @Inject(data_providers.USER_REPOSITORY)
     private userRepository: Repository<User>
-  ) { }
+  ) {}
 
-  async create(createUserDto: CreateUserDto, hasTransaction: boolean = false,): Promise<User> {
+  async create(
+    createUserDto: CreateUserDto,
+    hasTransaction: boolean = false
+  ): Promise<User> {
     try {
       const userEmail = new Email(createUserDto.email as string);
       const hashedPassword = await bcrypt.hash(

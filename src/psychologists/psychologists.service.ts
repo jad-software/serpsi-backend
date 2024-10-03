@@ -20,24 +20,26 @@ export class PsychologistsService {
     private personsService: PersonsService,
     @Inject()
     private cloudinaryService: CloudinaryService
-  ) { }
+  ) {}
 
   async create(
     createPsychologistDto: CreatePsychologistDto,
     profilePicture: Express.Multer.File,
     crpFile?: Express.Multer.File,
     identifyfile?: Express.Multer.File,
-    degreeFile?: Express.Multer.File,
+    degreeFile?: Express.Multer.File
   ) {
     const queryRunner =
-      this.psychologistsRepository
-        .manager.connection.createQueryRunner();
+      this.psychologistsRepository.manager.connection.createQueryRunner();
     await queryRunner.connect();
     let ids: Record<string, any> = {};
     let publicsIds = [];
     try {
       await queryRunner.startTransaction();
-      const user = await this.usersService.create(createPsychologistDto.user, true);
+      const user = await this.usersService.create(
+        createPsychologistDto.user,
+        true
+      );
       ids['user'] = user.id.id;
 
       createPsychologistDto.person.user = user.id.id;
@@ -45,11 +47,11 @@ export class PsychologistsService {
         this.personsService.create(
           createPsychologistDto.person,
           true,
-          profilePicture,
+          profilePicture
         ),
         this.cloudinaryService.uploadFile(crpFile, true),
         this.cloudinaryService.uploadFile(identifyfile, true),
-        this.cloudinaryService.uploadFile(degreeFile, true)
+        this.cloudinaryService.uploadFile(degreeFile, true),
       ]);
       ids['person'] = person.id.id;
 
@@ -59,7 +61,7 @@ export class PsychologistsService {
 
       const crp = new Crp({
         crp: createPsychologistDto.crp.crp,
-        crpLink: crpSaved.url
+        crpLink: crpSaved.url,
       });
 
       const psychologist = new Psychologist({
@@ -76,14 +78,15 @@ export class PsychologistsService {
       const operations = [
         ids['user'] ? this.usersService.remove(ids['user']) : null,
         ids['person'] ? this.personsService.delete(ids['person']) : null,
-        ...publicsIds.map(publicID => this.cloudinaryService.deleteFileOtherThanImage(publicID)),
+        ...publicsIds.map((publicID) =>
+          this.cloudinaryService.deleteFileOtherThanImage(publicID)
+        ),
       ].filter(Boolean);
 
       await queryRunner.rollbackTransaction();
       await Promise.allSettled([operations]);
       throw new BadRequestException(err?.message);
-    }
-    finally {
+    } finally {
       await queryRunner.release();
     }
   }
@@ -170,18 +173,17 @@ export class PsychologistsService {
       await this.personsService.delete(foundPsychologist.user.person.id.id);
       await this.usersService.remove(foundPsychologist.user.id.id);
       const crpPublicID = foundPsychologist.crp.crpLink.split('/').slice(-1)[0];
-      const identifyPublicId = foundPsychologist.identifyLink.split('/').slice(-1)[0];
-      const degreePublicId = foundPsychologist.degreeLink.split('/').slice(-1)[0];
-      await Promise.all(
-        [
-          this.cloudinaryService.deleteFileOtherThanImage(crpPublicID),
-          this.cloudinaryService.deleteFileOtherThanImage(identifyPublicId),
-          this.cloudinaryService.deleteFileOtherThanImage(degreePublicId),
-
-        ]
-      )
-
-
+      const identifyPublicId = foundPsychologist.identifyLink
+        .split('/')
+        .slice(-1)[0];
+      const degreePublicId = foundPsychologist.degreeLink
+        .split('/')
+        .slice(-1)[0];
+      await Promise.all([
+        this.cloudinaryService.deleteFileOtherThanImage(crpPublicID),
+        this.cloudinaryService.deleteFileOtherThanImage(identifyPublicId),
+        this.cloudinaryService.deleteFileOtherThanImage(degreePublicId),
+      ]);
     } catch (err) {
       throw new BadRequestException(err?.message);
     }

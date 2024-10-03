@@ -6,10 +6,17 @@ import { DatabaseModule } from 'src/database/database.module';
 import { UsersModule } from 'src/users/users.module';
 import { PersonsModule } from 'src/persons/persons.module';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
+import { AgendasModule } from './agendas.module';
 
 @Module({
   controllers: [PsychologistsController],
-  imports: [DatabaseModule, UsersModule, PersonsModule, CloudinaryModule],
+  imports: [
+    DatabaseModule,
+    UsersModule,
+    PersonsModule,
+    CloudinaryModule,
+    AgendasModule,
+  ],
   providers: [...psychologistProvider, PsychologistsService],
 })
-export class PsychologistsModule { }
+export class PsychologistsModule {}

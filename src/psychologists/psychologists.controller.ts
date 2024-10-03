@@ -21,7 +21,7 @@ import { extname } from 'path';
 
 @Controller('psychologists')
 export class PsychologistsController {
-  constructor(private readonly psychologistsService: PsychologistsService) { }
+  constructor(private readonly psychologistsService: PsychologistsService) {}
 
   private validateUploadedFile(
     document: Express.Multer.File,
@@ -49,27 +49,34 @@ export class PsychologistsController {
     @Body('psychologistData') psychologistData: string
   ) {
     const parsedData = JSON.parse(psychologistData);
-    const createPsychologistDto = plainToClass(CreatePsychologistDto, parsedData);
+    const createPsychologistDto = plainToClass(
+      CreatePsychologistDto,
+      parsedData
+    );
 
-    const profilePicture = files.filter((file) => file.fieldname === 'profilePicture')[0];
+    const profilePicture = files.filter(
+      (file) => file.fieldname === 'profilePicture'
+    )[0];
     this.validateUploadedFile(profilePicture, ['jpg', 'jpeg', 'png']);
     files.map((file) => {
-      if(file.fieldname !== 'profilePicture'){
+      if (file.fieldname !== 'profilePicture') {
         this.validateUploadedFile(file, ['pdf']);
       }
     });
 
     const crpfile = files.filter((file) => file.fieldname === 'crpFile')[0];
-    const identifyfile = files.filter((file) => file.fieldname === 'identifyfile')[0];
-    const degreeFile = files.filter((file) => file.fieldname === 'degreeFile')[0];
+    const identifyfile = files.filter(
+      (file) => file.fieldname === 'identifyfile'
+    )[0];
+    const degreeFile = files.filter(
+      (file) => file.fieldname === 'degreeFile'
+    )[0];
 
     const errors = await validate(createPsychologistDto);
     if (errors.length > 0) {
-      throw new BadRequestException(
-        `Validation Error in Field: ${errors[0]}`
-      );
+      throw new BadRequestException(`Validation Error in Field: ${errors[0]}`);
     }
-    
+
     return this.psychologistsService.create(
       createPsychologistDto,
       profilePicture,

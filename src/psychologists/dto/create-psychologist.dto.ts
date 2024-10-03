@@ -7,7 +7,6 @@ import { OmitType } from '@nestjs/swagger';
 import { CreateCrpDto } from './create-crp.dto';
 
 export class CreatePsychologistDto {
-
   @ValidateNested()
   @Type(() => CreateCrpDto)
   crp: Crp;

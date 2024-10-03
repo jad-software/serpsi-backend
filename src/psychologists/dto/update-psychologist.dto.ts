@@ -15,4 +15,4 @@ export class UpdatePsychologistDto extends PartialType(
   @ValidateNested()
   @Type(() => UpdateUserDto)
   user?: UpdateUserDto;
- }
+}
