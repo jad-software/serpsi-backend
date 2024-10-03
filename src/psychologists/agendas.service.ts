@@ -4,31 +4,41 @@ import { UpdateAgendaDto } from './dto/update-agenda.dto';
 import { Repository } from 'typeorm';
 import { Agenda } from './entities/agenda.entity';
 import { data_providers } from 'src/constants';
+import { TimeOfDay } from './dto/TimeOfDay.dto';
+import { Day } from './vo/days.enum';
 
 @Injectable()
 export class AgendasService {
   constructor(
     @Inject(data_providers.AGENDA_REPOSITORY) private agendaRepository: Repository<Agenda>
   ) { }
-  async create(createAgendasDto: CreateAgendaDto[]) {
-    try{
-      let agendasSaved = [];
-      for (const createAgendaDto of createAgendasDto) {
-        const agenda = new Agenda({
-          day: createAgendaDto.day, 
-          startTime: createAgendaDto.startTime, 
-          endTime: createAgendaDto.endTime 
-        })
-        const agendaSaved  =  await this.agendaRepository.save(agenda);
-        agendasSaved.push(agendaSaved)
+  async create(createAgendaDto: CreateAgendaDto) {
+    const operations = [];
+    try {
+      for (const day in createAgendaDto.days) {
+        if (Object.prototype.hasOwnProperty.call(createAgendaDto.days, day)) {
+          const timeSlots: TimeOfDay[] = createAgendaDto.days[day];
+
+          console.log(`Horários para ${day}:`);
+          timeSlots.forEach((slot) => {
+            const agenda = new Agenda({
+              day: day as Day,
+              startTime: slot.initialTime,
+              endTime: slot.endTime
+            });
+            operations.push(this.agendaRepository.save(agenda))
+
+          });
+        }
       }
-    
-      return agendasSaved;
+      const allPromises =  Promise.all(operations);
+      const savedDays = await allPromises;
+      return savedDays;
     }
-    catch(err) {
+    catch (err) {
       throw new BadRequestException(err?.message);
     }
-   
+
   }
 
   findAll() {
