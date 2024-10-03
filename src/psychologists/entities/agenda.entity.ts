@@ -2,9 +2,16 @@ import { Column, Entity } from 'typeorm';
 import { EntityBase } from '../../entity-base/entities/entity-base';
 import { Day } from '../vo/days.enum';
 import { IAgenda } from '../interfaces/agenda.interface';
+import { CreateAgendaDto } from '../dto/create-agenda.dto';
 
 @Entity()
 export class Agenda extends EntityBase implements IAgenda {
+  
+  constructor(partial: Partial<CreateAgendaDto>) {
+    super();
+    Object.assign(this, partial);
+  }
+
   @Column({
     type: 'enum',
     name: 'day',

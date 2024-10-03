@@ -4,11 +4,9 @@ import { Day } from '../vo/days.enum';
 
 export class CreateAgendaDto implements IAgenda {
   @IsNotEmpty()
-  @IsDateString()
   startTime: string;
 
   @IsNotEmpty()
-  @IsDateString()
   endTime: string;
 
   @IsNotEmpty()

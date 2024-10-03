@@ -16,8 +16,8 @@ export class AgendasController {
   constructor(private readonly agendasService: AgendasService) {}
 
   @Post()
-  create(@Body() createAgendaDto: CreateAgendaDto) {
-    return this.agendasService.create(createAgendaDto);
+  async create(@Body() createAgendaDto: CreateAgendaDto[]) {
+    return await this.agendasService.create(createAgendaDto);
   }
 
   @Get()
