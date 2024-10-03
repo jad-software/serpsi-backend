@@ -39,7 +39,7 @@ export class PsychologistsService {
       await queryRunner.startTransaction();
       const user = await this.usersService.create(createPsychologistDto.user, true);
       ids['user'] = user.id.id;
-      
+
       createPsychologistDto.person.user = user.id.id;
       const [person, crpSaved, identifySaved, degreeSaved] = await Promise.all([
         this.personsService.create(
@@ -73,23 +73,14 @@ export class PsychologistsService {
       await queryRunner.commitTransaction();
       return savedPsychologist;
     } catch (err) {
+      const operations = [
+        ids['user'] ? this.usersService.remove(ids['user']) : null,
+        ids['person'] ? this.personsService.delete(ids['person']) : null,
+        ...publicsIds.map(publicID => this.cloudinaryService.deleteFileOtherThanImage(publicID)),
+      ].filter(Boolean);
 
-      let operations = [];
-      Object.entries(ids).forEach(([key, value]) => {
-        if (key === 'user') {
-          operations.push(this.usersService.remove(value));
-        }
-        if (key === 'person') {
-          operations.push(this.personsService.delete(value));
-        }
-      });
       await queryRunner.rollbackTransaction();
-      publicsIds.forEach(async (publicID) => {
-        operations.push(this.cloudinaryService.deleteFileOtherThanImage(publicID));
-      });
-      await Promise.allSettled([
-        ...operations
-      ]);
+      await Promise.allSettled([operations]);
       throw new BadRequestException(err?.message);
     }
     finally {
