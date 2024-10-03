@@ -29,8 +29,17 @@ export class PsychologistsService {
     identifyfile?: Express.Multer.File,
     degreeFile?: Express.Multer.File,
   ) {
+    const queryRunner =
+      this.psychologistsRepository
+        .manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    let ids: Record<string, any> = {};
+    let publicsIds = [];
     try {
-      const user = await this.usersService.create(createPsychologistDto.user);
+      await queryRunner.startTransaction();
+      const user = await this.usersService.create(createPsychologistDto.user, true);
+      ids['user'] = user.id.id;
+      
       createPsychologistDto.person.user = user.id.id;
       const [person, crpSaved, identifySaved, degreeSaved] = await Promise.all([
         this.personsService.create(
@@ -42,22 +51,49 @@ export class PsychologistsService {
         this.cloudinaryService.uploadFile(identifyfile, true),
         this.cloudinaryService.uploadFile(degreeFile, true)
       ]);
+      ids['person'] = person.id.id;
+
+      publicsIds.push(crpSaved.url.split('/').slice(-1)[0]);
+      publicsIds.push(identifySaved.url.split('/').slice(-1)[0]);
+      publicsIds.push(degreeSaved.url.split('/').slice(-1)[0]);
+
       const crp = new Crp({
         crp: createPsychologistDto.crp.crp,
         crpLink: crpSaved.url
       });
+
       const psychologist = new Psychologist({
         crp,
         identifyLink: identifySaved.url,
         degreeLink: degreeSaved.url,
       });
       psychologist.user = user;
-      const savedPsychologist =
-        await this.psychologistsRepository.save(psychologist);
+      const savedPsychologist = await queryRunner.manager.save(psychologist);
 
+      await queryRunner.commitTransaction();
       return savedPsychologist;
     } catch (err) {
+
+      let operations = [];
+      Object.entries(ids).forEach(([key, value]) => {
+        if (key === 'user') {
+          operations.push(this.usersService.remove(value));
+        }
+        if (key === 'person') {
+          operations.push(this.personsService.delete(value));
+        }
+      });
+      await queryRunner.rollbackTransaction();
+      publicsIds.forEach(async (publicID) => {
+        operations.push(this.cloudinaryService.deleteFileOtherThanImage(publicID));
+      });
+      await Promise.allSettled([
+        ...operations
+      ]);
       throw new BadRequestException(err?.message);
+    }
+    finally {
+      await queryRunner.release();
     }
   }
 
