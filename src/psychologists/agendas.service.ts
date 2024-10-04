@@ -12,6 +12,7 @@ import { data_providers } from 'src/constants';
 import { Day } from './vo/days.enum';
 import { PsychologistsService } from './psychologists.service';
 import { Psychologist } from './entities/psychologist.entity';
+import { UpdatePsychologistDto } from './dto/update-psychologist.dto';
 
 @Injectable()
 export class AgendasService {
@@ -20,7 +21,7 @@ export class AgendasService {
     private agendaRepository: Repository<Agenda>,
     @Inject(forwardRef(() => PsychologistsService))
     private psychologistService: PsychologistsService
-  ) {}
+  ) { }
   async create(createAgendaDto: CreateAgendaDto) {
     const operations = [];
     try {
@@ -41,6 +42,11 @@ export class AgendasService {
           operations.push(this.agendaRepository.save(newAgenda));
         });
       });
+      const updatePsychologist  = {
+        meetValue: createAgendaDto.meetValue,
+        meetDuration: createAgendaDto.meetDuration
+      } as UpdatePsychologistDto;
+      await this.psychologistService.update(psychologist.id.id, updatePsychologist);
       const savedDays = await Promise.all(operations);
       return savedDays;
     } catch (err) {
@@ -60,7 +66,6 @@ export class AgendasService {
   }
   async findAllFromPsychologist(id: string): Promise<CreateAgendaDto> {
     try {
-      console.log('aquii');
       const agendaFromPsychologist = await this.agendaRepository
         .createQueryBuilder('agenda')
         .leftJoinAndSelect('agenda.psychologist', 'psychologist')
@@ -69,11 +74,13 @@ export class AgendasService {
           'agenda._day',
           'agenda._startTime',
           'agenda._endTime',
-          'agenda._id._id',
+          'agenda._id._id'
         ])
         .orderBy('agenda.day', 'ASC')
         .addOrderBy('agenda.startTime', 'ASC')
         .getMany();
+
+      const psychologist = await this.psychologistService.findOne(id);
 
       const groupedAgendas = agendaFromPsychologist.reduce(
         (result, current) => {
@@ -98,9 +105,10 @@ export class AgendasService {
       );
 
       const formattedAgendas = Object.values(groupedAgendas);
-
       return {
         psychologistId: id,
+        meetDuration: psychologist.meetDuration,
+        meetValue: psychologist.meetValue,
         agendas: formattedAgendas,
       };
     } catch (err) {

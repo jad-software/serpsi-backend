@@ -3,7 +3,9 @@ import {
   IsDateString,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsObject,
+  IsPositive,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -38,6 +40,13 @@ export class CreateAgendaDto {
   @IsString()
   psychologistId: string;
 
+  @IsNumber()
+  @IsPositive()
+  meetValue: number;
+
+  @IsNumber()
+  @IsPositive()
+  meetDuration: number;
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => AgendaDto)
