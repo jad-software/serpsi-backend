@@ -19,6 +19,8 @@ export class AvailableTimeDto {
   @IsString()
   @IsNotEmpty()
   _endTime: string;
+
+  id: string;
 }
 
 export class AgendaDto {
@@ -31,6 +33,7 @@ export class AgendaDto {
   @ValidateNested({each: true})
   @Type(() => AvailableTimeDto)
   _avaliableTimes: AvailableTimeDto[];
+
 }
 
 export class CreateAgendaDto {

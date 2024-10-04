@@ -9,7 +9,6 @@ import { UpdateAgendaDto } from './dto/update-agenda.dto';
 import { Repository } from 'typeorm';
 import { Agenda } from './entities/agenda.entity';
 import { data_providers } from 'src/constants';
-import { TimeOfDay } from './dto/TimeOfDay.dto';
 import { Day } from './vo/days.enum';
 import { PsychologistsService } from './psychologists.service';
 import { Psychologist } from './entities/psychologist.entity';
@@ -43,8 +42,8 @@ export class AgendasService {
           operations.push(this.agendaRepository.save(newAgenda));
         });
       });
-     const savedDays = await Promise.all(operations);
-    return savedDays;
+      const savedDays = await Promise.all(operations);
+      return savedDays;
     } catch (err) {
       throw new BadRequestException(err?.message);
     }
@@ -60,9 +59,9 @@ export class AgendasService {
       throw new BadRequestException(err?.message);
     }
   }
-
-  async findAllFromPsychologist(id: string): Promise<Agenda[]> {
+  async findAllFromPsychologist(id: string): Promise<CreateAgendaDto> {
     try {
+      console.log('aquii');
       const agendaFromPsychologist = await this.agendaRepository.createQueryBuilder('agenda')
         .leftJoinAndSelect('agenda.psychologist', 'psychologist')
         .where('psychologist.id = :id', { id })
@@ -70,11 +69,37 @@ export class AgendasService {
         .orderBy('agenda.day', 'ASC')
         .addOrderBy('agenda.startTime', 'ASC')
         .getMany();
-      return agendaFromPsychologist;
+
+      const groupedAgendas = agendaFromPsychologist.reduce((result, current) => {
+        const { day, startTime, endTime, id } = current; // Propriedade correta é 'day'
+        console.log('IDDD', id.id);
+        if (!result[day]) {
+          result[day] = {
+            _day: day,
+            _avaliableTimes: [],
+          };
+        }
+
+        result[day]._avaliableTimes.push({
+          _startTime: startTime,
+          _endTime: endTime,
+          id: id.id
+        });
+
+        return result;
+      }, {} as { [key: string]: AgendaDto });
+
+      const formattedAgendas = Object.values(groupedAgendas);
+
+      return {
+        psychologistId: id,
+        agendas: formattedAgendas,
+      };
     } catch (err) {
       throw new BadRequestException(err?.message);
     }
   }
+
 
   async FindOne(id: string): Promise<Agenda> {
     try {
@@ -86,7 +111,7 @@ export class AgendasService {
       throw new BadRequestException(err?.message);
     }
   }
-  
+
   async update(id: string, updateAgendaDto: UpdateAgendaDto) {
     try {
       await this.removeAllFromPsychologist(id);
@@ -102,8 +127,11 @@ export class AgendasService {
     try {
       const operations = [];
       const psychologistAgendas = await this.findAllFromPsychologist(id);
-      psychologistAgendas.forEach(agenda => {
-        operations.push(this.remove(agenda.id.id));
+
+      psychologistAgendas.agendas.forEach(agenda => {
+        agenda._avaliableTimes.forEach(timeOfDay => {
+          operations.push(this.remove(timeOfDay.id));
+        })
       })
       await Promise.allSettled(operations);
     } catch (err) {
