@@ -10,7 +10,6 @@ import {
 import { Day } from '../vo/days.enum';
 import { Type } from 'class-transformer';
 
-
 export class AvailableTimeDto {
   @IsString()
   @IsNotEmpty()
@@ -28,12 +27,10 @@ export class AgendaDto {
   @IsEnum(Day, { each: true })
   _day: Day;
 
-  
   @IsArray()
-  @ValidateNested({each: true})
+  @ValidateNested({ each: true })
   @Type(() => AvailableTimeDto)
   _avaliableTimes: AvailableTimeDto[];
-
 }
 
 export class CreateAgendaDto {
@@ -42,7 +39,7 @@ export class CreateAgendaDto {
   psychologistId: string;
 
   @IsArray()
-  @ValidateNested({each: true})
+  @ValidateNested({ each: true })
   @Type(() => AgendaDto)
   agendas: AgendaDto[];
 }

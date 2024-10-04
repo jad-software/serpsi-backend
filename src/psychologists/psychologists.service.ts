@@ -68,6 +68,8 @@ export class PsychologistsService {
         crp,
         identifyLink: identifySaved.url,
         degreeLink: degreeSaved.url,
+        meetValue: +createPsychologistDto.meetValue,
+        meetDuration: createPsychologistDto.meetDuration,
       });
       psychologist.user = user;
       const savedPsychologist = await queryRunner.manager.save(psychologist);
@@ -115,12 +117,12 @@ export class PsychologistsService {
       const psychologist = await this.psychologistsRepository
         .createQueryBuilder('psychologist')
         .leftJoinAndSelect('psychologist.user', 'user')
-        .leftJoinAndSelect('psychologist.agendas', 'agendas')
         .where('psychologist.id = :id', { id })
         .getOneOrFail();
       psychologist.user.person = await this.personsService.findOneByUserId(
         psychologist.user.id.id
       );
+      psychologist.meetValue = +psychologist.meetValue;
       return psychologist;
     } catch (err) {
       throw new BadRequestException(err?.message);

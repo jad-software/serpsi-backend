@@ -26,7 +26,9 @@ export class Agenda extends EntityBase implements IAgenda {
   @Column({ name: 'endTime', type: 'time' })
   private _endTime: string;
 
-  @ManyToOne(() => Psychologist, (psychologist) => psychologist.agendas)
+  @ManyToOne(() => Psychologist, (psychologist) => psychologist.agendas, {
+    onDelete: 'CASCADE',
+  })
   psychologist: Psychologist;
 
   get day(): Day {

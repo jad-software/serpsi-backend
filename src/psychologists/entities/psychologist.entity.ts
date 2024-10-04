@@ -31,6 +31,12 @@ export class Psychologist extends EntityBase {
   @Column({ name: 'degreeLink' })
   private _degreeLink: string;
 
+  @Column('decimal', { default: 0, name: 'meetValue' })
+  private _meetValue: number;
+
+  @Column({ default: 0, name: 'meetDuration' })
+  private _meetDuration: number;
+
   @OneToOne(() => User, {
     onDelete: 'CASCADE',
   })
@@ -62,5 +68,21 @@ export class Psychologist extends EntityBase {
 
   set degreeLink(degreeLink: string) {
     this._degreeLink = degreeLink;
+  }
+
+  get meetValue(): number {
+    return this._meetValue;
+  }
+
+  set meetValue(meetValue: number) {
+    this._meetValue = meetValue;
+  }
+
+  get meetDuration(): number {
+    return this._meetDuration;
+  }
+
+  set meetDuration(meetDuration: number) {
+    this._meetDuration = meetDuration;
   }
 }

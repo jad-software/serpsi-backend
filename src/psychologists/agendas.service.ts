@@ -13,7 +13,6 @@ import { Day } from './vo/days.enum';
 import { PsychologistsService } from './psychologists.service';
 import { Psychologist } from './entities/psychologist.entity';
 
-
 @Injectable()
 export class AgendasService {
   constructor(
@@ -21,7 +20,7 @@ export class AgendasService {
     private agendaRepository: Repository<Agenda>,
     @Inject(forwardRef(() => PsychologistsService))
     private psychologistService: PsychologistsService
-  ) { }
+  ) {}
   async create(createAgendaDto: CreateAgendaDto) {
     const operations = [];
     try {
@@ -30,9 +29,9 @@ export class AgendasService {
       );
       await this.removeAllFromPsychologist(psychologist.id.id);
 
-      createAgendaDto.agendas.forEach(agenda => {
+      createAgendaDto.agendas.forEach((agenda) => {
         const { _day, _avaliableTimes } = agenda;
-        _avaliableTimes.forEach(timeSlot => {
+        _avaliableTimes.forEach((timeSlot) => {
           const newAgenda = new Agenda({
             day: _day as Day,
             startTime: timeSlot._startTime,
@@ -62,32 +61,41 @@ export class AgendasService {
   async findAllFromPsychologist(id: string): Promise<CreateAgendaDto> {
     try {
       console.log('aquii');
-      const agendaFromPsychologist = await this.agendaRepository.createQueryBuilder('agenda')
+      const agendaFromPsychologist = await this.agendaRepository
+        .createQueryBuilder('agenda')
         .leftJoinAndSelect('agenda.psychologist', 'psychologist')
         .where('psychologist.id = :id', { id })
-        .select(['agenda._day', 'agenda._startTime', 'agenda._endTime', 'agenda._id._id'])
+        .select([
+          'agenda._day',
+          'agenda._startTime',
+          'agenda._endTime',
+          'agenda._id._id',
+        ])
         .orderBy('agenda.day', 'ASC')
         .addOrderBy('agenda.startTime', 'ASC')
         .getMany();
 
-      const groupedAgendas = agendaFromPsychologist.reduce((result, current) => {
-        const { day, startTime, endTime, id } = current; // Propriedade correta é 'day'
-        console.log('IDDD', id.id);
-        if (!result[day]) {
-          result[day] = {
-            _day: day,
-            _avaliableTimes: [],
-          };
-        }
+      const groupedAgendas = agendaFromPsychologist.reduce(
+        (result, current) => {
+          const { day, startTime, endTime, id } = current; // Propriedade correta é 'day'
 
-        result[day]._avaliableTimes.push({
-          _startTime: startTime,
-          _endTime: endTime,
-          id: id.id
-        });
+          if (!result[day]) {
+            result[day] = {
+              _day: day,
+              _avaliableTimes: [],
+            };
+          }
 
-        return result;
-      }, {} as { [key: string]: AgendaDto });
+          result[day]._avaliableTimes.push({
+            _startTime: startTime,
+            _endTime: endTime,
+            id: id.id,
+          });
+
+          return result;
+        },
+        {} as { [key: string]: AgendaDto }
+      );
 
       const formattedAgendas = Object.values(groupedAgendas);
 
@@ -100,10 +108,10 @@ export class AgendasService {
     }
   }
 
-
   async FindOne(id: string): Promise<Agenda> {
     try {
-      const agenda = await this.agendaRepository.createQueryBuilder('agenda')
+      const agenda = await this.agendaRepository
+        .createQueryBuilder('agenda')
         .where('agenda.id = :id', { id })
         .getOneOrFail();
       return agenda;
@@ -128,11 +136,11 @@ export class AgendasService {
       const operations = [];
       const psychologistAgendas = await this.findAllFromPsychologist(id);
 
-      psychologistAgendas.agendas.forEach(agenda => {
-        agenda._avaliableTimes.forEach(timeOfDay => {
+      psychologistAgendas.agendas.forEach((agenda) => {
+        agenda._avaliableTimes.forEach((timeOfDay) => {
           operations.push(this.remove(timeOfDay.id));
-        })
-      })
+        });
+      });
       await Promise.allSettled(operations);
     } catch (err) {
       throw new BadRequestException(err?.message);
