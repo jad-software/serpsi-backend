@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsDateString,
   IsEnum,
   IsNotEmpty,
@@ -6,21 +7,39 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { IAgenda } from '../interfaces/agenda.interface';
 import { Day } from '../vo/days.enum';
 import { Type } from 'class-transformer';
-import { TimeOfDay } from './TimeOfDay.dto';
+
+
+export class AvailableTimeDto {
+  @IsString()
+  @IsNotEmpty()
+  _startTime: string;
+
+  @IsString()
+  @IsNotEmpty()
+  _endTime: string;
+}
+
+export class AgendaDto {
+  @IsNotEmpty()
+  @IsEnum(Day, { each: true })
+  _day: Day;
+
+  
+  @IsArray()
+  @ValidateNested({each: true})
+  @Type(() => AvailableTimeDto)
+  _avaliableTimes: AvailableTimeDto[];
+}
 
 export class CreateAgendaDto {
-  @IsNotEmpty({ message: 'A agenda deve conter horários para os dias' })
-  @IsObject({ message: 'A agenda deve ser um objeto' })
-  @ValidateNested({ each: true })
-  @Type(() => Object)
-  days: {
-    [key in Day]: TimeOfDay[];
-  };
-
   @IsNotEmpty()
   @IsString()
   psychologistId: string;
+
+  @IsArray()
+  @ValidateNested({each: true})
+  @Type(() => AgendaDto)
+  agendas: AgendaDto[];
 }
