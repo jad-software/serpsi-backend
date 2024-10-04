@@ -8,7 +8,7 @@ import { psychologistProvider } from './providers/psychologists.providers';
 
 @Module({
   controllers: [AgendasController],
-  imports: [DatabaseModule, forwardRef(() => PsychologistsModule),],
-  providers: [...agendaProvider, ...psychologistProvider,AgendasService],
+  imports: [DatabaseModule, forwardRef(() => PsychologistsModule)],
+  providers: [...agendaProvider, AgendasService],
 })
-export class AgendasModule { }
+export class AgendasModule {}

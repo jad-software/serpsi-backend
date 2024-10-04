@@ -1,8 +1,9 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { EntityBase } from '../../entity-base/entities/entity-base';
 import { Day } from '../vo/days.enum';
 import { IAgenda } from '../interfaces/agenda.interface';
 import { CreateAgendaDto } from '../dto/create-agenda.dto';
+import { Psychologist } from './psychologist.entity';
 
 @Entity()
 export class Agenda extends EntityBase implements IAgenda {
@@ -24,6 +25,9 @@ export class Agenda extends EntityBase implements IAgenda {
 
   @Column({ name: 'endTime', type: 'time' })
   private _endTime: string;
+
+  @ManyToOne(() => Psychologist, (psychologist) => psychologist.agendas)
+  psychologist: Psychologist;
 
   get day(): Day {
     return this._day;

@@ -20,4 +20,4 @@ import { AgendasModule } from './agendas.module';
   ],
   providers: [...psychologistProvider, PsychologistsService],
 })
-export class PsychologistsModule { }
+export class PsychologistsModule {}
