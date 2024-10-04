@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { AgendasService } from './agendas.service';
 import { CreateAgendaDto } from './dto/create-agenda.dto';
@@ -30,13 +31,13 @@ export class AgendasController {
     return this.agendasService.findAllFromPsychologist(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateAgendaDto: UpdateAgendaDto) {
-    return this.agendasService.update(+id, updateAgendaDto);
+    return this.agendasService.update(id, updateAgendaDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.agendasService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.agendasService.remove(id);
   }
 }
