@@ -1,4 +1,4 @@
-import { data_providers } from 'src/constants';
+import { data_providers } from '../../constants';
 import { DataSource } from 'typeorm';
 import { Agenda } from '../entities/agenda.entity';
 

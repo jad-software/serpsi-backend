@@ -8,7 +8,7 @@ import { AgendaDto, CreateAgendaDto } from './dto/create-agenda.dto';
 import { UpdateAgendaDto } from './dto/update-agenda.dto';
 import { Repository } from 'typeorm';
 import { Agenda } from './entities/agenda.entity';
-import { data_providers } from 'src/constants';
+import { data_providers } from '../constants';
 import { Day } from './vo/days.enum';
 import { PsychologistsService } from './psychologists.service';
 import { Psychologist } from './entities/psychologist.entity';

@@ -1,13 +1,13 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreatePsychologistDto } from './dto/create-psychologist.dto';
 import { UpdatePsychologistDto } from './dto/update-psychologist.dto';
-import { data_providers } from 'src/constants';
+import { data_providers } from '../constants';
 import { Repository } from 'typeorm';
 import { Psychologist } from './entities/psychologist.entity';
 import { UsersService } from '../users/users.service';
 import { PersonsService } from '../persons/persons.service';
 import { Crp } from './vo/crp.vo';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class PsychologistsService {
