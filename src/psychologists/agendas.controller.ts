@@ -12,7 +12,7 @@ import {
 import { AgendasService } from './agendas.service';
 import { AvailableTimeDto, CreateAgendaDto } from './dto/create-agenda.dto';
 import { UpdateAgendaDto } from './dto/update-agenda.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('agendas')
 @ApiBearerAuth()
@@ -44,28 +44,33 @@ export class AgendasController {
       })
     });
   }
+  @ApiOperation({ summary: 'Criação de uma nova agenda' })
   @Post()
   async create(@Body() createAgendaDto: CreateAgendaDto) {
     this.validateAvaliableTime(createAgendaDto)
     return await this.agendasService.create(createAgendaDto);
   }
 
+  @ApiOperation({ summary: 'Listagem de todas as agendas' })
   @Get()
   findAll() {
     return this.agendasService.findAll();
   }
 
+  @ApiOperation({ summary: 'Listagem de todas as agendas de um psicólogo' })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.agendasService.findAllFromPsychologist(id);
   }
 
+  @ApiOperation({ summary: 'Atualiza da agenda de um psicólogo' })
   @Put(':id')
   update(@Param('id') id: string, @Body() updateAgendaDto: UpdateAgendaDto) {
     this.validateAvaliableTime(updateAgendaDto)
     return this.agendasService.update(id, updateAgendaDto);
   }
 
+  @ApiOperation({ summary: 'Deleta da agenda de um psicólogo' })
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return await this.agendasService.remove(id);
