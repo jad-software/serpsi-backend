@@ -12,7 +12,10 @@ import {
 import { AgendasService } from './agendas.service';
 import { AvailableTimeDto, CreateAgendaDto } from './dto/create-agenda.dto';
 import { UpdateAgendaDto } from './dto/update-agenda.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('agendas')
+@ApiBearerAuth()
 @Controller('agendas')
 export class AgendasController {
   constructor(private readonly agendasService: AgendasService) { }
