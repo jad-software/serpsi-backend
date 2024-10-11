@@ -257,5 +257,40 @@ describe('PsychologistsService', () => {
     });
   });
   
+  describe('update', () => {
+    it('Should update a psychologist without changing the service', async () => {
+      const mockPsychologist = {
+        id: '1',
+        user: {
+          id: { id: 'user-id' },
+          person: { id: { id: 'person-id' } },
+        },
+        crp: { crp: '00/123456' },
+      };
+  
+      service.findOne = jest.fn().mockResolvedValue(mockPsychologist);
+  
+      mockPersonsService.findOneByUserId.mockResolvedValue({
+        id: { id: 'person-id' },
+      });
+  
+      const updateDto: UpdatePsychologistDto = {
+        person: { name: 'Updated Name' },
+        user: { email: 'updated@example.com' },
+        crp: { crp: '00/654321' } as Crp,
+      };
+  
+      mockPersonsService.update.mockResolvedValue({});
+      mockUsersService.update.mockResolvedValue({});
+      mockRepository.update.mockResolvedValue(mockPsychologist);
+  
+      const result = await service.update('1', updateDto);
+      expect(mockPersonsService.update).toHaveBeenCalledWith('person-id', updateDto.person);
+      expect(mockUsersService.update).toHaveBeenCalledWith('user-id', updateDto.user);
+      expect(mockRepository.update).toHaveBeenCalledWith('1', mockPsychologist);
+      expect(result).toEqual(mockPsychologist);
+    });
+  });
+  
   
 });
