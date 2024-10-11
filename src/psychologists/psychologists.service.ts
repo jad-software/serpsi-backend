@@ -133,31 +133,32 @@ export class PsychologistsService {
     try {
       let foundPsychologist = await this.findOne(id);
       const updateTasks = [];
-      if (updatePsychologistDto.person) {
+      const { person, user, crp, ...otherFields } = updatePsychologistDto;
+      if (person) {
         updateTasks.push(
           this.personsService.update(
             foundPsychologist.user.person.id.id,
             updatePsychologistDto.person
           )
         );
-        delete updatePsychologistDto.person;
+       
       }
-      if (updatePsychologistDto.user) {
+      if (user) {
         updateTasks.push(
           this.usersService.update(
             foundPsychologist.user.id.id,
             updatePsychologistDto.user
           )
         );
-        delete updatePsychologistDto.user;
+        user;
       }
-      if (updatePsychologistDto.crp) {
+      if (crp) {
         foundPsychologist.crp = new Crp(
           updatePsychologistDto.crp || foundPsychologist.crp
         );
-        delete updatePsychologistDto.crp;
+        crp;
       }
-      Object.assign(foundPsychologist, updatePsychologistDto);
+      Object.assign(foundPsychologist, otherFields);
       await Promise.all([
         this.psychologistsRepository.update(id, foundPsychologist),
         ...updateTasks,
