@@ -26,7 +26,7 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nes
 export class PsychologistsController {
   constructor(private readonly psychologistsService: PsychologistsService) {}
 
-  private validateUploadedFile(
+  validateUploadedFile(
     document: Express.Multer.File,
     allowedFileTypes: string[],
     isRequired = true
@@ -220,7 +220,7 @@ export class PsychologistsController {
       throw new BadRequestException(`Validation Error in Field: ${errors[0]}`);
     }
 
-    return this.psychologistsService.create(
+    return await this.psychologistsService.create(
       createPsychologistDto,
       profilePicture,
       crpfile,
@@ -231,28 +231,28 @@ export class PsychologistsController {
 
   @ApiOperation({ summary: 'Lista todos os psicólogos' })
   @Get()
-  findAll() {
-    return this.psychologistsService.findAll();
+  async findAll() {
+    return await this.psychologistsService.findAll();
   }
 
   @ApiOperation({ summary: 'Lista um psicólogo pelo id' })
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.psychologistsService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return await this.psychologistsService.findOne(id);
   }
 
   @ApiOperation({ summary: 'atualiza um psicólogo pelo id' })
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updatePsychologistDto: UpdatePsychologistDto
   ) {
-    return this.psychologistsService.update(id, updatePsychologistDto);
+    return await this.psychologistsService.update(id, updatePsychologistDto);
   }
 
   @ApiOperation({ summary: 'deleta um psicólogo pelo id' })
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.psychologistsService.remove(id);
+  async remove(@Param('id') id: string) {
+    return await this.psychologistsService.remove(id);
   }
 }
