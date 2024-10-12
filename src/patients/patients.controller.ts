@@ -45,7 +45,6 @@ export class PatientsController {
     allowedFileTypes: string[],
     isRequired = true
   ) {
-
     if (!document && isRequired) {
       throw new BadRequestException('Profile Picture is required');
     }
@@ -72,6 +71,10 @@ export class PatientsController {
             paymentPlan: {
               type: 'string',
               example: 'TRIMESTRAL',
+            },
+            psychologistId: {
+              type: 'string',
+              example: '1a6aecba-45d0-44c5-a47d-55b5aaeba93a',
             },
             person: {
               type: 'object',
@@ -323,16 +326,16 @@ export class PatientsController {
         },
         document: {
           type: 'string',
-          format: 'binary'
-        }
+          format: 'binary',
+        },
       },
     },
-  })  
+  })
   @UseInterceptors(AnyFilesInterceptor())
   @Post()
   async create(
     @UploadedFiles() files: Array<Express.Multer.File>,
-    @Body('patientData') patientData: string,
+    @Body('patientData') patientData: string
   ) {
     const parsedData = JSON.parse(patientData);
     const createPatientDto = plainToClass(CreatePatientDto, parsedData);
@@ -363,9 +366,9 @@ export class PatientsController {
   }
 
   @ApiOperation({ summary: 'lista todos os pacientes de um psicólogo' })
-  @Get('/psychologist')
-  async findAllByPsychologist() {
-    return await this.patientsService.findAllByPsychologist();
+  @Get('/psychologist/:id')
+  async findAllByPsychologist(@Param('id') id: string) {
+    return await this.patientsService.findAllByPsychologist(id);
   }
 
   @ApiOperation({ summary: 'retorna um paciente pelo id' })

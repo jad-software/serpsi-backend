@@ -10,6 +10,7 @@ import { AddressesModule } from './addresses/addresses.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { PatientsModule } from './patients/patients.module';
 import { DocumentsModule } from './documents/documents.module';
+import { PsychologistsModule } from './psychologists/psychologists.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { DocumentsModule } from './documents/documents.module';
     CloudinaryModule,
     PatientsModule,
     DocumentsModule,
+    PsychologistsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -20,7 +20,10 @@ export class UsersService {
     private userRepository: Repository<User>
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(
+    createUserDto: CreateUserDto,
+    hasTransaction: boolean = false
+  ): Promise<User> {
     try {
       const userEmail = new Email(createUserDto.email as string);
       const hashedPassword = await bcrypt.hash(
@@ -32,7 +35,9 @@ export class UsersService {
         password: hashedPassword,
         role: createUserDto.role,
       });
-      return await this.userRepository.save(user);
+      return await this.userRepository.save(user, {
+        transaction: !hasTransaction,
+      });
     } catch (err) {
       throw new InternalServerErrorException(err);
     }

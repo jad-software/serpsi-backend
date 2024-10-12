@@ -31,8 +31,11 @@ export class SchoolService {
     try {
       const school = new School(createSchoolDto);
       school.CNPJ = new CNPJ(createSchoolDto.CNPJ);
-      school.phone = new Phone(createSchoolDto.phone)
-      school.address = await this.addressService.create(createSchoolDto.address, true);
+      school.phone = new Phone(createSchoolDto.phone);
+      school.address = await this.addressService.create(
+        createSchoolDto.address,
+        true
+      );
       return await this.schoolRepository.save(school, {
         transaction: !hasTransaction,
       });

@@ -51,7 +51,7 @@ describe('PatientsController', () => {
   describe('create', () => {
     it('should create a Patient', async () => {
       const cpf = {
-        cpf: '123.456.789-00'
+        cpf: '123.456.789-00',
       } as Cpf;
 
       const schoolAddress = {
@@ -65,6 +65,7 @@ describe('PatientsController', () => {
       } as Address;
       const dto: CreatePatientDto = {
         paymentPlan: PaymentPlan.BIMESTRAL,
+        psychologistId: 'psychologist-id',
         school: {
           name: 'ativa idade',
           CNPJ: '00.000.000/0001-00',
@@ -103,19 +104,25 @@ describe('PatientsController', () => {
         },
         {
           originalname: 'teste.png',
-          fieldname: 'profilePicture', 
+          fieldname: 'profilePicture',
         },
       ] as Express.Multer.File[];
 
       const profilePicture = previusFollowUps.find(
-        (file) => file.fieldname === 'profilePicture',
+        (file) => file.fieldname === 'profilePicture'
       );
       const documents = previusFollowUps.filter(
-        (file) => file.fieldname === 'documents',
+        (file) => file.fieldname === 'documents'
       );
 
-      expect(await controller.create(previusFollowUps, JSON.stringify(dto))).toEqual({ id: '1', ...dto });
-      expect(service.create).toHaveBeenCalledWith(dto, profilePicture, documents);
+      expect(
+        await controller.create(previusFollowUps, JSON.stringify(dto))
+      ).toEqual({ id: '1', ...dto });
+      expect(service.create).toHaveBeenCalledWith(
+        dto,
+        profilePicture,
+        documents
+      );
     });
   });
 

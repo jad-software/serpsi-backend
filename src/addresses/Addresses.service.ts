@@ -26,6 +26,7 @@ export class AddressesService {
         state: createAddressDto.state,
         zipCode: createAddressDto.zipCode,
         street: createAddressDto.street,
+        city: createAddressDto.city,
         district: createAddressDto.district,
         homeNumber: createAddressDto.homeNumber,
         complement: createAddressDto.complement,

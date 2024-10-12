@@ -27,7 +27,7 @@ export class PersonsService {
     private userService: UsersService,
     @Inject()
     private cloudinaryService: CloudinaryService
-  ) { }
+  ) {}
   async create(
     createPersonDto: CreatePersonDto,
     hasTransaction: boolean = false,
@@ -103,6 +103,19 @@ export class PersonsService {
     }
   }
 
+  async findOneByUserId(id: string): Promise<Person> {
+    try {
+      const person = await this.personRepository
+        .createQueryBuilder('person')
+        .leftJoinAndSelect('person.address', 'address')
+        .where('person.user = :id', { id })
+        .getOneOrFail();
+      return person;
+    } catch (err) {
+      throw new NotFoundException(err?.message);
+    }
+  }
+
   async findOneByCPF(cpf: Cpf): Promise<Person> {
     try {
       return await this.personRepository
@@ -121,9 +134,7 @@ export class PersonsService {
       let foundPerson = await this.findOneById(id);
 
       if (updatePersonDto.phone) {
-        person.phone = new Phone(
-          updatePersonDto.phone || foundPerson.phone
-        );
+        person.phone = new Phone(updatePersonDto.phone || foundPerson.phone);
       }
       if (updatePersonDto.cpf) {
         person.cpf = new Cpf(updatePersonDto.cpf.cpf);

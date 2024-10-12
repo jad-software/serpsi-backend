@@ -9,6 +9,7 @@ import { ComorbiditiesModule } from './comorbidities.module';
 import { PersonsModule } from '../persons/persons.module';
 import { DocumentsModule } from '../documents/documents.module';
 import { CloudinaryModule } from '../cloudinary/cloudinary.module';
+import { PsychologistsModule } from '../psychologists/psychologists.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { CloudinaryModule } from '../cloudinary/cloudinary.module';
     PersonsModule,
     forwardRef(() => DocumentsModule),
     CloudinaryModule,
+    PsychologistsModule,
   ],
   controllers: [PatientsController],
   providers: [PatientsService, ...patientProvider],
