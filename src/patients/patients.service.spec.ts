@@ -13,7 +13,8 @@ import { Person } from '../persons/entities/person.enitiy';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { DocumentsService } from '../documents/documents.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
-import { Cpf } from 'src/persons/vo/cpf.vo';
+import { Cpf } from '../persons/vo/cpf.vo';
+import { PsychologistsService } from '../psychologists/psychologists.service';
 
 describe('PatientsService', () => {
   let service: PatientsService;
@@ -50,6 +51,9 @@ describe('PatientsService', () => {
     delete: jest.fn(),
   };
 
+  const mockPsychologistService = {
+    findOne: jest.fn()
+  }
   const mockSchoolService = {
     findOneBy: jest.fn(),
     create: jest.fn(),
@@ -111,6 +115,10 @@ describe('PatientsService', () => {
         {
           provide: DocumentsService,
           useValue: mockDocumentsService,
+        },
+        {
+          provide: PsychologistsService,
+          useValue: mockPsychologistService,
         },
       ],
     }).compile();
