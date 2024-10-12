@@ -30,6 +30,14 @@ export class AgendasService {
       );
       await this.removeAllFromPsychologist(psychologist.id.id);
 
+      const updatePsychologist = {
+        meetValue: createAgendaDto.meetValue,
+        meetDuration: createAgendaDto.meetDuration,
+      } as UpdatePsychologistDto;
+      
+      psychologist.meetDuration = updatePsychologist.meetDuration;
+      psychologist.meetValue = updatePsychologist.meetValue;
+
       createAgendaDto.agendas.forEach((agenda) => {
         const { _day, _avaliableTimes } = agenda;
         _avaliableTimes.forEach((timeSlot) => {
@@ -42,10 +50,7 @@ export class AgendasService {
           operations.push(this.agendaRepository.save(newAgenda));
         });
       });
-      const updatePsychologist = {
-        meetValue: createAgendaDto.meetValue,
-        meetDuration: createAgendaDto.meetDuration,
-      } as UpdatePsychologistDto;
+      
       await this.psychologistService.update(
         psychologist.id.id,
         updatePsychologist
