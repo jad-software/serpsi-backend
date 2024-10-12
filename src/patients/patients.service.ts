@@ -26,6 +26,7 @@ import { DocumentsService } from '../documents/documents.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { School } from './entities/school.entity';
 import { Person } from 'src/persons/entities/person.enitiy';
+import { PsychologistsService } from 'src/psychologists/psychologists.service';
 
 @Injectable()
 export class PatientsService {
@@ -39,7 +40,9 @@ export class PatientsService {
     @Inject(forwardRef(() => DocumentsService))
     private documentService: DocumentsService,
     @Inject()
-    private cloudinaryService: CloudinaryService
+    private cloudinaryService: CloudinaryService,
+    @Inject()
+    private psychologistService: PsychologistsService
   ) {}
 
   async create(
@@ -65,13 +68,14 @@ export class PatientsService {
         );
       }
 
-      let [person, school, comorbidities, parents] = await Promise.all([
+      let [psychologist, person, school, comorbidities, parents] = await Promise.all([
+        this.psychologistService.findOne(createPatientDto.psychologistId),
         this.setPerson(createPatientDto.person, profilePicture),
         this.setSchool(createPatientDto.school),
         this.setComorbities(createPatientDto.comorbidities),
         this.setParents(createPatientDto.parents),
       ]);
-
+      patient.psychologist = psychologist;
       patient.person = person;
       patient.school = school;
       patient.comorbidities = comorbidities;

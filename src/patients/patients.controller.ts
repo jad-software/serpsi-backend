@@ -74,7 +74,7 @@ export class PatientsController {
             },
             psychologistId: {
               type: 'string',
-              example: 'psychologistId',
+              example: '1a6aecba-45d0-44c5-a47d-55b5aaeba93a',
             },
             person: {
               type: 'object',
