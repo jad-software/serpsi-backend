@@ -21,9 +21,7 @@ export class CreatePersonDto implements IPerson {
     example: '12.544.143-1',
   })
   @IsNotEmpty()
-  @Matches(new RegExp(/^\d{1,2}\.?\d{3}\.?\d{3}-?[a-zA-Z0-9]{1}$/), {
-    message: 'Rg Inválido',
-  })
+  @IsString()
   rg: string;
 
   @ApiPropertyOptional({
