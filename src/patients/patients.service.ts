@@ -25,8 +25,8 @@ import { CreateSchoolDto } from './dto/school/create-school.dto';
 import { DocumentsService } from '../documents/documents.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { School } from './entities/school.entity';
-import { Person } from 'src/persons/entities/person.enitiy';
-import { PsychologistsService } from 'src/psychologists/psychologists.service';
+import { Person } from '../persons/entities/person.enitiy';
+import { PsychologistsService } from '../psychologists/psychologists.service';
 
 @Injectable()
 export class PatientsService {
@@ -181,8 +181,7 @@ export class PatientsService {
     });
   }
 
-  // Rota a ser alterada quando tiver vinculos de psicólogo
-  async findAllByPsychologist() {
+  async findAllByPsychologist(id: string) {
     return await this.patientRepository
       .createQueryBuilder('patient')
       .leftJoinAndSelect('patient._person', 'person')
@@ -192,6 +191,7 @@ export class PatientsService {
         'patient.payment_plan',
         'person.cpf',
       ])
+      .where('patient.Psychologist_id = :id',{id} )
       .getRawMany();
   }
 

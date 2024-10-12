@@ -366,9 +366,9 @@ export class PatientsController {
   }
 
   @ApiOperation({ summary: 'lista todos os pacientes de um psicólogo' })
-  @Get('/psychologist')
-  async findAllByPsychologist() {
-    return await this.patientsService.findAllByPsychologist();
+  @Get('/psychologist/:id')
+  async findAllByPsychologist(@Param('id') id: string) {
+    return await this.patientsService.findAllByPsychologist(id);
   }
 
   @ApiOperation({ summary: 'retorna um paciente pelo id' })

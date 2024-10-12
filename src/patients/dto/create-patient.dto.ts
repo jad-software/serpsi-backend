@@ -21,7 +21,7 @@ export class CreatePatientDto implements IPatient {
 
   @ApiProperty({
     example: 'psychologist-id',
-    description: 'O id do psicológo o qual o paciente é atendido',
+    description: 'O id do psicólogo o qual o paciente é atendido',
   })
   @IsNotEmpty()
   @IsString()

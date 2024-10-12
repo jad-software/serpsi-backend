@@ -9,7 +9,7 @@ import { ComorbiditiesModule } from './comorbidities.module';
 import { PersonsModule } from '../persons/persons.module';
 import { DocumentsModule } from '../documents/documents.module';
 import { CloudinaryModule } from '../cloudinary/cloudinary.module';
-import { PsychologistsModule } from 'src/psychologists/psychologists.module';
+import { PsychologistsModule } from '../psychologists/psychologists.module';
 
 @Module({
   imports: [
