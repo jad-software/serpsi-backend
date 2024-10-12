@@ -11,45 +11,59 @@ describe('PsychologistsController', () => {
   let controller: PsychologistsController;
   let service: PsychologistsService;
   const mockPsychologistService = {
-    create: jest.fn((
-      dto: CreatePsychologistDto,
-      profilePicture: Express.Multer.File,
-      crpfile: Express.Multer.File,
-      identifyfile: Express.Multer.File,
-      degreeFile: Express.Multer.File
-    ) => ({
-      id: '1',
-      ...dto,
-      profilePicture: 'profilePictureLink.png',
-      crpfile: 'crpfileLink.pdf',
-      identifyfile: 'identifyfileLink.pdf',
-      degreeFile: 'degreeFileLink.pdf'
-    })),
+    create: jest.fn(
+      (
+        dto: CreatePsychologistDto,
+        profilePicture: Express.Multer.File,
+        crpfile: Express.Multer.File,
+        identifyfile: Express.Multer.File,
+        degreeFile: Express.Multer.File
+      ) => ({
+        id: '1',
+        ...dto,
+        profilePicture: 'profilePictureLink.png',
+        crpfile: 'crpfileLink.pdf',
+        identifyfile: 'identifyfileLink.pdf',
+        degreeFile: 'degreeFileLink.pdf',
+      })
+    ),
     findAll: jest.fn(() => [
       {
-        id: '1', identifyLink: '123', meetValue: 150, meetDuration: 50, crp: {
+        id: '1',
+        identifyLink: '123',
+        meetValue: 150,
+        meetDuration: 50,
+        crp: {
           crp: 'crp',
-          crpLink: 'crpLink.com'
+          crpLink: 'crpLink.com',
         },
-        degreeLink: 'degreeLink.com'
+        degreeLink: 'degreeLink.com',
       },
     ]),
     findOne: jest.fn((id: string) => ({
       id,
-      identifyLink: '123', meetValue: 150, meetDuration: 50, crp: {
+      identifyLink: '123',
+      meetValue: 150,
+      meetDuration: 50,
+      crp: {
         crp: 'crp',
-        crpLink: 'crpLink.com'
+        crpLink: 'crpLink.com',
       },
-      degreeLink: 'degreeLink.com'
+      degreeLink: 'degreeLink.com',
     })),
 
-    update: jest.fn((id: string, dto: UpdatePsychologistDto) => ({ id, ...dto })),
+    update: jest.fn((id: string, dto: UpdatePsychologistDto) => ({
+      id,
+      ...dto,
+    })),
     remove: jest.fn((id: string) => ({ id })),
-  }
+  };
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PsychologistsController],
-      providers: [{ provide: PsychologistsService, useValue: mockPsychologistService }],
+      providers: [
+        { provide: PsychologistsService, useValue: mockPsychologistService },
+      ],
     }).compile();
 
     controller = module.get<PsychologistsController>(PsychologistsController);
@@ -67,8 +81,9 @@ describe('PsychologistsController', () => {
         originalname: 'profile.pdf',
         buffer: Buffer.from(''),
       } as Express.Multer.File;
-      expect(() => controller.validateUploadedFile(profilePicture, ['jpg', 'jpeg', 'png']))
-        .toThrow(BadRequestException);
+      expect(() =>
+        controller.validateUploadedFile(profilePicture, ['jpg', 'jpeg', 'png'])
+      ).toThrow(BadRequestException);
     });
 
     it('Should throw an error if Files is not a pdf File', () => {
@@ -76,14 +91,16 @@ describe('PsychologistsController', () => {
         originalname: 'crpFile.png',
         buffer: Buffer.from(''),
       } as Express.Multer.File;
-      expect(() => controller.validateUploadedFile(crpFile, ['pdf']))
-        .toThrow(BadRequestException);
+      expect(() => controller.validateUploadedFile(crpFile, ['pdf'])).toThrow(
+        BadRequestException
+      );
     });
 
     it('Should throw an error if Files is missing', () => {
-      const crpFile = undefined
-      expect(() => controller.validateUploadedFile(crpFile, ['pdf']))
-        .toThrow(BadRequestException);
+      const crpFile = undefined;
+      expect(() => controller.validateUploadedFile(crpFile, ['pdf'])).toThrow(
+        BadRequestException
+      );
     });
 
     it('Should pass Validation With Correct File extention', () => {
@@ -91,10 +108,10 @@ describe('PsychologistsController', () => {
         originalname: 'crpFile.pdf',
         buffer: Buffer.from(''),
       } as Express.Multer.File;
-      expect(() => controller.validateUploadedFile(crpFile, ['pdf']))
-        .not.toThrow();
-    })
-
+      expect(() =>
+        controller.validateUploadedFile(crpFile, ['pdf'])
+      ).not.toThrow();
+    });
   });
 
   describe('create', () => {
@@ -126,9 +143,12 @@ describe('PsychologistsController', () => {
             homeNumber: 10,
             complement: 'Complement de Address teste',
           },
-        }
-        ,
-        user: { email: 'john@example.com', password: 'Password@123', role: 'PSI' },
+        },
+        user: {
+          email: 'john@example.com',
+          password: 'Password@123',
+          role: 'PSI',
+        },
         crp: { crp: '00/123456' },
         meetValue: 100,
         meetDuration: 60,
@@ -143,7 +163,7 @@ describe('PsychologistsController', () => {
         files[0], // profilePicture
         files[1], // crpFile
         files[2], // identifyfile
-        files[3], // degreeFile
+        files[3] // degreeFile
       );
     });
   });
@@ -151,13 +171,16 @@ describe('PsychologistsController', () => {
     it('Should list all Psychologists', async () => {
       expect(await controller.findAll()).toEqual([
         {
-          id: '1', identifyLink: '123', meetValue: 150, meetDuration: 50, crp: {
+          id: '1',
+          identifyLink: '123',
+          meetValue: 150,
+          meetDuration: 50,
+          crp: {
             crp: 'crp',
-            crpLink: 'crpLink.com'
+            crpLink: 'crpLink.com',
           },
-          degreeLink: 'degreeLink.com'
+          degreeLink: 'degreeLink.com',
         },
-
       ]);
       expect(service.findAll).toHaveBeenCalled();
     });
@@ -167,11 +190,14 @@ describe('PsychologistsController', () => {
       const id = '1';
       expect(await controller.findOne(id)).toEqual({
         id,
-        identifyLink: '123', meetValue: 150, meetDuration: 50, crp: {
+        identifyLink: '123',
+        meetValue: 150,
+        meetDuration: 50,
+        crp: {
           crp: 'crp',
-          crpLink: 'crpLink.com'
+          crpLink: 'crpLink.com',
         },
-        degreeLink: 'degreeLink.com'
+        degreeLink: 'degreeLink.com',
       });
       expect(service.findOne).toHaveBeenCalled();
     });
@@ -185,14 +211,13 @@ describe('PsychologistsController', () => {
       };
       expect(await controller.update(id, dto)).toEqual({ id, ...dto });
       expect(service.update).toHaveBeenCalled();
-
-    })
+    });
   });
   describe('remove', () => {
     it('Should remove a Psychologist', async () => {
       const id = '1';
       expect(await controller.remove(id)).toEqual({ id });
       expect(service.remove).toHaveBeenCalled();
-    })
-  })
+    });
+  });
 });

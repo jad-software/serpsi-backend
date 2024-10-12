@@ -17,6 +17,7 @@ import { School } from './school.entity';
 import { Comorbidity } from './comorbidity.entity';
 import { Person } from '../../persons/entities/person.enitiy';
 import { Document } from '../../documents/entities/document.entity';
+import { Psychologist } from '../../psychologists/entities/psychologist.entity';
 
 @Entity()
 export class Patient extends EntityBase implements IPatient {
@@ -59,6 +60,11 @@ export class Patient extends EntityBase implements IPatient {
   @JoinTable()
   private _parents: Person[];
 
+  @ManyToOne(() => Psychologist, (psychologist) => psychologist.patients, {
+    nullable: true,
+  })
+  private _psychologist: Psychologist;
+
   get previewFollowUps(): Document[] {
     return this._previewFollowUps;
   }
@@ -84,6 +90,14 @@ export class Patient extends EntityBase implements IPatient {
 
   get parents(): Person[] {
     return this._parents;
+  }
+
+  get psychologist(): Psychologist {
+    return this._psychologist;
+  }
+
+  set psychologist(psychologist: Psychologist) {
+    this._psychologist = psychologist;
   }
 
   set parents(parents: Person[]) {

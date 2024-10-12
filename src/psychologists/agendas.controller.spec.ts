@@ -13,7 +13,13 @@ describe('AgendasController', () => {
   const mockAgendasService = {
     create: jest.fn((dto: CreateAgendaDto) => ({ id: '1', ...dto })),
     findAll: jest.fn(() => [
-      { id: '1', psychologistId: '123', meetValue: 150, meetDuration: 50, agendas: [] },
+      {
+        id: '1',
+        psychologistId: '123',
+        meetValue: 150,
+        meetDuration: 50,
+        agendas: [],
+      },
     ]),
     findAllFromPsychologist: jest.fn((id: string) => ({
       id,
@@ -53,10 +59,12 @@ describe('AgendasController', () => {
           },
         ],
       };
-  
-      expect(() => controller.validateAvaliableTime(dto)).toThrow(BadRequestException);
+
+      expect(() => controller.validateAvaliableTime(dto)).toThrow(
+        BadRequestException
+      );
     });
-  
+
     it('should throw an error if endTime is before startTime', () => {
       const dto: CreateAgendaDto = {
         psychologistId: '123',
@@ -65,14 +73,18 @@ describe('AgendasController', () => {
         agendas: [
           {
             _day: 'SEGUNDA' as Day,
-            _avaliableTimes: [{ _startTime: '10:00', _endTime: '09:00', id: '1' }],
+            _avaliableTimes: [
+              { _startTime: '10:00', _endTime: '09:00', id: '1' },
+            ],
           },
         ],
       };
-  
-      expect(() => controller.validateAvaliableTime(dto)).toThrow(BadRequestException);
+
+      expect(() => controller.validateAvaliableTime(dto)).toThrow(
+        BadRequestException
+      );
     });
-  
+
     it('should pass validation with correct times', () => {
       const dto: CreateAgendaDto = {
         psychologistId: '123',
@@ -87,7 +99,7 @@ describe('AgendasController', () => {
           },
         ],
       };
-  
+
       expect(() => controller.validateAvaliableTime(dto)).not.toThrow();
     });
   });
@@ -107,16 +119,22 @@ describe('AgendasController', () => {
           },
         ],
       };
-  
+
       expect(await controller.create(dto)).toEqual({ id: '1', ...dto });
       expect(service.create).toHaveBeenCalledWith(dto);
     });
   });
-  
+
   describe('findAll', () => {
     it('should return an array of agendas', async () => {
       expect(await controller.findAll()).toEqual([
-        { id: '1', psychologistId: '123', meetValue: 150, meetDuration: 50, agendas: [] },
+        {
+          id: '1',
+          psychologistId: '123',
+          meetValue: 150,
+          meetDuration: 50,
+          agendas: [],
+        },
       ]);
       expect(service.findAll).toHaveBeenCalled();
     });

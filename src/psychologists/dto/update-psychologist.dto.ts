@@ -8,7 +8,6 @@ import { UpdateUserDto } from '../../users/dto/update-user.dto';
 export class UpdatePsychologistDto extends PartialType(
   OmitType(CreatePsychologistDto, ['person', 'user'] as const)
 ) {
-
   @ApiPropertyOptional({
     type: UpdatePersonDto,
     description: 'Dados pessoais de um psicólogo',

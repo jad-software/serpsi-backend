@@ -72,6 +72,10 @@ export class PatientsController {
               type: 'string',
               example: 'TRIMESTRAL',
             },
+            psychologistId: {
+              type: 'string',
+              example: 'psychologistId',
+            },
             person: {
               type: 'object',
               properties: {

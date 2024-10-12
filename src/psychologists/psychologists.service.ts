@@ -141,7 +141,6 @@ export class PsychologistsService {
             updatePsychologistDto.person
           )
         );
-       
       }
       if (user) {
         updateTasks.push(

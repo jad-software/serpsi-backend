@@ -12,6 +12,7 @@ import { Crp } from '../vo/crp.vo';
 import { CreatePsychologistDto } from '../dto/create-psychologist.dto';
 import { User } from '../../users/entities/user.entity';
 import { Agenda } from './agenda.entity';
+import { Patient } from '../../patients/entities/patient.entity';
 
 @Entity()
 export class Psychologist extends EntityBase {
@@ -45,6 +46,17 @@ export class Psychologist extends EntityBase {
 
   @OneToMany(() => Agenda, (agenda) => agenda.psychologist)
   agendas: Agenda[];
+
+  @OneToMany(() => Patient, (patient) => patient.psychologist)
+  private _patients: Patient[];
+
+  get patients(): Patient[] {
+    return this._patients;
+  }
+
+  set patients(patients: Patient[]) {
+    this._patients = patients;
+  }
 
   get crp(): Crp {
     return this._crp;

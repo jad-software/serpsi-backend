@@ -17,7 +17,7 @@ export class AvailableTimeDto {
   @ApiProperty({
     type: 'string',
     description: 'Horário de inicio',
-    example: '10:00'
+    example: '10:00',
   })
   @IsString()
   @IsNotEmpty()
@@ -26,7 +26,7 @@ export class AvailableTimeDto {
   @ApiProperty({
     type: 'string',
     description: 'Horário de termino',
-    example: '12:00'
+    example: '12:00',
   })
   @IsString()
   @IsNotEmpty()
@@ -59,7 +59,7 @@ export class CreateAgendaDto {
   @ApiProperty({
     type: 'string',
     description: 'id do psicólogo ao qual pertence a agenda',
-    example: '2315cd8e-093e-4f7b-badc-55ae4c6e105d'
+    example: '2315cd8e-093e-4f7b-badc-55ae4c6e105d',
   })
   @IsNotEmpty()
   @IsString()

@@ -46,7 +46,7 @@ describe('PsychologistsService', () => {
       save: jest.fn(), // Mock do método save
     },
   };
-  
+
   const mockRepository = {
     manager: {
       connection: {
@@ -66,7 +66,7 @@ describe('PsychologistsService', () => {
     create: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
-    findOneByUserId: jest.fn()
+    findOneByUserId: jest.fn(),
   };
 
   const mockUsersService = {
@@ -81,25 +81,24 @@ describe('PsychologistsService', () => {
   };
 
   beforeEach(async () => {
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PsychologistsService,
         {
           provide: data_providers.PSYCHOLOGISTS_REPOSITORY,
-          useValue: mockRepository
+          useValue: mockRepository,
         },
         {
           provide: UsersService,
-          useValue: mockUsersService
+          useValue: mockUsersService,
         },
         {
           provide: PersonsService,
-          useValue: mockPersonsService
+          useValue: mockPersonsService,
         },
         {
           provide: CloudinaryService,
-          useValue: mockCloudinaryService
+          useValue: mockCloudinaryService,
         },
       ],
     }).compile();
@@ -120,12 +119,16 @@ describe('PsychologistsService', () => {
         crp: '00/123456',
         crpLink: 'crpLink.com',
       } as Crp;
-  
+
       const createPsychologistDto: CreatePsychologistDto = {
         crp,
         meetDuration: 60,
         meetValue: 100,
-        user: { email: 'john@example.com', password: 'Password@123', role: Role.PSYCHOLOGIST },
+        user: {
+          email: 'john@example.com',
+          password: 'Password@123',
+          role: Role.PSYCHOLOGIST,
+        },
         person: {
           rg: '98.747.153-7',
           birthdate: new Date('1990-01-01'),
@@ -143,35 +146,37 @@ describe('PsychologistsService', () => {
           },
         },
       };
-  
+
       const mockPsychologist = new Psychologist({});
       mockUsersService.create.mockResolvedValue({ id: { id: 'user-id' } });
       mockPersonsService.create.mockResolvedValue({ id: { id: 'person-id' } });
       mockCloudinaryService.uploadFile.mockResolvedValue({ url: 'file-url' });
       mockQueryRunner.manager.save.mockResolvedValue(mockPsychologist); // Mock do save
-  
+
       const files = [
         { fieldname: 'profilePicture', originalname: 'profile.jpg' },
         { fieldname: 'crpFile', originalname: 'crp.pdf' },
         { fieldname: 'identifyfile', originalname: 'id.pdf' },
         { fieldname: 'degreeFile', originalname: 'degree.pdf' },
       ] as Express.Multer.File[];
-  
+
       const result = await service.create(
         createPsychologistDto,
         files[0], // profilePicture
         files[1], // crpFile
         files[2], // identifyfile
-        files[3], // degreeFile
+        files[3] // degreeFile
       );
-  
+
       expect(result).toEqual(mockPsychologist);
-      expect(mockQueryRunner.manager.save).toHaveBeenCalledWith(expect.any(Psychologist)); // Verifica o save
+      expect(mockQueryRunner.manager.save).toHaveBeenCalledWith(
+        expect.any(Psychologist)
+      ); // Verifica o save
       expect(mockQueryRunner.commitTransaction).toHaveBeenCalled(); // Verifica commit
       expect(mockQueryRunner.release).toHaveBeenCalled(); // Verifica release
     });
   });
-  
+
   describe('findAll', () => {
     it('Should return an array of psychologists with user and person details', async () => {
       const mockPsychologists = [
@@ -180,16 +185,21 @@ describe('PsychologistsService', () => {
           user: { id: { id: 'user-id' }, person: {} },
         },
       ];
-  
+
       mockQueryBuilder.getMany.mockResolvedValue(mockPsychologists);
       mockPersonsService.findOneByUserId.mockResolvedValue({ id: 'person-id' });
-  
+
       const result = await service.findAll();
-  
+
       expect(result).toEqual(mockPsychologists);
-      expect(mockQueryBuilder.leftJoinAndSelect).toHaveBeenCalledWith('psychologist.user', 'user');
+      expect(mockQueryBuilder.leftJoinAndSelect).toHaveBeenCalledWith(
+        'psychologist.user',
+        'user'
+      );
       expect(mockQueryBuilder.getMany).toHaveBeenCalled();
-      expect(mockPersonsService.findOneByUserId).toHaveBeenCalledWith('user-id');
+      expect(mockPersonsService.findOneByUserId).toHaveBeenCalledWith(
+        'user-id'
+      );
     });
   });
 
@@ -200,63 +210,65 @@ describe('PsychologistsService', () => {
         user: { id: { id: 'user-id' }, person: {} },
         meetValue: '100',
       };
-  
+
       mockQueryBuilder.getOneOrFail.mockResolvedValue(mockPsychologist);
       mockPersonsService.findOneByUserId.mockResolvedValue({ id: 'person-id' });
-  
+
       const result = await service.findOne('1');
-  
+
       expect(result).toEqual({
         ...mockPsychologist,
         meetValue: 100,
       });
-      expect(mockQueryBuilder.where).toHaveBeenCalledWith('psychologist.id = :id', { id: '1' });
+      expect(mockQueryBuilder.where).toHaveBeenCalledWith(
+        'psychologist.id = :id',
+        { id: '1' }
+      );
       expect(mockQueryBuilder.getOneOrFail).toHaveBeenCalled();
-      expect(mockPersonsService.findOneByUserId).toHaveBeenCalledWith('user-id');
+      expect(mockPersonsService.findOneByUserId).toHaveBeenCalledWith(
+        'user-id'
+      );
     });
-  
+
     it('Should throw BadRequestException if psychologist not found', async () => {
       mockQueryBuilder.getOneOrFail.mockRejectedValue(new Error('Not found'));
-  
+
       await expect(service.findOne('1')).rejects.toThrow(BadRequestException);
     });
   });
-
-  
 
   describe('remove', () => {
     it('Should remove a psychologist and related files', async () => {
       const mockPsychologist = {
         id: '1',
         user: {
-          id: { id: 'user-id' }, 
-          person: { id: { id: 'person-id' } }, 
+          id: { id: 'user-id' },
+          person: { id: { id: 'person-id' } },
         },
         crp: { crpLink: 'crpLink/file-id' },
-        identifyLink: 'identifyLink/file-id', 
-        degreeLink: 'degreeLink/file-id', 
+        identifyLink: 'identifyLink/file-id',
+        degreeLink: 'degreeLink/file-id',
       };
-  
-      service.findOne = jest.fn().mockResolvedValue(mockPsychologist);  
-  
+
+      service.findOne = jest.fn().mockResolvedValue(mockPsychologist);
 
       await service.remove('1');
-  
 
       expect(mockRepository.remove).toHaveBeenCalledWith(mockPsychologist);
-  
 
       expect(mockPersonsService.delete).toHaveBeenCalledWith('person-id');
-  
 
       expect(mockUsersService.remove).toHaveBeenCalledWith('user-id');
-  
 
-      expect(mockCloudinaryService.deleteFileOtherThanImage).toHaveBeenCalledTimes(3);
-      expect(mockCloudinaryService.deleteFileOtherThanImage).toHaveBeenCalledWith('file-id');
+      expect(
+        mockCloudinaryService.deleteFileOtherThanImage
+      ).toHaveBeenCalledTimes(3);
+      expect(
+        mockCloudinaryService.deleteFileOtherThanImage
+      ).toHaveBeenCalledWith('file-id');
     });
   });
-  
+
   describe('update', () => {
     it('Should update a psychologist without changing the service', async () => {
       const mockPsychologist = {
@@ -267,30 +279,34 @@ describe('PsychologistsService', () => {
         },
         crp: { crp: '00/123456' },
       };
-  
+
       service.findOne = jest.fn().mockResolvedValue(mockPsychologist);
-  
+
       mockPersonsService.findOneByUserId.mockResolvedValue({
         id: { id: 'person-id' },
       });
-  
+
       const updateDto: UpdatePsychologistDto = {
         person: { name: 'Updated Name' },
         user: { email: 'updated@example.com' },
         crp: { crp: '00/654321' } as Crp,
       };
-  
+
       mockPersonsService.update.mockResolvedValue({});
       mockUsersService.update.mockResolvedValue({});
       mockRepository.update.mockResolvedValue(mockPsychologist);
-  
+
       const result = await service.update('1', updateDto);
-      expect(mockPersonsService.update).toHaveBeenCalledWith('person-id', updateDto.person);
-      expect(mockUsersService.update).toHaveBeenCalledWith('user-id', updateDto.user);
+      expect(mockPersonsService.update).toHaveBeenCalledWith(
+        'person-id',
+        updateDto.person
+      );
+      expect(mockUsersService.update).toHaveBeenCalledWith(
+        'user-id',
+        updateDto.user
+      );
       expect(mockRepository.update).toHaveBeenCalledWith('1', mockPsychologist);
       expect(result).toEqual(mockPsychologist);
     });
   });
-  
-  
 });

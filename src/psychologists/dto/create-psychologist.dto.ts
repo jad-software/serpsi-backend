@@ -7,7 +7,6 @@ import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { CreateCrpDto } from './create-crp.dto';
 
 export class CreatePsychologistDto {
-
   @ApiProperty({
     type: CreateCrpDto,
     description: 'Dados do CRP do psicólogo',

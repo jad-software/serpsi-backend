@@ -128,6 +128,7 @@ describe('PatientsService', () => {
     } as Cpf;
     const createPatientDto: CreatePatientDto = {
       paymentPlan: PaymentPlan.MENSAL,
+      psychologistId: '',
       person: {
         rg: '',
         birthdate: undefined,

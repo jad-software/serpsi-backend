@@ -18,7 +18,13 @@ import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import { extname } from 'path';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('psychologists')
 @ApiBearerAuth()
@@ -130,47 +136,47 @@ export class PsychologistsController {
                 },
               },
             },
-            user:{
+            user: {
               type: 'object',
-              properties:{
+              properties: {
                 email: {
                   type: 'string',
-                  example: 'Psi123@teste.com'
+                  example: 'Psi123@teste.com',
                 },
                 password: {
                   type: 'string',
-                  example: 'Ifwrifn@123'
+                  example: 'Ifwrifn@123',
                 },
                 role: {
                   type: 'string',
-                  example: 'PSI'
-                }
-              }
+                  example: 'PSI',
+                },
+              },
             },
-            crp:{
+            crp: {
               type: 'object',
-              properties:{
-                crp:{
+              properties: {
+                crp: {
                   type: 'string',
-                  example: '00/123456'
-                }
-              }
+                  example: '00/123456',
+                },
+              },
             },
             meetValue: {
               type: 'IsNumber',
-              example: 10
+              example: 10,
             },
             meetDuration: {
               type: 'IsNumber',
-              example: 200
-            }
+              example: 200,
+            },
           },
         },
-        crpFile:{
+        crpFile: {
           type: 'string',
           format: 'binary',
         },
-        identifyfile:{
+        identifyfile: {
           type: 'string',
           format: 'binary',
         },

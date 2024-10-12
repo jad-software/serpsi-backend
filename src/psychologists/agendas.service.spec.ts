@@ -61,7 +61,8 @@ describe('AgendasService', () => {
     }).compile();
 
     service = module.get<AgendasService>(AgendasService);
-    psychologistService = module.get<PsychologistsService>(PsychologistsService);
+    psychologistService =
+      module.get<PsychologistsService>(PsychologistsService);
   });
 
   it('should be defined', () => {
@@ -72,7 +73,7 @@ describe('AgendasService', () => {
     it('should create agendas and update psychologist', async () => {
       const crp = new Crp({
         crp: '00/123456',
-        crpLink: 'teste.com'
+        crpLink: 'teste.com',
       });
       const psychologistId = new Id('psychologist-id');
 
@@ -82,7 +83,6 @@ describe('AgendasService', () => {
         meetDuration: 50,
         crp,
       });
-    
 
       const createAgendaDto: CreateAgendaDto = {
         psychologistId: 'psychologist-id',
@@ -91,22 +91,31 @@ describe('AgendasService', () => {
         agendas: [
           {
             _day: 'SEGUNDA' as Day,
-            _avaliableTimes: [{ _startTime: '08:00', _endTime: '12:00', id: '' }],
+            _avaliableTimes: [
+              { _startTime: '08:00', _endTime: '12:00', id: '' },
+            ],
           },
         ],
       };
 
-      jest.spyOn(psychologistService, 'findOne').mockResolvedValue(psychologist);
+      jest
+        .spyOn(psychologistService, 'findOne')
+        .mockResolvedValue(psychologist);
       jest.spyOn(mockRepository, 'save').mockResolvedValue({} as Agenda);
       jest.spyOn(psychologistService, 'update').mockResolvedValue(psychologist);
       mockQueryBuilder.getMany.mockReturnValue([]);
       const result = await service.create(createAgendaDto);
 
-      expect(psychologistService.findOne).toHaveBeenCalledWith('psychologist-id');
-      expect(psychologistService.update).toHaveBeenCalledWith('psychologist-id', {
-        meetValue: 250,
-        meetDuration: 60,
-      });
+      expect(psychologistService.findOne).toHaveBeenCalledWith(
+        'psychologist-id'
+      );
+      expect(psychologistService.update).toHaveBeenCalledWith(
+        'psychologist-id',
+        {
+          meetValue: 250,
+          meetDuration: 60,
+        }
+      );
       expect(mockRepository.save).toHaveBeenCalledTimes(1);
       expect(result).toBeDefined();
     });
@@ -119,17 +128,29 @@ describe('AgendasService', () => {
         agendas: [],
       };
 
-      jest.spyOn(psychologistService, 'findOne').mockRejectedValue(new Error('Error'));
+      jest
+        .spyOn(psychologistService, 'findOne')
+        .mockRejectedValue(new Error('Error'));
 
-      await expect(service.create(createAgendaDto)).rejects.toThrow(BadRequestException);
+      await expect(service.create(createAgendaDto)).rejects.toThrow(
+        BadRequestException
+      );
     });
   });
 
   describe('findAll', () => {
     it('should return all agendas', async () => {
       const agendas = [
-        new Agenda({ day: 'SEGUNDA' as Day, startTime: '08:00', endTime: '12:00' }),
-        new Agenda({ day: 'TERCA' as Day, startTime: '10:00', endTime: '14:00' }),
+        new Agenda({
+          day: 'SEGUNDA' as Day,
+          startTime: '08:00',
+          endTime: '12:00',
+        }),
+        new Agenda({
+          day: 'TERCA' as Day,
+          startTime: '10:00',
+          endTime: '14:00',
+        }),
       ];
 
       jest.spyOn(mockRepository, 'createQueryBuilder').mockReturnValueOnce({
@@ -150,7 +171,7 @@ describe('AgendasService', () => {
         meetValue: 200,
         meetDuration: 50,
       });
-  
+
       const mockAgendas = [
         {
           day: 'SEGUNDA' as Day,
@@ -165,8 +186,10 @@ describe('AgendasService', () => {
           id: new Id('agenda-id-2'),
         },
       ];
-  
-      jest.spyOn(psychologistService, 'findOne').mockResolvedValue(psychologist);
+
+      jest
+        .spyOn(psychologistService, 'findOne')
+        .mockResolvedValue(psychologist);
       jest.spyOn(mockRepository, 'createQueryBuilder').mockReturnValue({
         leftJoinAndSelect: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
@@ -175,15 +198,15 @@ describe('AgendasService', () => {
         addOrderBy: jest.fn().mockReturnThis(),
         getMany: jest.fn().mockResolvedValue(mockAgendas),
       } as any);
-  
+
       const result = await service.findAllFromPsychologist(psychologistId);
-  
+
       expect(psychologistService.findOne).toHaveBeenCalledWith(psychologistId);
       expect(result.psychologistId).toBe(psychologistId);
       expect(result.meetDuration).toBe(psychologist.meetDuration);
       expect(result.meetValue).toBe(psychologist.meetValue);
       expect(result.agendas.length).toBe(2); // Verificando o número de agendas retornadas
-  
+
       expect(result.agendas).toEqual([
         {
           _day: 'SEGUNDA',
@@ -207,14 +230,17 @@ describe('AgendasService', () => {
         },
       ]);
     });
-  
+
     it('should throw BadRequestException if an error occurs', async () => {
       const psychologistId = 'psychologist-id';
-  
-      jest.spyOn(psychologistService, 'findOne').mockRejectedValue(new Error('Error'));
-  
-      await expect(service.findAllFromPsychologist(psychologistId)).rejects.toThrow(BadRequestException);
+
+      jest
+        .spyOn(psychologistService, 'findOne')
+        .mockRejectedValue(new Error('Error'));
+
+      await expect(
+        service.findAllFromPsychologist(psychologistId)
+      ).rejects.toThrow(BadRequestException);
     });
   });
-  
 });

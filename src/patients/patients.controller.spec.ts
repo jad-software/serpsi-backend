@@ -65,6 +65,7 @@ describe('PatientsController', () => {
       } as Address;
       const dto: CreatePatientDto = {
         paymentPlan: PaymentPlan.BIMESTRAL,
+        psychologistId: 'psychologist-id',
         school: {
           name: 'ativa idade',
           CNPJ: '00.000.000/0001-00',

@@ -21,7 +21,7 @@ export class AgendasService {
     private agendaRepository: Repository<Agenda>,
     @Inject(forwardRef(() => PsychologistsService))
     private psychologistService: PsychologistsService
-  ) { }
+  ) {}
   async create(createAgendaDto: CreateAgendaDto) {
     const operations = [];
     try {
@@ -42,11 +42,14 @@ export class AgendasService {
           operations.push(this.agendaRepository.save(newAgenda));
         });
       });
-      const updatePsychologist  = {
+      const updatePsychologist = {
         meetValue: createAgendaDto.meetValue,
-        meetDuration: createAgendaDto.meetDuration
+        meetDuration: createAgendaDto.meetDuration,
       } as UpdatePsychologistDto;
-      await this.psychologistService.update(psychologist.id.id, updatePsychologist);
+      await this.psychologistService.update(
+        psychologist.id.id,
+        updatePsychologist
+      );
       const savedDays = await Promise.all(operations);
       return savedDays;
     } catch (err) {
@@ -74,7 +77,7 @@ export class AgendasService {
           'agenda._day',
           'agenda._startTime',
           'agenda._endTime',
-          'agenda._id._id'
+          'agenda._id._id',
         ])
         .orderBy('agenda.day', 'ASC')
         .addOrderBy('agenda.startTime', 'ASC')
