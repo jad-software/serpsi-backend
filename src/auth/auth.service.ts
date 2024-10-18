@@ -1,4 +1,6 @@
+import { PsychologistsService } from './../psychologists/psychologists.service';
 import {
+  Inject,
   Injectable,
   NotAcceptableException,
   UnauthorizedException,
@@ -12,7 +14,9 @@ import * as bcrypt from 'bcrypt';
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    @Inject()
+    private psychologistService:PsychologistsService
   ) {}
   async validateUser(email: string, password: string): Promise<User> {
     const user = await this.usersService.findOneByEmail(email);
@@ -27,9 +31,15 @@ export class AuthService {
   }
 
   async login(user: User) {
+    let id = user.id.id;
+    if(user.role === 'PSI'){
+      const psychologist = await this.psychologistService.findOneByUser(user.id.id);
+      id = psychologist.id.id;
+    }
+    
     const payload = {
       email: user.email.email,
-      sub: user.id.id,
+      sub: id,
       role: user.role,
     };
     return {
