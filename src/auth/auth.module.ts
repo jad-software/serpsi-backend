@@ -10,6 +10,7 @@ import { JwtStrategy } from './providers/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt.guards';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './guards/roles.guards';
+import { PsychologistsModule } from 'src/psychologists/psychologists.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { RolesGuard } from './guards/roles.guards';
       secret: jwt_constants.JWT_SECRET,
       signOptions: { expiresIn: '24h' },
     }),
+    PsychologistsModule
   ],
   providers: [
     AuthService,

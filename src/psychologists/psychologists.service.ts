@@ -20,7 +20,7 @@ export class PsychologistsService {
     private personsService: PersonsService,
     @Inject()
     private cloudinaryService: CloudinaryService
-  ) {}
+  ) { }
 
   async create(
     createPsychologistDto: CreatePsychologistDto,
@@ -93,6 +93,11 @@ export class PsychologistsService {
     }
   }
 
+  async findOneByUser(id: string): Promise<Psychologist> {
+    const allPsychologist = await this.findAll();
+    const psychologist = allPsychologist.filter(p => p.user.id.id === id)[0];
+    return psychologist;
+  }
   async findAll() {
     try {
       const psychologists = await this.psychologistsRepository
