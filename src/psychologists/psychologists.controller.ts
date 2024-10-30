@@ -25,6 +25,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { ChangePassworDto } from './dto/change-password.dto';
 
 @ApiTags('psychologists')
 @ApiBearerAuth()
@@ -260,5 +261,10 @@ export class PsychologistsController {
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return await this.psychologistsService.remove(id);
+  }
+
+  @Patch('/updatePassword/:id')
+  async updatePassword(@Param('id') id: string, @Body() changePassword: ChangePassworDto){
+    console.log(changePassword);
   }
 }

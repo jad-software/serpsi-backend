@@ -138,7 +138,7 @@ export class PsychologistsService {
     try {
       let foundPsychologist = await this.findOne(id);
       const updateTasks = [];
-      const { person, user, crp, ...otherFields } = updatePsychologistDto;
+      const { person, user, crp,...otherFields } = updatePsychologistDto;
       if (person) {
         updateTasks.push(
           this.personsService.update(
