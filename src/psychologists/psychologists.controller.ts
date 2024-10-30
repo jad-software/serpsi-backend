@@ -265,6 +265,6 @@ export class PsychologistsController {
 
   @Patch('/updatePassword/:id')
   async updatePassword(@Param('id') id: string, @Body() changePassword: ChangePassworDto){
-    console.log(changePassword);
+    return await this.psychologistsService.updatePassword(id, changePassword);
   }
 }
