@@ -108,16 +108,26 @@ export class DocumentsService {
     try {
       const documents = await this.documentRepository
         .createQueryBuilder('document')
-        .leftJoin('document._patient', 'patient')
-        .leftJoin('patient._person', 'person')
-        .select([
+        .leftJoinAndSelect('document._patient', 'patient')
+        .leftJoinAndSelect('patient._person', 'person')
+        .select(
           'document._id._id',
-          'person._name',
+          'id'
+        )
+        .addSelect(
           'document._title',
+          'title'
+        )
+        .addSelect(
           'document._docLink',
-        ])
+          'docLink'
+        )
+        .addSelect(
+          'person._name',
+          'name'
+        )
         .where('patient.Psychologist_id = :psychologistId', { psychologistId })
-        .getMany();
+        .getRawMany();
       return documents;
     } catch (err) {
       throw new BadRequestException(err?.message);
