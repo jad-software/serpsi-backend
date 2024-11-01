@@ -104,6 +104,26 @@ export class DocumentsService {
     }
   }
 
+  async findAllByPsychologist(psychologistId: string) {
+    try {
+      const documents = await this.documentRepository
+        .createQueryBuilder('document')
+        .leftJoin('document._patient', 'patient')
+        .leftJoin('patient._person', 'person')
+        .select([
+          'document._id._id',
+          'person._name',
+          'document._title',
+          'document._docLink',
+        ])
+        .where('patient.Psychologist_id = :psychologistId', { psychologistId })
+        .getMany();
+      return documents;
+    } catch (err) {
+      throw new BadRequestException(err?.message);
+    }
+  }
+
   async findOne(id: string): Promise<Document> {
     try {
       const document = await this.documentRepository
