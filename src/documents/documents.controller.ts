@@ -140,6 +140,15 @@ export class DocumentsController {
     return await this.documentsService.findAllByPatient(id);
   }
 
+  @Get('/psychologist/:id')
+  @ApiOperation({
+    summary:
+      'Retorna todos os documentos de todos os pacientes de um psicólogo',
+  })
+  async findAllByPsychologist(@Param('id') id: string) {
+    return await this.documentsService.findAllByPsychologist(id);
+  }
+
   @Get(':id')
   @ApiOperation({
     summary: 'Retorna um documento de acordo com o id',
