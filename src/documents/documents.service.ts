@@ -73,7 +73,6 @@ export class DocumentsService {
           });
           document.patient = patient;
           publicsIds.push(document.docLink.split('/').slice(-1)[0]);
-
           returnedFollowUps.push(await queryRunner.manager.save(document));
         }
       }
