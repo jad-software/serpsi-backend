@@ -8,6 +8,7 @@ import { UsersService } from '../users/users.service';
 import { PersonsService } from '../persons/persons.service';
 import { Crp } from './vo/crp.vo';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { ChangePassworDto } from './dto/change-password.dto';
 
 @Injectable()
 export class PsychologistsService {
@@ -193,6 +194,19 @@ export class PsychologistsService {
         this.cloudinaryService.deleteFileOtherThanImage(degreePublicId),
       ]);
     } catch (err) {
+      throw new BadRequestException(err?.message);
+    }
+  }
+
+  async updatePassword(id: string, changePasswordDto: ChangePassworDto) {
+    try {
+      const person = await this.findOne(id);
+      const result = await this.usersService.updatePassword(
+        person.user.email.email, changePasswordDto
+      );
+      return result;
+    }
+    catch (err) {
       throw new BadRequestException(err?.message);
     }
   }

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -12,13 +13,14 @@ import { Repository } from 'typeorm';
 import { Email } from './vo/email.vo';
 import { Id } from '../entity-base/vo/id.vo';
 import * as bcrypt from 'bcrypt';
+import { ChangePassworDto } from '../psychologists/dto/change-password.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @Inject(data_providers.USER_REPOSITORY)
     private userRepository: Repository<User>
-  ) {}
+  ) { }
 
   async create(
     createUserDto: CreateUserDto,
@@ -93,5 +95,32 @@ export class UsersService {
 
   async remove(id: string): Promise<any> {
     return await this.userRepository.delete(id);
+  }
+
+  async updatePassword(email: string, changePasswordDto: ChangePassworDto) {
+    try {
+      const user = await this.findOneByEmail(email);
+      const id = user.id.id;
+      const passwordValid = await bcrypt.compare(changePasswordDto._password, user.password);
+      if (!passwordValid) {
+        throw new BadRequestException('Senha antiga incorreta');
+      }
+      const isNewPasswordEqualOldPassword = await bcrypt.compare(
+        changePasswordDto._newPassword, user.password
+      );
+      if (isNewPasswordEqualOldPassword) {
+        throw new BadRequestException('Senha Nova não deve ser igual a anterior');
+      }
+      const hashedPassword = await bcrypt.hash(
+        changePasswordDto._newPassword,
+        bcrypt_salt
+      );
+
+      user.password = hashedPassword;
+      this.userRepository.update(id, user);
+    }
+    catch (err) {
+      throw new InternalServerErrorException(err?.message);
+    }
   }
 }

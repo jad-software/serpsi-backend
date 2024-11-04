@@ -8,7 +8,7 @@ export class CreateCrpDto {
     example: '00/000001',
   })
   @IsNotEmpty()
-  @Matches(/^\d{2}\/\d{6}$/, {
+  @Matches(/^\d{2}\/\d{5,6}$/, {
     message: 'CRP Inválido',
   })
   crp: string;
