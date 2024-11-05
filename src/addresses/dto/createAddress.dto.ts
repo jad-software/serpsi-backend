@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 import { IAddress } from '../interfaces/address.interface';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -62,7 +62,7 @@ export class CreateAddressDto implements IAddress {
     description: 'Complemento do endereço da pessoa',
     example: 'Tô sem ideia do que colocar',
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   complement: string;
 }
