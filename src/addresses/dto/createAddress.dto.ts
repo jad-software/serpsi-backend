@@ -49,13 +49,12 @@ export class CreateAddressDto implements IAddress {
   state: string;
 
   @ApiProperty({
-    type: Number,
+    type: String,
     description: 'Numero da casa da pessoa',
-    example: 94,
+    example: '94c',
   })
-  @IsNumber()
-  @Min(0)
-  homeNumber: number;
+  @IsString()
+  homeNumber: string;
 
   @ApiProperty({
     type: String,
@@ -64,5 +63,5 @@ export class CreateAddressDto implements IAddress {
   })
   @IsOptional()
   @IsString()
-  complement: string;
+  complement?: string;
 }

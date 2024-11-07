@@ -46,6 +46,7 @@ describe('UsersController (integration)', () => {
     controller = module.get<UsersController>(UsersController);
     service = module.get<UsersService>(UsersService);
   });
+
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();

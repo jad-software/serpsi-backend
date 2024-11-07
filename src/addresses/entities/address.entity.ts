@@ -22,9 +22,9 @@ export class Address extends EntityBase implements IAddress {
   @Column({ name: 'state' })
   private _state: string;
   @Column({ name: 'homeNumber' })
-  private _homeNumber: number;
-  @Column({ name: 'complement' })
-  private _complement: string;
+  private _homeNumber: string;
+  @Column({ name: 'complement', nullable: true })
+  private _complement?: string;
 
   @OneToMany(() => Person, (person) => person.address)
   persons: Person[];
@@ -64,10 +64,10 @@ export class Address extends EntityBase implements IAddress {
     this._state = state;
   }
 
-  get homeNumber(): number {
+  get homeNumber(): string {
     return this._homeNumber;
   }
-  set homeNumber(homeNumber: number) {
+  set homeNumber(homeNumber: string) {
     this._homeNumber = homeNumber;
   }
 

@@ -142,8 +142,8 @@ export class PatientsController {
                       example: 'São Paulo',
                     },
                     homeNumber: {
-                      type: 'number',
-                      example: 278,
+                      type: 'string',
+                      example: '278',
                     },
                     complement: {
                       type: 'string',
@@ -235,8 +235,8 @@ export class PatientsController {
                       example: 'cidade que ficou faltando',
                     },
                     homeNumber: {
-                      type: 'number',
-                      example: 1131,
+                      type: 'string',
+                      example: '1131',
                     },
                     complement: {
                       type: 'string',

@@ -149,7 +149,7 @@ describe('PatientsService', () => {
           district: '',
           city: '',
           state: '',
-          homeNumber: 0,
+          homeNumber: '0',
           complement: '',
         },
       },
