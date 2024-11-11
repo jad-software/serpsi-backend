@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { CreateMeetingDto } from '../dto/create-meeting.dto';
-import { UpdateMeetingDto } from '../dto/update-meeting.dto';
 import { MeetingsService } from './meetings.service';
+import { CreateMeetingDto } from './dto/create-meeting.dto';
+import { UpdateMeetingDto } from './dto/update-meeting.dto';
 
 
 @Controller('meetings')
