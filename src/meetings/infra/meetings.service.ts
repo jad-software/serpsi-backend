@@ -1,26 +1,34 @@
 import { Injectable } from '@nestjs/common';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';
+import { create } from '../application/create/create';
+import { remove } from '../application/remove/remove';
+import { update } from '../application/update/update';
+import { getBusyDays } from '../application/getBusyDays/get-busy-days';
+import { getOneSession } from '../application/getOneSession/get-one-session';
 
 @Injectable()
 export class MeetingsService {
-  create(createMeetingDto: CreateMeetingDto) {
-    return 'This action adds a new meeting';
+  async create(createMeetingDto: CreateMeetingDto) {
+    return await create(createMeetingDto);
   }
 
-  findAll() {
-    return `This action returns all meetings`;
+  async getBusyDays(psychologistId: string, month?: number) {
+    return await getBusyDays({
+      psychologistId,
+      month: month ?? new Date().getMonth(),
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} meeting`;
+  async findOne(id: string) {
+    return await getOneSession(id);
   }
 
-  update(id: number, updateMeetingDto: UpdateMeetingDto) {
-    return `This action updates a #${id} meeting`;
+  async update(id: string, updateMeetingDto: UpdateMeetingDto) {
+    return await update(id, updateMeetingDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} meeting`;
+  async remove(id: string) {
+    return await remove(id);
   }
 }

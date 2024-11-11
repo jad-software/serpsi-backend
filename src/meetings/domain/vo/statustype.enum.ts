@@ -1,5 +1,5 @@
 export enum StatusType {
-  CONFIRMED = "CONFIRMADO",
-  CANCELED = "CANCELADO",
-  OPEN = "ABERTO"
+  CONFIRMED = 'CONFIRMADO',
+  CANCELED = 'CANCELADO',
+  OPEN = 'ABERTO',
 }
