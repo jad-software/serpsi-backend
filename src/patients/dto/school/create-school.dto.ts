@@ -30,15 +30,6 @@ export class CreateSchoolDto implements ISchool {
   @ApiProperty({
     type: CreateAddressDto,
     description: 'Endereço da escola',
-    example: {
-      state: 'BA',
-      zipCode: '4499815760',
-      street: 'rua dos bobos',
-      district: 'bairro bonito',
-      city: 'cidade que ficou faltando',
-      homeNumber: 1131,
-      complement: 'complemento',
-    },
   })
   @ValidateNested()
   @Type(() => CreateAddressDto)

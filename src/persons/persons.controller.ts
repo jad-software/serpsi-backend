@@ -118,8 +118,8 @@ export class PersonsController {
                   example: 'District no swagger',
                 },
                 homeNumber: {
-                  type: 'number',
-                  example: 21,
+                  type: 'string',
+                  example: '21',
                 },
                 complement: {
                   type: 'string',
