@@ -20,13 +20,14 @@ import { PsychologistsModule } from 'src/psychologists/psychologists.module';
       secret: jwt_constants.JWT_SECRET,
       signOptions: { expiresIn: '24h' },
     }),
-    PsychologistsModule
+    PsychologistsModule,
   ],
   providers: [
     AuthService,
     LocalStrategy,
     JwtStrategy,
-    {  //Descomentar quando for usar todas as rotas protegidas
+    {
+      //Descomentar quando for usar todas as rotas protegidas
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },

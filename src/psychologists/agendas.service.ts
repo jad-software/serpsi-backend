@@ -34,7 +34,7 @@ export class AgendasService {
         meetValue: createAgendaDto.meetValue,
         meetDuration: createAgendaDto.meetDuration,
       } as UpdatePsychologistDto;
-      
+
       psychologist.meetDuration = updatePsychologist.meetDuration;
       psychologist.meetValue = updatePsychologist.meetValue;
 
@@ -50,7 +50,7 @@ export class AgendasService {
           operations.push(this.agendaRepository.save(newAgenda));
         });
       });
-      
+
       await this.psychologistService.update(
         psychologist.id.id,
         updatePsychologist

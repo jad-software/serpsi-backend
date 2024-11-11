@@ -265,7 +265,10 @@ export class PsychologistsController {
 
   @ApiOperation({ summary: 'Atualiza a senha de um psicólogo' })
   @Patch('/updatePassword/:id')
-  async updatePassword(@Param('id') id: string, @Body() changePassword: ChangePassworDto){
+  async updatePassword(
+    @Param('id') id: string,
+    @Body() changePassword: ChangePassworDto
+  ) {
     return await this.psychologistsService.updatePassword(id, changePassword);
   }
 }

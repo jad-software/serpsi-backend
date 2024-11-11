@@ -68,13 +68,14 @@ export class PatientsService {
         );
       }
 
-      let [psychologist, person, school, comorbidities, parents] = await Promise.all([
-        this.psychologistService.findOne(createPatientDto.psychologistId),
-        this.setPerson(createPatientDto.person, profilePicture),
-        this.setSchool(createPatientDto.school),
-        this.setComorbities(createPatientDto.comorbidities),
-        this.setParents(createPatientDto.parents),
-      ]);
+      let [psychologist, person, school, comorbidities, parents] =
+        await Promise.all([
+          this.psychologistService.findOne(createPatientDto.psychologistId),
+          this.setPerson(createPatientDto.person, profilePicture),
+          this.setSchool(createPatientDto.school),
+          this.setComorbities(createPatientDto.comorbidities),
+          this.setParents(createPatientDto.parents),
+        ]);
       patient.psychologist = psychologist;
       patient.person = person;
       patient.school = school;
@@ -191,7 +192,7 @@ export class PatientsService {
         'patient.payment_plan',
         'person.cpf',
       ])
-      .where('patient.Psychologist_id = :id',{id} )
+      .where('patient.Psychologist_id = :id', { id })
       .getRawMany();
   }
 
