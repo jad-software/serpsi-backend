@@ -3,6 +3,7 @@ import { IDocument } from '../interfaces/document.interface';
 import { CreateDocumentDto } from '../dto/create-document.dto';
 import { EntityBase } from '../../entity-base/entities/entity-base';
 import { Patient } from '../../patients/entities/patient.entity';
+import { Meeting } from 'src/meetings/domain/entities/meeting.entity';
 
 @Entity()
 export class Document extends EntityBase implements IDocument {
@@ -21,6 +22,18 @@ export class Document extends EntityBase implements IDocument {
     onDelete: 'CASCADE',
   })
   private _patient: Patient;
+
+  @ManyToOne(() => Meeting, (meeting) => meeting.documents, {
+    onDelete: 'CASCADE',
+  })
+  private _meeting: Meeting;
+
+  get meeting(): Meeting {
+    return this._meeting;
+  }
+  set meeting(value: Meeting) {
+    this._meeting = value;
+  }
 
   get title(): string {
     return this._title;

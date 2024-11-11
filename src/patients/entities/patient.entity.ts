@@ -18,6 +18,7 @@ import { Comorbidity } from './comorbidity.entity';
 import { Person } from '../../persons/entities/person.enitiy';
 import { Document } from '../../documents/entities/document.entity';
 import { Psychologist } from '../../psychologists/entities/psychologist.entity';
+import { Meeting } from 'src/meetings/domain/entities/meeting.entity';
 
 @Entity()
 export class Patient extends EntityBase implements IPatient {
@@ -64,6 +65,16 @@ export class Patient extends EntityBase implements IPatient {
     nullable: true,
   })
   private _psychologist: Psychologist;
+
+  @OneToMany(() => Meeting, (meeting) => meeting.patient)
+  private _meetings: Meeting[];
+
+  get meetings(): Meeting[] {
+    return this._meetings;
+  }
+  set meetings(value: Meeting[]) {
+    this._meetings = value;
+  }
 
   get previewFollowUps(): Document[] {
     return this._previewFollowUps;
