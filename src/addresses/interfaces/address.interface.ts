@@ -4,6 +4,6 @@ export interface IAddress {
   city: string;
   district: string;
   state: string;
-  homeNumber: number;
-  complement: string;
+  homeNumber: string;
+  complement?: string;
 }

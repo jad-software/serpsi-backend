@@ -60,7 +60,7 @@ describe('PatientsController', () => {
         street: 'Rua de Address teste',
         city: 'cidade',
         district: 'District de Address teste',
-        homeNumber: 10,
+        homeNumber: '10',
         complement: 'Complement de Address teste',
       } as Address;
       const dto: CreatePatientDto = {
@@ -84,7 +84,7 @@ describe('PatientsController', () => {
             street: 'Rua de Address teste',
             city: 'cidade',
             district: 'District de Address teste',
-            homeNumber: 10,
+            homeNumber: '10',
             complement: 'Complement de Address teste',
           },
         },

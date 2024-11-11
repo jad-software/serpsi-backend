@@ -140,7 +140,7 @@ describe('PsychologistsController', () => {
             street: 'Rua de Address teste',
             city: 'cidade',
             district: 'District de Address teste',
-            homeNumber: 10,
+            homeNumber: '10',
             complement: 'Complement de Address teste',
           },
         },
