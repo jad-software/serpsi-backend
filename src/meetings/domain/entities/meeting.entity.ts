@@ -8,7 +8,7 @@ import { Document } from 'src/documents/entities/document.entity';
 
 @Entity()
 export class Meeting extends EntityBase implements IMeetings {
-  @Column({ name: 'schedule' })
+  @Column({ name: 'schedule', type: 'timestamptz', })
   private _schedule: Date;
 
   @Column({

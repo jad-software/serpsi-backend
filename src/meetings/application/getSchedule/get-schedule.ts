@@ -1,7 +1,17 @@
-export function getSchedule(
+
+import { Meeting } from "src/meetings/domain/entities/meeting.entity";
+import { Repository } from "typeorm";
+
+export async function getSchedule(
+  psychologistId: string,
+  repository: Repository<Meeting>,
   startDate: Date,
   endDate: Date,
-  psychologistId: string
-) {
-  return `get all schedules between ${startDate} and ${endDate} from ${psychologistId}`;
-}
+) {  
+  return await repository
+    .createQueryBuilder("meeting")
+    .where("meeting.Psychologist_id = :psychologistId", { psychologistId })
+    .andWhere("meeting._schedule >= :startDate", { startDate })
+    .andWhere("meeting._schedule <= :endDate", { endDate })
+    .getMany();
+} 

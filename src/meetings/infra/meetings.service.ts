@@ -12,6 +12,7 @@ import { Meeting } from '../domain/entities/meeting.entity';
 import { PsychologistsService } from 'src/psychologists/psychologists.service';
 import { PatientsService } from 'src/patients/patients.service';
 import { StatusType } from '../domain/vo/statustype.enum';
+import { getSchedule } from '../application/getSchedule/get-schedule';
 
 @Injectable()
 export class MeetingsService {
@@ -49,6 +50,10 @@ export class MeetingsService {
 
   async findOne(id: string) {
     return await getOneSession(id, this.meetingsRepository);
+  }
+  
+  async getSessionsByInterval(psychologistId: string, startDate: Date, endDate: Date) {
+    return await getSchedule(psychologistId, this.meetingsRepository, startDate, endDate);
   }
 
   async update(id: string, updateMeetingDto: UpdateMeetingDto) {
