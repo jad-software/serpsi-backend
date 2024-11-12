@@ -6,8 +6,8 @@ import { CreateDocumentDto } from 'src/documents/dto/create-document.dto';
 
 export interface IMeetings {
   schedule: Date;
-  status: StatusType;
+  status?: StatusType;
   patient: Patient | string;
   psychologist: Psychologist | string;
-  documents: Document[] | CreateDocumentDto[];
+  documents?: Document[];
 }

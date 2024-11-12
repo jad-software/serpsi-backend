@@ -1,5 +1,14 @@
-import { CreateMeetingDto } from 'src/meetings/infra/dto/create-meeting.dto';
+import { InternalServerErrorException } from '@nestjs/common';
+import { Meeting } from 'src/meetings/domain/entities/meeting.entity';
+import { Repository } from 'typeorm';
 
-export function create(meeting: CreateMeetingDto) {
-  return `a new meeting with this object ${meeting} will be created`;
+export async function create(meeting: Meeting, repository: Repository<Meeting>) {
+  try{
+    return await repository.save(meeting);
+  }
+  catch(error){
+    throw new InternalServerErrorException(
+      'problemas ao criar sessão'
+    );
+  }
 }

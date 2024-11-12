@@ -1,11 +1,31 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
 import { CreateDocumentDto } from 'src/documents/dto/create-document.dto';
 import { IMeetings } from 'src/meetings/domain/intefaces/meetings.interface';
-import { StatusType } from 'src/meetings/domain/vo/statustype.enum';
 
 export class CreateMeetingDto implements IMeetings {
+  
+  @ApiProperty({
+    example: '2024-05-15T08:00:00-03:00',
+    description: 'data e hora da sessão',
+  })
+  @IsNotEmpty()
+  @IsDateString()
   schedule: Date;
-  status: StatusType;
+  
+  @ApiProperty({
+    example: 'patient-id',
+    description: 'O id do paciente a ser atendido',
+  })
+  @IsNotEmpty()
+  @IsString()
   patient: string;
+
+  @ApiProperty({
+    example: 'psychologist-id',
+    description: 'O id do psicólogo o qual o paciente é atendido',
+  })
+  @IsNotEmpty()
+  @IsString()
   psychologist: string;
-  documents: CreateDocumentDto[];
 }

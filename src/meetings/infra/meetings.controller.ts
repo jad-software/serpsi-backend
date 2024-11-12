@@ -12,7 +12,10 @@ import { MeetingsService } from './meetings.service';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';
 import { FindBusyDaysDAO } from '../application/getBusyDays/findBusyDays.dao';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('meetings')
+@ApiBearerAuth()
 @Controller('meetings')
 export class MeetingsController {
   constructor(private readonly meetingsService: MeetingsService) {}

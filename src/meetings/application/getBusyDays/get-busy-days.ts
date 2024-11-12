@@ -1,5 +1,7 @@
+import { Repository } from 'typeorm';
 import { FindBusyDaysDAO } from './findBusyDays.dao';
+import { Meeting } from 'src/meetings/domain/entities/meeting.entity';
 
-export function getBusyDays(search: FindBusyDaysDAO) {
-  return `get all busy days in the month ${search.month} from ${search.psychologistId}`;
+export async function getBusyDays(search: FindBusyDaysDAO, repository: Repository<Meeting>) {
+  return await repository.find();
 }
