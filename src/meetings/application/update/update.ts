@@ -1,5 +1,23 @@
+import { InternalServerErrorException } from '@nestjs/common';
+import { Meeting } from 'src/meetings/domain/entities/meeting.entity';
 import { UpdateMeetingDto } from 'src/meetings/infra/dto/update-meeting.dto';
+import { Repository } from 'typeorm';
 
-export function update(id: string, updateMeetingDto: UpdateMeetingDto) {
-  return `update a meeting with this ${id} and this object ${updateMeetingDto} `;
+export async function update(id: string, updateMeetingDto: UpdateMeetingDto, repository: Repository<Meeting>) {
+  try {
+    let session = await repository.createQueryBuilder("meeting")
+      .where("meeting.id = :id", { id })
+      .getOneOrFail();
+    let updatedSession = new Meeting(updateMeetingDto);
+    await repository.update(id, updatedSession);
+    session = await repository.createQueryBuilder("meeting")
+      .where("meeting.id = :id", { id })
+      .getOneOrFail();
+    return session;
+  }
+  catch (error) {
+    throw new InternalServerErrorException(
+      'problemas ao atualizar uma sessão'
+    );
+  }
 }

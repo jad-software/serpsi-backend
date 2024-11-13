@@ -5,9 +5,15 @@ import { Patient } from 'src/patients/entities/patient.entity';
 import { Psychologist } from 'src/psychologists/entities/psychologist.entity';
 import { StatusType } from '../vo/statustype.enum';
 import { Document } from 'src/documents/entities/document.entity';
+import { CreateMeetingDto } from 'src/meetings/infra/dto/create-meeting.dto';
 
 @Entity()
 export class Meeting extends EntityBase implements IMeetings {
+  constructor(partial: Partial<CreateMeetingDto>) {
+    super();
+    Object.assign(this, partial);
+  }
+
   @Column({ name: 'schedule', type: 'timestamptz', })
   private _schedule: Date;
 
@@ -22,15 +28,15 @@ export class Meeting extends EntityBase implements IMeetings {
   @ManyToOne(() => Patient, (patient) => patient.meetings, {
     onDelete: 'CASCADE',
   })
-  private _patient: Patient;
+  protected _patient: Patient;
 
   @ManyToOne(() => Psychologist, (psychologist) => psychologist.meetings, {
     onDelete: 'CASCADE',
   })
-  private _psychologist: Psychologist;
+  protected _psychologist: Psychologist;
 
   @OneToMany(() => Document, (document) => document.meeting)
-  private _documents: Document[];
+  protected _documents: Document[];
 
   get schedule(): Date {
     return this._schedule;

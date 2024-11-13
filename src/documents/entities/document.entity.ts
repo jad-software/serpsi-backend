@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { IDocument } from '../interfaces/document.interface';
 import { CreateDocumentDto } from '../dto/create-document.dto';
 import { EntityBase } from '../../entity-base/entities/entity-base';
@@ -26,14 +26,8 @@ export class Document extends EntityBase implements IDocument {
   @ManyToOne(() => Meeting, (meeting) => meeting.documents, {
     onDelete: 'CASCADE',
   })
-  private _meeting: Meeting;
-
-  get meeting(): Meeting {
-    return this._meeting;
-  }
-  set meeting(value: Meeting) {
-    this._meeting = value;
-  }
+  @JoinColumn({ name: 'Meeting_id'})
+  meeting: Meeting;
 
   get title(): string {
     return this._title;

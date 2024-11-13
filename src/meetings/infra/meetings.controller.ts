@@ -7,14 +7,16 @@ import {
   Param,
   Delete,
   Query,
+  Put,
 } from '@nestjs/common';
 import { MeetingsService } from './meetings.service';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
-import { UpdateMeetingDto } from './dto/update-meeting.dto';
 import { FindBusyDaysDAO } from '../application/getBusyDays/findBusyDays.dao';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/auth/providers/user.decorator';
 import { GetScheduleDAO } from '../application/getSchedule/getSchedule.dao';
+import { UpdateStatusDto } from './dto/update-status.dto';
+import { UpdateMeetingDto } from './dto/update-meeting.dto';
 
 @ApiTags('meetings')
 @ApiBearerAuth()
@@ -61,14 +63,24 @@ export class MeetingsController {
     return await this.meetingsService.findOne(id);
   }
 
-  @ApiOperation({ summary: 'Atualiza uma sessão' })
-  @Patch(':id')
+  @ApiOperation({ summary: 'Atualiza o status de uma sessão' })
+  @Patch('/status/:id')
+  async updateStatus(
+    @Param('id') id: string,
+    @Body() updateStatusDTO: UpdateStatusDto
+  ) {
+    return await this.meetingsService.updateStatus(id, updateStatusDTO);
+  }
+
+  @ApiOperation({ summary: 'Atualiza o status de uma sessão' })
+  @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateMeetingDto: UpdateMeetingDto
+    @Body() updateMeetingDTO: UpdateMeetingDto
   ) {
-    return await this.meetingsService.update(id, updateMeetingDto);
+    return await this.meetingsService.update(id, updateMeetingDTO);
   }
+
   @ApiOperation({ summary: 'Deleta uma sessão' })
   @Delete(':id')
   async remove(@Param('id') id: string) {

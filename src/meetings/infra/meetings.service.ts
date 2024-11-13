@@ -13,6 +13,8 @@ import { PsychologistsService } from 'src/psychologists/psychologists.service';
 import { PatientsService } from 'src/patients/patients.service';
 import { StatusType } from '../domain/vo/statustype.enum';
 import { getSchedule } from '../application/getSchedule/get-schedule';
+import { modifyStatus } from '../application/modifyStatus/modify-status';
+import { UpdateStatusDto } from './dto/update-status.dto';
 
 @Injectable()
 export class MeetingsService {
@@ -24,9 +26,7 @@ export class MeetingsService {
   ) { }
 
   async create(createMeetingDto: CreateMeetingDto) {
-    const meeting = new Meeting();
-    meeting.schedule = createMeetingDto.schedule;
-    meeting.status = StatusType.OPEN;
+    const meeting = new Meeting(createMeetingDto);
     try {
       const [patient, psychologist] = await Promise.all([
         this.patientService.findOne(createMeetingDto.patient),
@@ -51,16 +51,20 @@ export class MeetingsService {
   async findOne(id: string) {
     return await getOneSession(id, this.meetingsRepository);
   }
-  
+
   async getSessionsByInterval(psychologistId: string, startDate: Date, endDate: Date) {
     return await getSchedule(psychologistId, this.meetingsRepository, startDate, endDate);
   }
 
   async update(id: string, updateMeetingDto: UpdateMeetingDto) {
-    return await update(id, updateMeetingDto);
+    return await update(id, updateMeetingDto, this.meetingsRepository);
+  }
+
+  async updateStatus(id: string, newStatus: UpdateStatusDto) {
+    return await modifyStatus(id, newStatus.status, this.meetingsRepository);
   }
 
   async remove(id: string) {
-    return await remove(id);
+    return await remove(id, this.meetingsRepository);
   }
 }

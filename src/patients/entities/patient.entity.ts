@@ -44,7 +44,7 @@ export class Patient extends EntityBase implements IPatient {
   @JoinTable()
   private _comorbidities: Comorbidity[];
 
-  @OneToMany(() => Document, (document) => document, {
+  @OneToMany(() => Document, (document) => document.patient, {
     nullable: true,
   })
   private _previewFollowUps?: Document[];
