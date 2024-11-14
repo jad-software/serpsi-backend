@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';
 import { create } from '../application/create/create';
@@ -22,6 +22,7 @@ export class MeetingsService {
     @Inject(data_providers.MEETINGS_REPOSITORY)
     private meetingsRepository: Repository<Meeting>,
     private readonly psychologistService: PsychologistsService,
+    @Inject(forwardRef(() => PatientsService))
     private readonly patientService: PatientsService
   ) { }
 
@@ -48,8 +49,8 @@ export class MeetingsService {
     }, this.meetingsRepository);
   }
 
-  async findOne(id: string) {
-    return await getOneSession(id, this.meetingsRepository);
+  async findOne(id: string, relations: boolean = true) {
+    return await getOneSession(id, this.meetingsRepository, relations);
   }
 
   async getSessionsByInterval(psychologistId: string, startDate: Date, endDate: Date) {

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MeetingsService } from './infra/meetings.service';
 import { MeetingsController } from './infra/meetings.controller';
 import { meetingsProvider } from './infra/providers/meetings.providers';
@@ -13,8 +13,8 @@ import { DocumentsModule } from 'src/documents/documents.module';
   imports: [
     DatabaseModule,
     PsychologistsModule,
-    PatientsModule,
-    DocumentsModule  
+    forwardRef(() => PatientsModule),
+    forwardRef(() => DocumentsModule)
   ],
   exports: [MeetingsService],
 })

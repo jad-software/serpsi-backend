@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
-import { CreateDocumentDto } from 'src/documents/dto/create-document.dto';
 import { IMeetings } from 'src/meetings/domain/intefaces/meetings.interface';
 
 export class CreateMeetingDto implements IMeetings {
@@ -14,7 +13,7 @@ export class CreateMeetingDto implements IMeetings {
   schedule: Date;
   
   @ApiProperty({
-    example: 'patient-id',
+    example: 'patient_id',
     description: 'O id do paciente a ser atendido',
   })
   @IsNotEmpty()
@@ -22,7 +21,7 @@ export class CreateMeetingDto implements IMeetings {
   patient: string;
 
   @ApiProperty({
-    example: 'psychologist-id',
+    example: 'psychologist_id',
     description: 'O id do psicólogo o qual o paciente é atendido',
   })
   @IsNotEmpty()

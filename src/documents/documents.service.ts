@@ -4,13 +4,12 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
-import { CreateDocumentDto } from './dto/create-document.dto';
-import { UpdateDocumentDto } from './dto/update-document.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { data_providers } from '../constants';
 import { Repository } from 'typeorm';
 import { Document } from './entities/document.entity';
 import { PatientsService } from '../patients/patients.service';
+import { MeetingsService } from 'src/meetings/infra/meetings.service';
 
 @Injectable()
 export class DocumentsService {
@@ -20,22 +19,24 @@ export class DocumentsService {
     @Inject()
     private cloudinaryService: CloudinaryService,
     @Inject(forwardRef(() => PatientsService))
-    private patientService: PatientsService
+    private patientService: PatientsService,
+    @Inject(forwardRef(() => MeetingsService))
+    private meetingService: MeetingsService
   ) {}
   async create(
     documentName: string,
-    personId: string,
+    meeetingId: string,
     documentFile: Express.Multer.File
   ): Promise<Document> {
     try {
-      const patient = await this.patientService.findOne(personId);
+      const meeting = await this.meetingService.findOne(meeetingId, false);
       const fileSaved = await this.cloudinaryService.uploadFile(documentFile);
       if (fileSaved) {
         const document = new Document({
           title: documentName,
           docLink: fileSaved.url,
         });
-        document.patient = patient;
+        document.meeting = meeting;
         const createdDocument = await this.documentRepository.save(document);
         return createdDocument;
       }
