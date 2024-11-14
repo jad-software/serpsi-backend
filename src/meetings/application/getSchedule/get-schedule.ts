@@ -6,8 +6,13 @@ export async function getSchedule(
   psychologistId: string,
   repository: Repository<Meeting>,
   startDate: Date,
-  endDate: Date,
+  endDate?: Date,
 ) {  
+  if (!endDate) {
+    endDate = new Date(startDate);
+    endDate.setUTCDate(endDate.getUTCDate() + 1);
+  }
+
   return await repository
     .createQueryBuilder("meeting")
     .where("meeting.Psychologist_id = :psychologistId", { psychologistId })
