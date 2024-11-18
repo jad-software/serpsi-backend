@@ -13,7 +13,7 @@ export async function getOneSession(sessionId: string, repository: Repository<Me
         .leftJoinAndSelect("patient._person", "patient_person")
         .leftJoinAndSelect("patient._parents", "patient_parents")
     }
-    return querybuilder.getOneOrFail();
+    return await querybuilder.getOneOrFail();
     
   } catch (error) {
     throw new NotFoundException("Sessão não encontrada");

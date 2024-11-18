@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';
 import { create } from '../application/create/create';
@@ -15,6 +15,8 @@ import { StatusType } from '../domain/vo/statustype.enum';
 import { getSchedule } from '../application/getSchedule/get-schedule';
 import { modifyStatus } from '../application/modifyStatus/modify-status';
 import { UpdateStatusDto } from './dto/update-status.dto';
+import { createManySessions } from '../application/create/create-many-sessions';
+import { FrequencyEnum } from './dto/frequency.enum';
 
 @Injectable()
 export class MeetingsService {
@@ -30,12 +32,15 @@ export class MeetingsService {
     const meeting = new Meeting(createMeetingDto);
     try {
       const [patient, psychologist] = await Promise.all([
-        this.patientService.findOne(createMeetingDto.patient),
+        this.patientService.findOne(createMeetingDto.patient, false),
         this.psychologistService.findOne(createMeetingDto.psychologist)
       ]);
       meeting.patient = patient;
       meeting.psychologist = psychologist;
-      return await create(meeting, this.meetingsRepository);
+      if (createMeetingDto.quantity === 1 || createMeetingDto.frequency === FrequencyEnum.AVULSO) {
+        return await create(meeting, this.meetingsRepository);
+      }
+      return await createManySessions(meeting, createMeetingDto.frequency, createMeetingDto.quantity, this.meetingsRepository);
     }
     catch (error) {
       throw error;

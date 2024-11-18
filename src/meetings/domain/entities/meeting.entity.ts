@@ -9,7 +9,7 @@ import { CreateMeetingDto } from 'src/meetings/infra/dto/create-meeting.dto';
 
 @Entity()
 export class Meeting extends EntityBase implements IMeetings {
-  constructor(partial: Partial<CreateMeetingDto>) {
+  constructor(partial: Partial<CreateMeetingDto> | Partial<Meeting>) {
     super();
     Object.assign(this, partial);
   }

@@ -43,7 +43,7 @@ export class PatientsService {
     private cloudinaryService: CloudinaryService,
     @Inject()
     private psychologistService: PsychologistsService
-  ) {}
+  ) { }
 
   async create(
     createPatientDto: CreatePatientDto,
@@ -196,26 +196,30 @@ export class PatientsService {
       .getRawMany();
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, relations: boolean = true) {
     try {
-      let patient = await this.patientRepository
+      let queryBuilder = await this.patientRepository
         .createQueryBuilder('patient')
-        .leftJoinAndSelect('patient._school', 'school')
-        .leftJoinAndSelect('school._address', 'school_address')
-        .leftJoinAndSelect('patient._comorbidities', '_comorbidities')
         .leftJoinAndSelect('patient._person', '_person')
-        .leftJoinAndSelect('_person.address', '_address')
-        .leftJoinAndSelect('patient._parents', '_parents')
-        .where('patient.id = :id', { id })
-        .getOneOrFail();
+      if (relations) {
+        queryBuilder
+          .leftJoinAndSelect('patient._school', 'school')
+          .leftJoinAndSelect('school._address', 'school_address')
+          .leftJoinAndSelect('patient._comorbidities', '_comorbidities')
+          .leftJoinAndSelect('_person.address', '_address')
+          .leftJoinAndSelect('patient._parents', '_parents')
+          .where('patient.id = :id', { id })
+      }
+      let patient = await queryBuilder.getOneOrFail();
+      if (relations) {
+        patient.medicines = await this.medicamentInfoService.findAllToPatient(
+          patient.id.id
+        );
 
-      patient.medicines = await this.medicamentInfoService.findAllToPatient(
-        patient.id.id
-      );
-
-      patient.previewFollowUps = await this.documentService.findAllByPatient(
-        patient.id.id
-      );
+        patient.previewFollowUps = await this.documentService.findAllByPatient(
+          patient.id.id
+        );
+      }
       return patient;
     } catch (err) {
       throw new NotFoundException(err?.message);
