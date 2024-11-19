@@ -25,17 +25,6 @@ export class MeetingsController {
   constructor(private readonly meetingsService: MeetingsService) { }
 
   @ApiBody({ type: CreateMeetingDto })
-  @ApiOperation({ summary: 'Cria uma sessão com horário, id do psicólogo e do paciente' })
-  @Post('/onesession')
-  async create(@Body() createMeetingDto: CreateMeetingDto) {
-    return await this.meetingsService.create(createMeetingDto);
-  }
-  /**
-   * @bug não está funcionando ainda
-   * @param createMeetingDto 
-   * @returns 
-   */
-  @ApiBody({ type: CreateMeetingDto })
   @ApiOperation({ summary: 'Cria várias sessões com horário, id do psicólogo e do paciente' })
   @Post()
   async createMany(@Body() createMeetingDto: CreateMeetingDto) {
@@ -48,6 +37,16 @@ export class MeetingsController {
     return await this.meetingsService.getBusyDays(
       userInfo.id,
       search.month
+    );
+  }
+
+  @ApiOperation({ summary: 'retorna os horários disponiveis de um dia específico (não adianta passar endDate)' })
+  @Get('/avaliable_times')
+  async getAvaliableTimes(@User() userInfo, @Query() search: GetScheduleDAO) {
+    const startDate = new Date(search.startDate);
+    return await this.meetingsService.AvaliableTimes(
+      userInfo.id,
+      startDate
     );
   }
 

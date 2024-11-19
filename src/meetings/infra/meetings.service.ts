@@ -11,12 +11,13 @@ import { Repository } from 'typeorm';
 import { Meeting } from '../domain/entities/meeting.entity';
 import { PsychologistsService } from 'src/psychologists/psychologists.service';
 import { PatientsService } from 'src/patients/patients.service';
-import { StatusType } from '../domain/vo/statustype.enum';
 import { getSchedule } from '../application/getSchedule/get-schedule';
 import { modifyStatus } from '../application/modifyStatus/modify-status';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { createManySessions } from '../application/create/create-many-sessions';
 import { FrequencyEnum } from './dto/frequency.enum';
+import { Day, numberToDay } from 'src/psychologists/vo/days.enum';
+import { checkAvaliableTime } from '../application/checkAvaliableTime/check-avaliable-time';
 
 @Injectable()
 export class MeetingsService {
@@ -52,6 +53,16 @@ export class MeetingsService {
       psychologistId,
       month: month ?? new Date().getMonth(),
     }, this.meetingsRepository);
+  }
+
+  async AvaliableTimes(psychologistId: string, startDate: Date) {
+    let days = numberToDay(startDate.getDay() + 1);
+
+    const [schedule, times] = await Promise.all([
+      getSchedule(psychologistId, this.meetingsRepository, startDate),
+      this.psychologistService.getTimes(psychologistId, days)
+    ])
+    return await checkAvaliableTime(times, schedule);
   }
 
   async findOne(id: string, relations: boolean = true) {

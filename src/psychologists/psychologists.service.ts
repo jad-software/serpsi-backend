@@ -9,6 +9,8 @@ import { PersonsService } from '../persons/persons.service';
 import { Crp } from './vo/crp.vo';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { ChangePassworDto } from './dto/change-password.dto';
+import { Day } from './vo/days.enum';
+import { formatTime } from 'src/helpers/format-time';
 
 @Injectable()
 export class PsychologistsService {
@@ -21,7 +23,7 @@ export class PsychologistsService {
     private personsService: PersonsService,
     @Inject()
     private cloudinaryService: CloudinaryService
-  ) {}
+  ) { }
 
   async create(
     createPsychologistDto: CreatePsychologistDto,
@@ -123,6 +125,8 @@ export class PsychologistsService {
       const psychologist = await this.psychologistsRepository
         .createQueryBuilder('psychologist')
         .leftJoinAndSelect('psychologist.user', 'user')
+        .leftJoinAndSelect('user.person', 'person')
+        .leftJoinAndSelect('psychologist.agendas', 'agendas')
         .where('psychologist.id = :id', { id })
         .getOneOrFail();
       psychologist.user.person = await this.personsService.findOneByUserId(
@@ -210,4 +214,29 @@ export class PsychologistsService {
       throw new BadRequestException(err?.message);
     }
   }
+
+  async getTimes(id: string, dayOfAgenda?: Day): Promise<{ day: Day, times: string[] }[]> {
+    const psychologist = await this.findOne(id);
+    let avaliableTimes: { day: Day, times: string[] }[] = [];
+    psychologist.agendas.filter((value) => dayOfAgenda === value.day).forEach((agenda) => {
+      let times = []
+      const start = new Date('2024-12-04T' + agenda.startTime + 'z');
+      const end = new Date('2024-12-04T' + agenda.endTime + 'z');
+      if (start > end) {
+        throw new BadRequestException('Start time must be before end time');
+      }
+      times.push(formatTime(start));
+      while (start < end) {
+        start.setMinutes(start.getMinutes() + psychologist.meetDuration);
+        times.push(formatTime(start));
+      };
+      avaliableTimes.push({
+        day: agenda.day,
+        times
+      });
+    })
+    return avaliableTimes;
+  }
+
+
 }
