@@ -4,7 +4,7 @@ export class CreateSessionsTable1731450211975 implements MigrationInterface {
     name = 'CreateSessionsTable1731450211975'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TYPE "public"."meeting_status_enum" AS ENUM('CONFIRMADO', 'CANCELADO', 'ABERTO')`);
+        await queryRunner.query(`CREATE TYPE "public"."meeting_status_enum" AS ENUM('CONFIRMADO', 'CANCELADO', 'ABERTO', 'CREDITO')`);
         await queryRunner.query(`CREATE TABLE "meeting" ("createDate" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updateDate" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "schedule" TIMESTAMP WITH TIME ZONE NOT NULL, "status" "public"."meeting_status_enum" NOT NULL DEFAULT 'ABERTO', "Patient_id" uuid, "Psychologist_id" uuid, "id" uuid NOT NULL DEFAULT uuid_generate_v4(), CONSTRAINT "PK_dccaf9e4c0e39067d82ccc7bb83" PRIMARY KEY ("id"))`);
         await queryRunner.query(`ALTER TABLE "document" ADD "Meeting_id" uuid`);
         await queryRunner.query(`ALTER TABLE "meeting" ADD CONSTRAINT "FK_5d24b93ebc10553c9dba002d063" FOREIGN KEY ("Patient_id") REFERENCES "patient"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
