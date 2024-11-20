@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreatePsychologistDto } from './dto/create-psychologist.dto';
 import { UpdatePsychologistDto } from './dto/update-psychologist.dto';
 import { data_providers } from '../constants';
@@ -126,7 +126,6 @@ export class PsychologistsService {
         .createQueryBuilder('psychologist')
         .leftJoinAndSelect('psychologist.user', 'user')
         .leftJoinAndSelect('user.person', 'person')
-        .leftJoinAndSelect('psychologist.agendas', 'agendas')
         .where('psychologist.id = :id', { id })
         .getOneOrFail();
       psychologist.user.person = await this.personsService.findOneByUserId(
@@ -135,7 +134,7 @@ export class PsychologistsService {
       psychologist.meetValue = +psychologist.meetValue;
       return psychologist;
     } catch (err) {
-      throw new BadRequestException(err?.message);
+      throw new NotFoundException(err?.message);
     }
   }
 
@@ -168,14 +167,12 @@ export class PsychologistsService {
         crp;
       }
       Object.assign(foundPsychologist, otherFields);
-      await Promise.all([
-        this.psychologistsRepository.update(id, foundPsychologist),
-        ...updateTasks,
-      ]);
+      await this.psychologistsRepository.update(id, foundPsychologist);
+      await Promise.all([...updateTasks]);
       foundPsychologist = await this.findOne(id);
       return foundPsychologist;
     } catch (err) {
-      throw new BadRequestException(err?.message);
+      throw new InternalServerErrorException('problemas ao atualizar o psicologo');
     }
   }
 
@@ -225,10 +222,9 @@ export class PsychologistsService {
       if (start > end) {
         throw new BadRequestException('Start time must be before end time');
       }
-      times.push(formatTime(start));
       while (start < end) {
-        start.setMinutes(start.getMinutes() + psychologist.meetDuration);
         times.push(formatTime(start));
+        start.setMinutes(start.getMinutes() + psychologist.meetDuration);
       };
       avaliableTimes.push({
         day: agenda.day,
