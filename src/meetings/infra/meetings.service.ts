@@ -34,7 +34,7 @@ export class MeetingsService {
     try {
       const [patient, psychologist] = await Promise.all([
         this.patientService.findOne(createMeetingDto.patient, false),
-        this.psychologistService.findOne(createMeetingDto.psychologist)
+        this.psychologistService.findOne(createMeetingDto.psychologist, false)
       ]);
       meeting.patient = patient;
       meeting.psychologist = psychologist;

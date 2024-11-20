@@ -120,14 +120,18 @@ export class PsychologistsService {
     }
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, relations: boolean = true) {
     try {
-      const psychologist = await this.psychologistsRepository
+      const queryBuilder = this.psychologistsRepository
         .createQueryBuilder('psychologist')
-        .leftJoinAndSelect('psychologist.user', 'user')
-        .leftJoinAndSelect('user.person', 'person')
         .where('psychologist.id = :id', { id })
-        .getOneOrFail();
+
+      if (relations) {
+        queryBuilder
+          .leftJoinAndSelect('psychologist.user', 'user')
+          .leftJoinAndSelect('user.person', 'person')
+      }
+      const psychologist = await queryBuilder.getOneOrFail();
 
       psychologist.meetValue = +psychologist.meetValue;
       return psychologist;
