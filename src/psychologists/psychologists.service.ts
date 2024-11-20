@@ -128,13 +128,11 @@ export class PsychologistsService {
         .leftJoinAndSelect('user.person', 'person')
         .where('psychologist.id = :id', { id })
         .getOneOrFail();
-      psychologist.user.person = await this.personsService.findOneByUserId(
-        psychologist.user.id.id
-      );
+
       psychologist.meetValue = +psychologist.meetValue;
       return psychologist;
     } catch (err) {
-      throw new NotFoundException(err?.message);
+      throw new NotFoundException('Nenhum psicologo encontrado');
     }
   }
 
@@ -213,7 +211,12 @@ export class PsychologistsService {
   }
 
   async getTimes(id: string, dayOfAgenda?: Day): Promise<{ day: Day, times: string[] }[]> {
-    const psychologist = await this.findOne(id);
+    const psychologist = await this.psychologistsRepository
+      .createQueryBuilder('psychologist')
+      .where('psychologist.id = :id', { id })
+      .leftJoinAndSelect('psychologist.agendas', 'agendas')
+      .getOneOrFail();
+
     let avaliableTimes: { day: Day, times: string[] }[] = [];
     psychologist.agendas.filter((value) => dayOfAgenda === value.day).forEach((agenda) => {
       let times = []
