@@ -59,7 +59,7 @@ export class MeetingsService {
     let days = numberToDay(startDate.getDay() + 1);
 
     const [schedule, times] = await Promise.all([
-      getSchedule(psychologistId, this.meetingsRepository, startDate),
+      getSchedule({ psychologistId, startDate, isEntity: true }, this.meetingsRepository),
       this.psychologistService.getTimes(psychologistId, days)
     ])
     return await checkAvaliableTime(times, schedule);
@@ -70,7 +70,7 @@ export class MeetingsService {
   }
 
   async getSessionsByInterval(psychologistId: string, startDate: Date, endDate: Date) {
-    return await getSchedule(psychologistId, this.meetingsRepository, startDate, endDate);
+    return await getSchedule({ psychologistId, startDate, endDate }, this.meetingsRepository);
   }
 
   async update(id: string, updateMeetingDto: UpdateMeetingDto) {
