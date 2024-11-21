@@ -27,6 +27,7 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { School } from './entities/school.entity';
 import { Person } from '../persons/entities/person.enitiy';
 import { PsychologistsService } from '../psychologists/psychologists.service';
+import { Meeting } from 'src/meetings/domain/entities/meeting.entity';
 
 @Injectable()
 export class PatientsService {
@@ -180,6 +181,22 @@ export class PatientsService {
     return await this.patientRepository.find({
       relations: ['_school', '_comorbidities', '_person', '_parents'],
     });
+  }
+
+  async findAllMeetings(id: string) {
+    return await this.patientRepository
+      .createQueryBuilder('patient')
+      .leftJoinAndSelect('patient._person', 'person')
+      .leftJoinAndMapMany('patient._meetings', Meeting, "meeting", "meeting.Patient_id = :id", { id })
+      .where('patient.id = :id', { id })
+      .orderBy('meeting._schedule', 'DESC')
+      .select([
+        'person._name',
+        'meeting.id',
+        'meeting._schedule',
+        'meeting._status',
+      ])
+      .getRawMany();
   }
 
   async findAllByPsychologist(id: string) {

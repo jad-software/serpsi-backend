@@ -376,6 +376,12 @@ export class PatientsController {
   async findOne(@Param('id') id: string) {
     return await this.patientsService.findOne(id);
   }
+  
+  @ApiOperation({ summary: 'retorna o histórico de sessões pelo id de um paciente' })
+  @Get('/meetings/:patient_id')
+  async findAllMeetings(@Param('patient_id') id: string) {
+    return await this.patientsService.findAllMeetings(id);
+  }
 
   @ApiOperation({ summary: 'atualiza um paciente pelo id' })
   @Put(':id')
