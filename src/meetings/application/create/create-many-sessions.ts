@@ -1,10 +1,10 @@
 import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
-import { Meeting } from 'src/meetings/domain/entities/meeting.entity';
-import { FrequencyEnum } from 'src/meetings/infra/dto/frequency.enum';
+import { Meeting } from '../../../meetings/domain/entities/meeting.entity';
+import { FrequencyEnum } from '../../../meetings/infra/dto/frequency.enum';
 import { Repository } from 'typeorm';
 import { create } from './create';
-import { formatDate } from 'src/helpers/format-date';
-import { StatusType } from 'src/meetings/domain/vo/statustype.enum';
+import { formatDate } from '../../../helpers/format-date';
+import { StatusType } from '../../../meetings/domain/vo/statustype.enum';
 
 export async function createManySessions(meeting: Meeting, frequency: FrequencyEnum, quantity: number, repository: Repository<Meeting>) {
   const sessions: Meeting[] = [];

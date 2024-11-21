@@ -1,7 +1,7 @@
-import { Meeting } from "src/meetings/domain/entities/meeting.entity";
-import { Day, numberToDay } from "src/psychologists/vo/days.enum";
-import { formatTime } from "src/helpers/format-time";
-import { StatusType } from "src/meetings/domain/vo/statustype.enum";
+import { Meeting } from "../../../meetings/domain/entities/meeting.entity";
+import { Day } from "../../../psychologists/vo/days.enum";
+import { formatTime } from "../../../helpers/format-time";
+import { StatusType } from "../../../meetings/domain/vo/statustype.enum";
 
 export async function checkAvaliableTime(times: { day: Day, times: string[] }[], schedule: Meeting[]) {
   schedule = schedule.filter((session) => session.status !== StatusType.CREDIT && session.status !== StatusType.CANCELED)

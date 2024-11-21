@@ -10,7 +10,7 @@ import { Crp } from './vo/crp.vo';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { ChangePassworDto } from './dto/change-password.dto';
 import { Day } from './vo/days.enum';
-import { formatTime } from 'src/helpers/format-time';
+import { formatTime } from '../helpers/format-time';
 
 @Injectable()
 export class PsychologistsService {

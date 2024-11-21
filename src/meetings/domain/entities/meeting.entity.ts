@@ -1,11 +1,11 @@
-import { EntityBase } from 'src/entity-base/entities/entity-base';
+import { EntityBase } from '../../../entity-base/entities/entity-base';
 import { IMeetings } from '../intefaces/meetings.interface';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
-import { Patient } from 'src/patients/entities/patient.entity';
-import { Psychologist } from 'src/psychologists/entities/psychologist.entity';
+import { Patient } from '../../../patients/entities/patient.entity';
+import { Psychologist } from '../../../psychologists/entities/psychologist.entity';
 import { StatusType } from '../vo/statustype.enum';
-import { Document } from 'src/documents/entities/document.entity';
-import { CreateMeetingDto } from 'src/meetings/infra/dto/create-meeting.dto';
+import { Document } from '../../../documents/entities/document.entity';
+import { CreateMeetingDto } from '../../../meetings/infra/dto/create-meeting.dto';
 
 @Entity()
 export class Meeting extends EntityBase implements IMeetings {

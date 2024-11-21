@@ -1,9 +1,9 @@
-import { Meeting } from "src/meetings/domain/entities/meeting.entity";
-import { getOneSession } from "./get-one-session";
+import { Meeting } from '../../../meetings/domain/entities/meeting.entity';
+import { getOneSession } from './get-one-session';
 
 describe("getOneSession", () => {
   let mockRepository: any;
-  
+
   beforeEach(() => {
     mockRepository = {
       createQueryBuilder: jest.fn().mockReturnThis(),
@@ -16,7 +16,7 @@ describe("getOneSession", () => {
   it("should get one session with all relations", async () => {
     // Arrange
     const sessionId = "test-session-id";
-    const expectedMeeting = new Meeting();
+    const expectedMeeting = new Meeting({});
     mockRepository.getOneOrFail.mockResolvedValue(expectedMeeting);
 
     // Act
@@ -35,11 +35,11 @@ describe("getOneSession", () => {
   it("should throw error when session is not found", async () => {
     // Arrange
     const sessionId = "non-existent-id";
-    mockRepository.getOneOrFail.mockRejectedValue(new Error("Session not found"));
+    mockRepository.getOneOrFail.mockRejectedValue(new Error("Sessão não encontrada"));
 
     // Act & Assert
     await expect(getOneSession(sessionId, mockRepository))
       .rejects
-      .toThrow("Session not found");
+      .toThrow("Sessão não encontrada");
   });
 });

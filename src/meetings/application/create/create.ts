@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { Meeting } from 'src/meetings/domain/entities/meeting.entity';
-import { StatusType } from 'src/meetings/domain/vo/statustype.enum';
+import { Meeting } from '../../../meetings/domain/entities/meeting.entity';
+import { StatusType } from '../../../meetings/domain/vo/statustype.enum';
 import { Repository } from 'typeorm';
 
 export async function create(meeting: Meeting, repository: Repository<Meeting>, isMany: boolean = false) {

@@ -1,8 +1,7 @@
-import { Patient } from 'src/patients/entities/patient.entity';
+import { Patient } from '../../../patients/entities/patient.entity';
 import { StatusType } from '../vo/statustype.enum';
-import { Psychologist } from 'src/psychologists/entities/psychologist.entity';
-import { Document } from 'src/documents/entities/document.entity';
-import { CreateDocumentDto } from 'src/documents/dto/create-document.dto';
+import { Psychologist } from '../../../psychologists/entities/psychologist.entity';
+import { Document } from '../../../documents/entities/document.entity';
 
 export interface IMeetings {
   schedule: Date;

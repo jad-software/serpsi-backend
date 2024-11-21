@@ -2,10 +2,10 @@ import { forwardRef, Module } from '@nestjs/common';
 import { MeetingsService } from './infra/meetings.service';
 import { MeetingsController } from './infra/meetings.controller';
 import { meetingsProvider } from './infra/providers/meetings.providers';
-import { DatabaseModule } from 'src/database/database.module';
-import { PsychologistsModule } from 'src/psychologists/psychologists.module';
-import { PatientsModule } from 'src/patients/patients.module';
-import { DocumentsModule } from 'src/documents/documents.module';
+import { DatabaseModule } from '../database/database.module';
+import { PsychologistsModule } from '../psychologists/psychologists.module';
+import { PatientsModule } from '../patients/patients.module';
+import { DocumentsModule } from '../documents/documents.module';
 
 @Module({
   controllers: [MeetingsController],

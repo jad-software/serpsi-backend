@@ -9,7 +9,7 @@ import { data_providers } from '../constants';
 import { Repository } from 'typeorm';
 import { Document } from './entities/document.entity';
 import { PatientsService } from '../patients/patients.service';
-import { MeetingsService } from 'src/meetings/infra/meetings.service';
+import { MeetingsService } from '../meetings/infra/meetings.service';
 
 @Injectable()
 export class DocumentsService {

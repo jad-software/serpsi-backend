@@ -27,7 +27,7 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { School } from './entities/school.entity';
 import { Person } from '../persons/entities/person.enitiy';
 import { PsychologistsService } from '../psychologists/psychologists.service';
-import { Meeting } from 'src/meetings/domain/entities/meeting.entity';
+import { Meeting } from '../meetings/domain/entities/meeting.entity';
 
 @Injectable()
 export class PatientsService {

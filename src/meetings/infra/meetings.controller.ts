@@ -13,7 +13,7 @@ import { MeetingsService } from './meetings.service';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { FindBusyDaysDAO } from '../application/getBusyDays/findBusyDays.dao';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { User } from 'src/auth/providers/user.decorator';
+import { User } from '../../auth/providers/user.decorator';
 import { GetScheduleDAO } from '../application/getSchedule/getSchedule.dao';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';

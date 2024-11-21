@@ -18,7 +18,7 @@ import { Comorbidity } from './comorbidity.entity';
 import { Person } from '../../persons/entities/person.enitiy';
 import { Document } from '../../documents/entities/document.entity';
 import { Psychologist } from '../../psychologists/entities/psychologist.entity';
-import { Meeting } from 'src/meetings/domain/entities/meeting.entity';
+import { Meeting } from '../../meetings/domain/entities/meeting.entity';
 
 @Entity()
 export class Patient extends EntityBase implements IPatient {

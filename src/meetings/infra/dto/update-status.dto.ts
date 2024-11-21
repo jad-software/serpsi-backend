@@ -1,6 +1,5 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { CreateMeetingDto } from './create-meeting.dto';
-import { StatusType } from 'src/meetings/domain/vo/statustype.enum';
+import { ApiProperty } from '@nestjs/swagger';
+import { StatusType } from '../../../meetings/domain/vo/statustype.enum';
 import { IsEnum, IsNotEmpty } from 'class-validator';
 
 export class UpdateStatusDto {

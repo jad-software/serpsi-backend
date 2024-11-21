@@ -6,17 +6,17 @@ import { remove } from '../application/remove/remove';
 import { update } from '../application/update/update';
 import { getBusyDays } from '../application/getBusyDays/get-busy-days';
 import { getOneSession } from '../application/getOneSession/get-one-session';
-import { data_providers } from 'src/constants';
+import { data_providers } from '../../constants';
 import { Repository } from 'typeorm';
 import { Meeting } from '../domain/entities/meeting.entity';
-import { PsychologistsService } from 'src/psychologists/psychologists.service';
-import { PatientsService } from 'src/patients/patients.service';
+import { PsychologistsService } from '../../psychologists/psychologists.service';
+import { PatientsService } from '../../patients/patients.service';
 import { getSchedule } from '../application/getSchedule/get-schedule';
 import { modifyStatus } from '../application/modifyStatus/modify-status';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { createManySessions } from '../application/create/create-many-sessions';
 import { FrequencyEnum } from './dto/frequency.enum';
-import { Day, numberToDay } from 'src/psychologists/vo/days.enum';
+import { Day, numberToDay } from '../../psychologists/vo/days.enum';
 import { checkAvaliableTime } from '../application/checkAvaliableTime/check-avaliable-time';
 
 @Injectable()

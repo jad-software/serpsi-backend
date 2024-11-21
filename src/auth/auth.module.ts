@@ -10,7 +10,7 @@ import { JwtStrategy } from './providers/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt.guards';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './guards/roles.guards';
-import { PsychologistsModule } from 'src/psychologists/psychologists.module';
+import { PsychologistsModule } from '../psychologists/psychologists.module';
 
 @Module({
   imports: [

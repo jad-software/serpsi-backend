@@ -3,7 +3,7 @@ import { SchoolService } from './school.service';
 import { schoolProvider } from './providers/school.provider';
 import { DatabaseModule } from '../database/database.module';
 import { SchoolController } from './school.controller';
-import { AddressesModule } from 'src/addresses/addresses.module';
+import { AddressesModule } from '../addresses/addresses.module';
 
 @Module({
   imports: [DatabaseModule, AddressesModule],

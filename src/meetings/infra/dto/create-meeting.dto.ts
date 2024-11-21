@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsString, ValidateIf } from 'class-validator';
-import { IMeetings } from 'src/meetings/domain/intefaces/meetings.interface';
+import { IMeetings } from '../../../meetings/domain/intefaces/meetings.interface';
 import { FrequencyEnum } from './frequency.enum';
 
 export class CreateMeetingDto implements IMeetings {

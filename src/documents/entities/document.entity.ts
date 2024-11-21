@@ -3,11 +3,11 @@ import { IDocument } from '../interfaces/document.interface';
 import { CreateDocumentDto } from '../dto/create-document.dto';
 import { EntityBase } from '../../entity-base/entities/entity-base';
 import { Patient } from '../../patients/entities/patient.entity';
-import { Meeting } from 'src/meetings/domain/entities/meeting.entity';
+import { Meeting } from '../../meetings/domain/entities/meeting.entity';
 
 @Entity()
 export class Document extends EntityBase implements IDocument {
-  constructor(partial: Partial<CreateDocumentDto>) {
+  constructor(partial: Partial<CreateDocumentDto> | Partial<Document>) {
     super();
     Object.assign(this, partial);
   }

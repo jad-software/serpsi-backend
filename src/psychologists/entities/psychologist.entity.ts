@@ -13,7 +13,7 @@ import { CreatePsychologistDto } from '../dto/create-psychologist.dto';
 import { User } from '../../users/entities/user.entity';
 import { Agenda } from './agenda.entity';
 import { Patient } from '../../patients/entities/patient.entity';
-import { Meeting } from 'src/meetings/domain/entities/meeting.entity';
+import { Meeting } from '../../meetings/domain/entities/meeting.entity';
 
 @Entity()
 export class Psychologist extends EntityBase {

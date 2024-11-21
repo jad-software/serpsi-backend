@@ -1,5 +1,5 @@
-import { data_providers } from 'src/constants';
-import { Meeting } from 'src/meetings/domain/entities/meeting.entity';
+import { data_providers } from '../../../constants';
+import { Meeting } from '../../../meetings/domain/entities/meeting.entity';
 import { DataSource } from 'typeorm';
 
 
