@@ -18,5 +18,4 @@ export async function getOneSession(sessionId: string, repository: Repository<Me
   } catch (error) {
     throw new NotFoundException("Sessão não encontrada");
   }
-
 }
