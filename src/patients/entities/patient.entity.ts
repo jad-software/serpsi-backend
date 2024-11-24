@@ -22,7 +22,7 @@ import { Meeting } from '../../meetings/domain/entities/meeting.entity';
 
 @Entity()
 export class Patient extends EntityBase implements IPatient {
-  constructor(partial: Partial<CreatePatientDto>) {
+  constructor(partial: Partial<CreatePatientDto | Patient>) {
     super();
     Object.assign(this, partial);
   }
