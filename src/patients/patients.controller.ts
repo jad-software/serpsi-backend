@@ -324,7 +324,7 @@ export class PatientsController {
           type: 'string',
           format: 'binary',
         },
-        document: {
+        documents: {
           type: 'string',
           format: 'binary',
         },
