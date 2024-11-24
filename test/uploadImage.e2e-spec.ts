@@ -28,7 +28,7 @@ describe('PersonsController (e2e)', () => {
           zipCode: '12345',
           state: 'Test State',
           district: 'Test District',
-          homeNumber: 123,
+          homeNumber: '123',
           complement: 'Test Complement',
         },
       });
@@ -70,7 +70,7 @@ describe('PersonsController (e2e)', () => {
         zipCode: '12345',
         state: 'Test State',
         district: 'Test District',
-        homeNumber: 123,
+        homeNumber: '123',
         complement: 'Test Complement',
       },
     };
@@ -103,7 +103,7 @@ describe('PersonsController (e2e)', () => {
         zipCode: '12345',
         state: 'Test State',
         district: 'Test District',
-        homeNumber: 123,
+        homeNumber: '123',
         complement: 'Test Complement',
       },
     };
@@ -140,7 +140,7 @@ describe('PersonsController (e2e)', () => {
         zipCode: '12345',
         state: 'Test State',
         district: 'Test District',
-        homeNumber: 123,
+        homeNumber: '123',
         complement: 'Test Complement',
       },
     };

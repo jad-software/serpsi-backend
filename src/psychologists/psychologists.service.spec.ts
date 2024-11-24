@@ -134,7 +134,7 @@ describe('PsychologistsService', () => {
             district: 'Bairro Teste',
             city: 'Salvador',
             state: 'BA',
-            homeNumber: 123,
+            homeNumber: '123',
             complement: 'Apt 101',
           },
         },

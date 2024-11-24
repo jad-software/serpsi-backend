@@ -84,15 +84,6 @@ export class CreatePersonDto implements IPerson {
   @ApiProperty({
     type: CreateAddressDto,
     description: 'Endereço da Pessoa',
-    example: {
-      state: 'SP',
-      zipCode: '41796616',
-      street: 'teste de street de refatoração no update',
-      district: 'district de teste  de refatoração no update',
-      city: 'São Paulo',
-      homeNumber: 278,
-      complement: 'complemento de refatoração no update',
-    },
   })
   @ValidateNested()
   @Type(() => CreateAddressDto)

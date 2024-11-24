@@ -24,7 +24,7 @@ export class PsychologistsService {
     private personsService: PersonsService,
     @Inject()
     private cloudinaryService: CloudinaryService
-  ) { }
+  ) {}
 
   async create(
     createPsychologistDto: CreatePsychologistDto,
@@ -206,11 +206,12 @@ export class PsychologistsService {
   async updatePassword(id: string, changePasswordDto: ChangePassworDto) {
     try {
       const person = await this.findOne(id);
-      const result = await this.usersService.updatePassword(
+
+      await this.usersService.updatePassword(
         person.user.email.email,
         changePasswordDto
       );
-      return result;
+      return { success: true, message: 'Senha atualizada com sucesso' };
     } catch (err) {
       throw new BadRequestException(err?.message);
     }

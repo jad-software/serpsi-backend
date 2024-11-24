@@ -76,7 +76,7 @@ describe('PersonsService', () => {
           state: 'Test State',
           city: 'cidade',
           district: 'Test District',
-          homeNumber: 123,
+          homeNumber: '123',
           complement: 'nenhum',
         },
       };
@@ -109,7 +109,7 @@ describe('PersonsService', () => {
           state: 'Test State',
           city: 'cidade',
           district: 'Test District',
-          homeNumber: 123,
+          homeNumber: '123',
           complement: 'nenhum',
         },
         user: 'user-id',
@@ -216,7 +216,7 @@ describe('PersonsService', () => {
           zipCode: '12345',
           state: 'Test State',
           district: 'Test District',
-          homeNumber: 123,
+          homeNumber: '123',
         }),
         user: 'user-id',
         id: id,
@@ -248,7 +248,7 @@ describe('PersonsService', () => {
           zipCode: '54321',
           state: 'Updated State',
           district: 'Updated District',
-          homeNumber: 321,
+          homeNumber: '321',
         }),
       };
 

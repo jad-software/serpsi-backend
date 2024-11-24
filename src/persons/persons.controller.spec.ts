@@ -54,7 +54,7 @@ describe('PersonsController', () => {
           zipCode: '12345',
           state: 'Test State',
           district: 'Test District',
-          homeNumber: 123,
+          homeNumber: '123',
         }),
       };
       const person = new Person(createPersonDto);
@@ -80,7 +80,7 @@ describe('PersonsController', () => {
           zipCode: '12345',
           state: 'Test State',
           district: 'Test District',
-          homeNumber: 123,
+          homeNumber: '123',
         }),
       };
 

@@ -69,20 +69,23 @@ export class PatientsService {
         );
       }
 
-      let [psychologist, person, school, comorbidities, parents] =
+      let [psychologist, person, comorbidities, parents] =
         await Promise.all([
           this.psychologistService.findOne(createPatientDto.psychologistId),
           this.setPerson(createPatientDto.person, profilePicture),
-          this.setSchool(createPatientDto.school),
           this.setComorbities(createPatientDto.comorbidities),
           this.setParents(createPatientDto.parents),
         ]);
+
       patient.psychologist = psychologist;
       patient.person = person;
-      patient.school = school;
       patient.comorbidities = comorbidities;
       patient.parents = parents;
 
+      if (createPatientDto.school) {
+        let school = await this.setSchool(createPatientDto.school);
+        patient.school = school;
+      }
       let savedPatient = await this.patientRepository.save(patient, {
         transaction: false,
       });

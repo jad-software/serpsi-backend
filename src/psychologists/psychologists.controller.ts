@@ -126,8 +126,8 @@ export class PsychologistsController {
                       example: 'São Paulo',
                     },
                     homeNumber: {
-                      type: 'number',
-                      example: 278,
+                      type: 'string',
+                      example: '291c',
                     },
                     complement: {
                       type: 'string',

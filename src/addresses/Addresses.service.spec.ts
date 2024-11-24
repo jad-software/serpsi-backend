@@ -51,7 +51,7 @@ describe('Addresses Service', () => {
       street: 'Rua de Address teste',
       district: 'District de Address teste',
       city: 'cidade',
-      homeNumber: 10,
+      homeNumber: '10',
       complement: 'Complement de Address teste',
     };
     const expectedAddress = new Address({
@@ -60,7 +60,7 @@ describe('Addresses Service', () => {
       street: 'Rua de Address teste',
       district: 'District de Address teste',
       city: 'cidade',
-      homeNumber: 10,
+      homeNumber: '10',
       complement: 'Complement de Address teste',
     });
     mockRepository.save.mockResolvedValue(expectedAddress);
@@ -75,7 +75,7 @@ describe('Addresses Service', () => {
       state: 'BA',
       street: 'Rua de Address teste',
       district: 'District de Address teste',
-      homeNumber: 10,
+      homeNumber: '10',
       complement: 'Complement de Address teste',
     });
     address.id = id;
@@ -93,14 +93,14 @@ describe('Addresses Service', () => {
     const id = new Id('a8c0fbb9-af01-4874-b792-e84a17c6524c');
     const updateAddressDto: UpdateAddressDto = {
       district: 'Updated District',
-      homeNumber: 37,
+      homeNumber: '37',
     };
     const address = new Address({
       zipCode: '44444-44',
       state: 'BA',
       street: 'Rua de Address teste',
       district: 'District de Address teste',
-      homeNumber: 10,
+      homeNumber: '10',
       complement: 'Complement de Address teste',
     });
     address.id = id;

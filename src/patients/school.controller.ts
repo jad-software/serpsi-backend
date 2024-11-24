@@ -19,7 +19,7 @@ export class SchoolController {
   constructor(private readonly schoolService: SchoolService) {}
 
   @ApiOperation({ summary: 'retorna uma escola pelo nome ou cnpj' })
-  @Post('/search')
+  @Get('/search')
   async findOneSchool(@Query() search?: FindSchoolDto) {
     return await this.schoolService.findOneBy(search);
   }
