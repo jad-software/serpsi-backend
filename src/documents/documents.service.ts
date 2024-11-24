@@ -109,22 +109,10 @@ export class DocumentsService {
         .createQueryBuilder('document')
         .leftJoinAndSelect('document._patient', 'patient')
         .leftJoinAndSelect('patient._person', 'person')
-        .select(
-          'document._id._id',
-          'id'
-        )
-        .addSelect(
-          'document._title',
-          'title'
-        )
-        .addSelect(
-          'document._docLink',
-          'docLink'
-        )
-        .addSelect(
-          'person._name',
-          'name'
-        )
+        .select('document._id._id', 'id')
+        .addSelect('document._title', 'title')
+        .addSelect('document._docLink', 'docLink')
+        .addSelect('person._name', 'name')
         .where('patient.Psychologist_id = :psychologistId', { psychologistId })
         .getRawMany();
       return documents;
