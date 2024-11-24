@@ -82,7 +82,6 @@ export class PatientsService {
       patient.parents = parents;
 
       if (createPatientDto.school) {
-        console.log('aquii', createPatientDto.school);
         let school = await this.setSchool(createPatientDto.school);
         patient.school = school;
       }
