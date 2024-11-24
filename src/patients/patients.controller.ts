@@ -33,6 +33,7 @@ import {
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import { extname } from 'path';
+import { User } from 'src/auth/providers/user.decorator';
 
 @ApiTags('patients')
 @ApiBearerAuth()
@@ -366,11 +367,17 @@ export class PatientsController {
   }
 
   @ApiOperation({ summary: 'lista todos os pacientes de um psicólogo' })
-  @Get('/psychologist/:id')
-  async findAllByPsychologist(@Param('id') id: string) {
-    return await this.patientsService.findAllByPsychologist(id);
+  @Get('/psychologist')
+  async findAllByPsychologist(@User() userInfo) {
+    return await this.patientsService.findAllByPsychologist(userInfo.id);
   }
-
+  
+  @ApiOperation({ summary: 'lista todos os pacientes de um psicólogo' })
+  @Get('/addmeeting')
+  async findAllToAddMeeting(@User() userInfo) {
+    return await this.patientsService.findAllByPsychologistToANewMeeting(userInfo.id);
+  }
+  
   @ApiOperation({ summary: 'retorna um paciente pelo id' })
   @Get(':id')
   async findOne(@Param('id') id: string) {

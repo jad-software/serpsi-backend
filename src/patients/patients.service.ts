@@ -28,6 +28,7 @@ import { School } from './entities/school.entity';
 import { Person } from '../persons/entities/person.enitiy';
 import { PsychologistsService } from '../psychologists/psychologists.service';
 import { Meeting } from '../meetings/domain/entities/meeting.entity';
+import { StatusType } from 'src/meetings/domain/vo/statustype.enum';
 
 @Injectable()
 export class PatientsService {
@@ -212,6 +213,28 @@ export class PatientsService {
         'patient.payment_plan',
         'person.cpf',
       ])
+      .where('patient.Psychologist_id = :id', { id })
+      .getRawMany();
+  }
+
+  async findAllByPsychologistToANewMeeting(id: string) {
+    return await this.patientRepository
+      .createQueryBuilder('patient')
+      .leftJoinAndSelect('patient._person', 'person')
+      .select([
+        'patient.id',
+        'person.name',
+        'patient.payment_plan',
+        'person.cpf',
+      ])
+      .addSelect((subquery) => {
+        return subquery
+          .select('COUNT(meeting.id)', 'count')
+          .from(Meeting, 'meeting')
+          .where('meeting.Patient_id = patient.id')
+          .andWhere('meeting._status != :status', { status: StatusType.CANCELED })
+          .andWhere('meeting._schedule > NOW()')
+      }, 'count_meetings')
       .where('patient.Psychologist_id = :id', { id })
       .getRawMany();
   }
