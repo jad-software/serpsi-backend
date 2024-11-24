@@ -131,6 +131,7 @@ export class PsychologistsService {
         queryBuilder
           .leftJoinAndSelect('psychologist.user', 'user')
           .leftJoinAndSelect('user.person', 'person')
+          .leftJoinAndSelect('person.address', 'address');
       }
       const psychologist = await queryBuilder.getOneOrFail();
 
