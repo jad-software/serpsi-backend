@@ -33,7 +33,7 @@ export class Patient extends EntityBase implements IPatient {
   })
   private _paymentPlan: PaymentPlan;
 
-  @ManyToOne(() => School)
+  @ManyToOne(() => School, { nullable: true })
   private _school: School;
 
   @OneToMany(() => MedicamentInfo, (medicamentInfo) => medicamentInfo.patient)

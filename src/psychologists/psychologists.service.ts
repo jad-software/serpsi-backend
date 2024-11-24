@@ -21,7 +21,7 @@ export class PsychologistsService {
     private personsService: PersonsService,
     @Inject()
     private cloudinaryService: CloudinaryService
-  ) { }
+  ) {}
 
   async create(
     createPsychologistDto: CreatePsychologistDto,
@@ -96,7 +96,7 @@ export class PsychologistsService {
 
   async findOneByUser(id: string): Promise<Psychologist> {
     const allPsychologist = await this.findAll();
-    const psychologist = allPsychologist.filter(p => p.user.id.id === id)[0];
+    const psychologist = allPsychologist.filter((p) => p.user.id.id === id)[0];
     return psychologist;
   }
   async findAll() {
@@ -202,11 +202,11 @@ export class PsychologistsService {
     try {
       const person = await this.findOne(id);
       await this.usersService.updatePassword(
-        person.user.email.email, changePasswordDto
+        person.user.email.email,
+        changePasswordDto
       );
-      return { success: true, message: "Senha atualizada com sucesso" };
-    }
-    catch (err) {
+      return { success: true, message: 'Senha atualizada com sucesso' };
+    } catch (err) {
       throw new BadRequestException(err?.message);
     }
   }

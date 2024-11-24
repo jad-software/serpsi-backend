@@ -52,8 +52,8 @@ describe('PatientsService', () => {
   };
 
   const mockPsychologistService = {
-    findOne: jest.fn()
-  }
+    findOne: jest.fn(),
+  };
   const mockSchoolService = {
     findOneBy: jest.fn(),
     create: jest.fn(),

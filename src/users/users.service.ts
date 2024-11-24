@@ -20,7 +20,7 @@ export class UsersService {
   constructor(
     @Inject(data_providers.USER_REPOSITORY)
     private userRepository: Repository<User>
-  ) { }
+  ) {}
 
   async create(
     createUserDto: CreateUserDto,
@@ -101,15 +101,21 @@ export class UsersService {
     try {
       const user = await this.findOneByEmail(email);
       const id = user.id.id;
-      const passwordValid = await bcrypt.compare(changePasswordDto._password, user.password);
+      const passwordValid = await bcrypt.compare(
+        changePasswordDto._password,
+        user.password
+      );
       if (!passwordValid) {
         throw new BadRequestException('Senha antiga incorreta');
       }
       const isNewPasswordEqualOldPassword = await bcrypt.compare(
-        changePasswordDto._newPassword, user.password
+        changePasswordDto._newPassword,
+        user.password
       );
       if (isNewPasswordEqualOldPassword) {
-        throw new BadRequestException('Senha Nova não deve ser igual a anterior');
+        throw new BadRequestException(
+          'Senha Nova não deve ser igual a anterior'
+        );
       }
       const hashedPassword = await bcrypt.hash(
         changePasswordDto._newPassword,
@@ -118,8 +124,7 @@ export class UsersService {
 
       user.password = hashedPassword;
       this.userRepository.update(id, user);
-    }
-    catch (err) {
+    } catch (err) {
       throw new InternalServerErrorException(err?.message);
     }
   }

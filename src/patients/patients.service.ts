@@ -43,7 +43,7 @@ export class PatientsService {
     private cloudinaryService: CloudinaryService,
     @Inject()
     private psychologistService: PsychologistsService
-  ) {}
+  ) { }
 
   async create(
     createPatientDto: CreatePatientDto,
@@ -68,19 +68,24 @@ export class PatientsService {
         );
       }
 
-      let [psychologist, person, school, comorbidities, parents] = await Promise.all([
-        this.psychologistService.findOne(createPatientDto.psychologistId),
-        this.setPerson(createPatientDto.person, profilePicture),
-        this.setSchool(createPatientDto.school),
-        this.setComorbities(createPatientDto.comorbidities),
-        this.setParents(createPatientDto.parents),
-      ]);
+      let [psychologist, person, comorbidities, parents] =
+        await Promise.all([
+          this.psychologistService.findOne(createPatientDto.psychologistId),
+          this.setPerson(createPatientDto.person, profilePicture),
+          this.setComorbities(createPatientDto.comorbidities),
+          this.setParents(createPatientDto.parents),
+        ]);
+
       patient.psychologist = psychologist;
       patient.person = person;
-      patient.school = school;
       patient.comorbidities = comorbidities;
       patient.parents = parents;
 
+      if (createPatientDto.school) {
+        console.log('aquii', createPatientDto.school);
+        let school = await this.setSchool(createPatientDto.school);
+        patient.school = school;
+      }
       let savedPatient = await this.patientRepository.save(patient, {
         transaction: false,
       });
@@ -191,7 +196,7 @@ export class PatientsService {
         'patient.payment_plan',
         'person.cpf',
       ])
-      .where('patient.Psychologist_id = :id',{id} )
+      .where('patient.Psychologist_id = :id', { id })
       .getRawMany();
   }
 
