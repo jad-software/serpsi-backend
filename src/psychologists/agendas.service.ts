@@ -3,6 +3,8 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { AgendaDto, CreateAgendaDto } from './dto/create-agenda.dto';
 import { UpdateAgendaDto } from './dto/update-agenda.dto';
@@ -11,7 +13,6 @@ import { Agenda } from './entities/agenda.entity';
 import { data_providers } from '../constants';
 import { Day } from './vo/days.enum';
 import { PsychologistsService } from './psychologists.service';
-import { Psychologist } from './entities/psychologist.entity';
 import { UpdatePsychologistDto } from './dto/update-psychologist.dto';
 
 @Injectable()
@@ -21,7 +22,7 @@ export class AgendasService {
     private agendaRepository: Repository<Agenda>,
     @Inject(forwardRef(() => PsychologistsService))
     private psychologistService: PsychologistsService
-  ) {}
+  ) { }
   async create(createAgendaDto: CreateAgendaDto) {
     const operations = [];
     try {
@@ -58,7 +59,7 @@ export class AgendasService {
       const savedDays = await Promise.all(operations);
       return savedDays;
     } catch (err) {
-      throw new BadRequestException(err?.message);
+      throw new InternalServerErrorException('problemas ao adicionar as agendas');
     }
   }
 
@@ -72,19 +73,18 @@ export class AgendasService {
       throw new BadRequestException(err?.message);
     }
   }
+
   async findAllFromPsychologist(id: string): Promise<CreateAgendaDto> {
     try {
       const agendaFromPsychologist = await this.agendaRepository
         .createQueryBuilder('agenda')
-        .leftJoinAndSelect('agenda.psychologist', 'psychologist')
-        .where('psychologist.id = :id', { id })
+        .where('psychologist_id = :id', { id })
         .select([
           'agenda._day',
           'agenda._startTime',
           'agenda._endTime',
           'agenda._id._id',
         ])
-        .orderBy('agenda.day', 'ASC')
         .addOrderBy('agenda.startTime', 'ASC')
         .getMany();
 
@@ -120,7 +120,7 @@ export class AgendasService {
         agendas: formattedAgendas,
       };
     } catch (err) {
-      throw new BadRequestException(err?.message);
+      throw new NotFoundException(err?.message);
     }
   }
 
@@ -132,7 +132,7 @@ export class AgendasService {
         .getOneOrFail();
       return agenda;
     } catch (err) {
-      throw new BadRequestException(err?.message);
+      throw new NotFoundException('agenda não encontrada');
     }
   }
 
@@ -143,7 +143,7 @@ export class AgendasService {
       const savedAgenda = await this.create(updateAgendaDto as CreateAgendaDto);
       return savedAgenda;
     } catch (err) {
-      throw new BadRequestException(err?.message);
+      throw new InternalServerErrorException('problema no update de agenda');
     }
   }
 
@@ -159,7 +159,7 @@ export class AgendasService {
       });
       await Promise.allSettled(operations);
     } catch (err) {
-      throw new BadRequestException(err?.message);
+      throw new InternalServerErrorException('problema na deleção das agendas');
     }
   }
 
@@ -168,7 +168,7 @@ export class AgendasService {
       const agenda = await this.FindOne(id);
       await this.agendaRepository.remove(agenda);
     } catch (err) {
-      throw new BadRequestException(err?.message);
+      throw new InternalServerErrorException('problemas ao remover agenda');
     }
   }
 }

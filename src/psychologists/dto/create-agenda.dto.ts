@@ -57,7 +57,7 @@ export class AgendaDto {
 
 export class CreateAgendaDto {
   @ApiProperty({
-    type: 'string',
+    type: String,
     description: 'id do psicólogo ao qual pertence a agenda',
     example: '2315cd8e-093e-4f7b-badc-55ae4c6e105d',
   })
@@ -66,16 +66,16 @@ export class CreateAgendaDto {
   psychologistId: string;
 
   @ApiProperty({
-    type: IsNumber,
+    type: Number,
     description: 'Valor da sessão em reais',
-    example: 150,
+    example: 150.50,
   })
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces: 2 })
   @IsPositive()
   meetValue: number;
 
   @ApiProperty({
-    type: IsNumber,
+    type: Number,
     description: 'Duraçao da sessão em minutos',
     example: 50,
   })

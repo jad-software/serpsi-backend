@@ -1,22 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
 import {
-  BadRequestException,
   INestApplication,
-  UnauthorizedException,
 } from '@nestjs/common';
-import { AppModule } from '../src/app.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Person } from '../src/persons/entities/person.enitiy';
-import { PersonsController } from '../src/persons/persons.controller';
 import { PersonsService } from '../src/persons/persons.service';
-import { Repository } from 'typeorm';
-import { DataSource } from 'typeorm';
-import { Address } from '../src/addresses/entities/address.entity';
-import { Cpf } from '../src/persons/vo/cpf.vo';
-import { Phone } from '../src/persons/vo/phone.vo';
 import { PersonsModule } from '../src/persons/persons.module';
-import { CreatePersonDto } from 'src/persons/dto/createPerson.dto';
 
 describe('PersonsController (e2e)', () => {
   let app: INestApplication;

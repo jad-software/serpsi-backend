@@ -6,7 +6,7 @@ export class CreateDocumentDto implements IDocument {
   @ApiProperty({
     type: String,
     description: 'título do documento',
-    example: 'título de documento',
+    example: 'relato de sessão',
   })
   @IsNotEmpty()
   @IsString()
@@ -16,10 +16,10 @@ export class CreateDocumentDto implements IDocument {
 
   @ApiProperty({
     type: String,
-    description: 'Id do paciente no relacionamento com documento',
-    example: '220fb404-4bf2-47c8-a20f-210f6e811620',
+    description: 'Id da sessão no relacionamento com documento',
+    example: 'meeting_id',
   })
   @IsUUID()
   @IsNotEmpty()
-  patient: string;
+  meeting: string;
 }

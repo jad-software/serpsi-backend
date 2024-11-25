@@ -11,6 +11,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { PatientsModule } from './patients/patients.module';
 import { DocumentsModule } from './documents/documents.module';
 import { PsychologistsModule } from './psychologists/psychologists.module';
+import { MeetingsModule } from './meetings/meetings.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { PsychologistsModule } from './psychologists/psychologists.module';
     PatientsModule,
     DocumentsModule,
     PsychologistsModule,
+    MeetingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

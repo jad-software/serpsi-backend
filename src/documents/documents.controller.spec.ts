@@ -4,6 +4,7 @@ import { DocumentsService } from './documents.service';
 import { Document } from './entities/document.entity';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { Id } from '../entity-base/vo/id.vo';
+import { Patient } from '../patients/entities/patient.entity';
 
 describe('Documents Controller', () => {
   let controller: DocumentsController;
@@ -39,7 +40,7 @@ describe('Documents Controller', () => {
     it('Should create a Document', async () => {
       const createDocumentDto: CreateDocumentDto = {
         title: 'Tille Controller teste',
-        patient: '65a588f1-0174-4e2c-b620-05b7c55adea5',
+        meeting: '65a588f1-0174-4e2c-b620-05b7c55adea5',
       };
 
       const document = new Document(createDocumentDto);
@@ -54,7 +55,7 @@ describe('Documents Controller', () => {
       expect(result).toEqual(document);
       expect(service.create).toHaveBeenCalledWith(
         document.title,
-        document.patient,
+        document.meeting,
         file
       );
     });
@@ -64,14 +65,14 @@ describe('Documents Controller', () => {
     it('Should create a follow up Document', async () => {
       let documents: Document[] = [];
       let patient = '65a588f1-0174-4e2c-b620-05b7c55adea5';
-      const createDocumentDto: CreateDocumentDto[] = [
+      const createDocumentDto = [
         {
           title: 'Title Controller teste',
-          patient,
+          patient
         },
         {
           title: 'Title Controller teste2',
-          patient,
+          patient
         },
       ];
       createDocumentDto.map((previusFollowUps) => {
@@ -98,7 +99,7 @@ describe('Documents Controller', () => {
   describe('findOne', () => {
     it('should return a single document by ID', async () => {
       const id = new Id('1');
-      const result = new Document({ title: 'doc1', patient: '13767676' });
+      const result = new Document({ title: 'doc1', patient: { id: new Id('13767676') } as Patient });
       result.id = id;
       jest.spyOn(service, 'findOne').mockResolvedValue(result);
 

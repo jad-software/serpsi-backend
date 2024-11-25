@@ -14,7 +14,6 @@ import { UpdatePersonDto } from './dto/updatePerson.dto';
 import { AddressesService } from '../addresses/Addresses.service';
 import { UsersService } from '../users/users.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
-import { Address } from 'src/addresses/entities/address.entity';
 
 @Injectable()
 export class PersonsService {

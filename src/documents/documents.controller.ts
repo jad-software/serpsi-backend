@@ -61,7 +61,7 @@ export class DocumentsController {
 
   @Post()
   @ApiOperation({
-    summary: 'Cria um documento com título, vinculo com paciente e arquivo',
+    summary: 'Cria um documento com título, vinculo com reunião e arquivo',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -70,11 +70,11 @@ export class DocumentsController {
       properties: {
         title: {
           type: 'string',
-          example: 'título de documento de sessão',
+          example: 'relato da sessão',
         },
-        patient: {
+        meeting: {
           type: 'string',
-          example: '220fb404-4bf2-47c8-a20f-210f6e811620',
+          example: 'meeting_id',
         },
         document: {
           type: 'string',
@@ -85,18 +85,18 @@ export class DocumentsController {
   })
   @UseInterceptors(FileInterceptor('document'))
   async create(
-    @Body() { title, patient }: { title: string; patient: string },
+    @Body() { title, meeting }: { title: string; meeting: string },
     @UploadedFile()
     document: Express.Multer.File
   ) {
     const createDocumentDto = plainToClass(CreateDocumentDto, {
       title,
-      patient,
+      meeting
     });
     await this.validateDocumentData(createDocumentDto);
     this.validateUploadedFile(document, 'md');
 
-    return await this.documentsService.create(title, patient, document);
+    return await this.documentsService.create(title, meeting, document);
   }
 
   @Post('/followups')
@@ -109,7 +109,7 @@ export class DocumentsController {
           type: 'string',
           example: 'f35f827e-0899-4d63-976a-2b9aac7fb3ff',
         },
-        document: {
+        documents: {
           type: 'string',
           format: 'binary',
         },

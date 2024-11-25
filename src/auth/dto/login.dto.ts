@@ -5,7 +5,7 @@ import { email } from '../../constants';
 export class LoginDTO {
   @ApiProperty({
     description: 'Insira um e-mail existe',
-    example: 'psi@teste.com',
+    example: 'teste@serpsi.com',
   })
   @Matches(RegExp(email.REGEX), {
     message: 'E-mail inválido',
@@ -15,7 +15,7 @@ export class LoginDTO {
 
   @ApiProperty({
     description: 'Insira a senha que corresponde ao E-mail',
-    example: 'Psiteste@123',
+    example: 'Senha@123',
   })
   @IsString()
   @IsNotEmpty()

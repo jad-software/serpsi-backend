@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { PsychologistsService } from './psychologists.service';
 import { CreateAgendaDto } from './dto/create-agenda.dto';
 import { Psychologist } from './entities/psychologist.entity';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Day } from './vo/days.enum';
 import { Crp } from './vo/crp.vo';
 import { Id } from '../entity-base/vo/id.vo';
@@ -133,7 +133,7 @@ describe('AgendasService', () => {
         .mockRejectedValue(new Error('Error'));
 
       await expect(service.create(createAgendaDto)).rejects.toThrow(
-        BadRequestException
+        InternalServerErrorException
       );
     });
   });
@@ -240,7 +240,7 @@ describe('AgendasService', () => {
 
       await expect(
         service.findAllFromPsychologist(psychologistId)
-      ).rejects.toThrow(BadRequestException);
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });

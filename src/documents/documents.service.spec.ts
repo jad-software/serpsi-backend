@@ -7,6 +7,7 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { Id } from '../entity-base/vo/id.vo';
 import { Document } from './entities/document.entity';
 import { Patient } from '../patients/entities/patient.entity';
+import { MeetingsService } from '../meetings/infra/meetings.service';
 
 describe('Documents Services', () => {
   let service: DocumentsService;
@@ -55,6 +56,12 @@ describe('Documents Services', () => {
             deleteFileOtherThanImage: jest.fn(),
           },
         },
+        {
+          provide: MeetingsService,
+          useValue: {
+            findOne: jest.fn(),
+          },
+        },
       ],
     }).compile();
     service = module.get<DocumentsService>(DocumentsService);
@@ -91,12 +98,12 @@ describe('Documents Services', () => {
       new Document({
         title: 'Documento da sessão 1',
         docLink: 'Link1/link',
-        patient: patientId.id,
+        patient
       }),
       new Document({
         title: 'Documento da sessão 2',
         docLink: 'Link2/link',
-        patient: patientId.id,
+        patient
       }),
     ];
     documents[0].id = new Id('f6ce1411-c3bb-42d6-a719-b1b6a7d2e073');

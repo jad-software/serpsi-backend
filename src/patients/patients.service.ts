@@ -27,6 +27,8 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { School } from './entities/school.entity';
 import { Person } from '../persons/entities/person.enitiy';
 import { PsychologistsService } from '../psychologists/psychologists.service';
+import { Meeting } from '../meetings/domain/entities/meeting.entity';
+import { StatusType } from 'src/meetings/domain/vo/statustype.enum';
 
 @Injectable()
 export class PatientsService {
@@ -185,6 +187,22 @@ export class PatientsService {
     });
   }
 
+  async findAllMeetings(id: string) {
+    return await this.patientRepository
+      .createQueryBuilder('patient')
+      .leftJoinAndSelect('patient._person', 'person')
+      .innerJoinAndMapMany('patient._meetings', Meeting, "meeting", "meeting.Patient_id = :id", { id })
+      .where('patient.id = :id', { id })
+      .orderBy('meeting._schedule', 'DESC')
+      .select([
+        'person._name',
+        'meeting.id',
+        'meeting._schedule',
+        'meeting._status',
+      ])
+      .getRawMany();
+  }
+
   async findAllByPsychologist(id: string) {
     return await this.patientRepository
       .createQueryBuilder('patient')
@@ -199,26 +217,52 @@ export class PatientsService {
       .getRawMany();
   }
 
-  async findOne(id: string) {
+  async findAllByPsychologistToANewMeeting(id: string) {
+    return await this.patientRepository
+      .createQueryBuilder('patient')
+      .leftJoinAndSelect('patient._person', 'person')
+      .select([
+        'patient.id',
+        'person.name',
+        'patient.payment_plan',
+        'person.cpf',
+      ])
+      .addSelect((subquery) => {
+        return subquery
+          .select('COUNT(meeting.id)', 'count')
+          .from(Meeting, 'meeting')
+          .where('meeting.Patient_id = patient.id')
+          .andWhere('meeting._status != :status', { status: StatusType.CANCELED })
+          .andWhere('meeting._schedule > NOW()')
+      }, 'count_meetings')
+      .where('patient.Psychologist_id = :id', { id })
+      .getRawMany();
+  }
+
+  async findOne(id: string, relations: boolean = true) {
     try {
-      let patient = await this.patientRepository
+      let queryBuilder = await this.patientRepository
         .createQueryBuilder('patient')
-        .leftJoinAndSelect('patient._school', 'school')
-        .leftJoinAndSelect('school._address', 'school_address')
-        .leftJoinAndSelect('patient._comorbidities', '_comorbidities')
-        .leftJoinAndSelect('patient._person', '_person')
-        .leftJoinAndSelect('_person.address', '_address')
-        .leftJoinAndSelect('patient._parents', '_parents')
         .where('patient.id = :id', { id })
-        .getOneOrFail();
+        .leftJoinAndSelect('patient._person', '_person')
+      if (relations) {
+        queryBuilder
+          .leftJoinAndSelect('patient._school', 'school')
+          .leftJoinAndSelect('school._address', 'school_address')
+          .leftJoinAndSelect('patient._comorbidities', '_comorbidities')
+          .leftJoinAndSelect('_person.address', '_address')
+          .leftJoinAndSelect('patient._parents', '_parents')
+      }
+      let patient = await queryBuilder.getOneOrFail();
+      if (relations) {
+        patient.medicines = await this.medicamentInfoService.findAllToPatient(
+          patient.id.id
+        );
 
-      patient.medicines = await this.medicamentInfoService.findAllToPatient(
-        patient.id.id
-      );
-
-      patient.previewFollowUps = await this.documentService.findAllByPatient(
-        patient.id.id
-      );
+        patient.previewFollowUps = await this.documentService.findAllByPatient(
+          patient.id.id
+        );
+      }
       return patient;
     } catch (err) {
       throw new NotFoundException(err?.message);
