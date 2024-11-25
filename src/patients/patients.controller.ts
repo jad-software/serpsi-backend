@@ -372,7 +372,7 @@ export class PatientsController {
     return await this.patientsService.findAllByPsychologist(userInfo.id);
   }
   
-  @ApiOperation({ summary: 'lista todos os pacientes de um psicólogo' })
+  @ApiOperation({ summary: 'lista todos os pacientes de um psicólogo com o contador de sessões restantes' })
   @Get('/addmeeting')
   async findAllToAddMeeting(@User() userInfo) {
     return await this.patientsService.findAllByPsychologistToANewMeeting(userInfo.id);
