@@ -1,16 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsString, ValidateIf } from 'class-validator';
+import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsString, MinDate } from 'class-validator';
 import { IMeetings } from '../../../meetings/domain/intefaces/meetings.interface';
 import { FrequencyEnum } from './frequency.enum';
+import { Transform } from 'class-transformer';
 
 export class CreateMeetingDto implements IMeetings {
 
   @ApiProperty({
-    example: '2024-05-15T08:00:00z',
+    example: '2025-11-15T08:00:00z',
     description: 'data e hora da sessão',
   })
   @IsNotEmpty()
-  @IsDateString()
+  @Transform(({ value }) => new Date(value))
+  @IsDate()
+  @MinDate(new Date(), {
+    message: 'Schedule date must be after current date'
+  })
   schedule: Date;
 
   @ApiProperty({
