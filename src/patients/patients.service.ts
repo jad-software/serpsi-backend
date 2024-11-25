@@ -243,6 +243,7 @@ export class PatientsService {
     try {
       let queryBuilder = await this.patientRepository
         .createQueryBuilder('patient')
+        .where('patient.id = :id', { id })
         .leftJoinAndSelect('patient._person', '_person')
       if (relations) {
         queryBuilder
@@ -251,7 +252,6 @@ export class PatientsService {
           .leftJoinAndSelect('patient._comorbidities', '_comorbidities')
           .leftJoinAndSelect('_person.address', '_address')
           .leftJoinAndSelect('patient._parents', '_parents')
-          .where('patient.id = :id', { id })
       }
       let patient = await queryBuilder.getOneOrFail();
       if (relations) {
