@@ -191,7 +191,7 @@ export class PatientsService {
     return await this.patientRepository
       .createQueryBuilder('patient')
       .leftJoinAndSelect('patient._person', 'person')
-      .leftJoinAndMapMany('patient._meetings', Meeting, "meeting", "meeting.Patient_id = :id", { id })
+      .innerJoinAndMapMany('patient._meetings', Meeting, "meeting", "meeting.Patient_id = :id", { id })
       .where('patient.id = :id', { id })
       .orderBy('meeting._schedule', 'DESC')
       .select([
