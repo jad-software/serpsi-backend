@@ -6,5 +6,4 @@ export const postgresDataSource = new DataSource({
   url: POSTGRES_URL,
   migrations: ['./dist/database/migrations/*.{ts,js}'],
   entities: ['./dist/**/entities/*.{ts,js}'],
-  logging: true,
 });

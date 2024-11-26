@@ -13,6 +13,7 @@ import { CreatePsychologistDto } from '../dto/create-psychologist.dto';
 import { User } from '../../users/entities/user.entity';
 import { Agenda } from './agenda.entity';
 import { Patient } from '../../patients/entities/patient.entity';
+import { Meeting } from '../../meetings/domain/entities/meeting.entity';
 
 @Entity()
 export class Psychologist extends EntityBase {
@@ -49,6 +50,16 @@ export class Psychologist extends EntityBase {
 
   @OneToMany(() => Patient, (patient) => patient.psychologist)
   private _patients: Patient[];
+
+  @OneToMany(() => Meeting, (meeting) => meeting.psychologist)
+  private _meetings: Meeting[];
+
+  public get meetings(): Meeting[] {
+    return this._meetings;
+  }
+  public set meetings(value: Meeting[]) {
+    this._meetings = value;
+  }
 
   get patients(): Patient[] {
     return this._patients;

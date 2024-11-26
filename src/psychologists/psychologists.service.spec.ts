@@ -1,27 +1,20 @@
 import { CreatePsychologistDto } from './dto/create-psychologist.dto';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PsychologistsService } from './psychologists.service';
-import { Repository } from 'typeorm';
 import { Psychologist } from './entities/psychologist.entity';
 import { UsersService } from '../users/users.service';
 import { PersonsService } from '../persons/persons.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { Cpf } from '../persons/vo/cpf.vo';
 import { Crp } from './vo/crp.vo';
-import { User } from '../users/entities/user.entity';
-import { Person } from '../persons/entities/person.enitiy';
 import { Role } from '../users/vo/role.enum';
 import { data_providers } from '../constants';
-import { release } from 'os';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { UpdatePsychologistDto } from './dto/update-psychologist.dto';
 import { Phone } from '../persons/vo/phone.vo';
 
 describe('PsychologistsService', () => {
   let service: PsychologistsService;
-  let userService: UsersService;
-  let personService: PersonsService;
-  let cloudinaryService: CloudinaryService;
   let mockQueryBuilder: Partial<{
     where: jest.Mock;
     select: jest.Mock;
@@ -233,7 +226,7 @@ describe('PsychologistsService', () => {
     it('Should throw BadRequestException if psychologist not found', async () => {
       mockQueryBuilder.getOneOrFail.mockRejectedValue(new Error('Not found'));
 
-      await expect(service.findOne('1')).rejects.toThrow(BadRequestException);
+      await expect(service.findOne('1')).rejects.toThrow(NotFoundException);
     });
   });
 

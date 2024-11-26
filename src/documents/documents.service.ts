@@ -4,13 +4,12 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
-import { CreateDocumentDto } from './dto/create-document.dto';
-import { UpdateDocumentDto } from './dto/update-document.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { data_providers } from '../constants';
 import { Repository } from 'typeorm';
 import { Document } from './entities/document.entity';
 import { PatientsService } from '../patients/patients.service';
+import { MeetingsService } from '../meetings/infra/meetings.service';
 
 @Injectable()
 export class DocumentsService {
@@ -20,22 +19,26 @@ export class DocumentsService {
     @Inject()
     private cloudinaryService: CloudinaryService,
     @Inject(forwardRef(() => PatientsService))
-    private patientService: PatientsService
-  ) {}
+    private patientService: PatientsService,
+    @Inject(forwardRef(() => MeetingsService))
+    private meetingService: MeetingsService
+  ) { }
   async create(
     documentName: string,
-    personId: string,
+    meeetingId: string,
     documentFile: Express.Multer.File
   ): Promise<Document> {
     try {
-      const patient = await this.patientService.findOne(personId);
-      const fileSaved = await this.cloudinaryService.uploadFile(documentFile);
+      const formatOfFile = documentFile.originalname.split(".").at(-1);
+      const meeting = await this.meetingService.findOne(meeetingId, true);
+      const fileSaved = await this.cloudinaryService.uploadFile(documentFile, formatOfFile === 'pdf');
       if (fileSaved) {
         const document = new Document({
           title: documentName,
           docLink: fileSaved.url,
         });
-        document.patient = patient;
+        document.meeting = meeting;
+        document.patient = meeting.patient;
         const createdDocument = await this.documentRepository.save(document);
         return createdDocument;
       }
@@ -109,10 +112,12 @@ export class DocumentsService {
         .createQueryBuilder('document')
         .leftJoinAndSelect('document._patient', 'patient')
         .leftJoinAndSelect('patient._person', 'person')
+        .leftJoinAndSelect('document.meeting', 'meeting')
         .select('document._id._id', 'id')
         .addSelect('document._title', 'title')
         .addSelect('document._docLink', 'docLink')
         .addSelect('person._name', 'name')
+        .addSelect('meeting.schedule', 'createDate')
         .where('patient.Psychologist_id = :psychologistId', { psychologistId })
         .getRawMany();
       return documents;
@@ -166,8 +171,12 @@ export class DocumentsService {
 
       if (foundDocument) {
         const publicID = foundDocument.docLink.split('/').slice(-1)[0];
+        if (foundDocument.docLink.includes("image"))
+          await this.cloudinaryService.deleteFile(publicID.split('.').at(0));
+        else
+          await this.cloudinaryService.deleteFileOtherThanImage(publicID);
+
         await this.documentRepository.remove(foundDocument);
-        await this.cloudinaryService.deleteFileOtherThanImage(publicID);
       }
     } catch (err) {
       throw new BadRequestException(err?.message);

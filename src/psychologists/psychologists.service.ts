@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreatePsychologistDto } from './dto/create-psychologist.dto';
 import { UpdatePsychologistDto } from './dto/update-psychologist.dto';
 import { data_providers } from '../constants';
@@ -9,6 +9,9 @@ import { PersonsService } from '../persons/persons.service';
 import { Crp } from './vo/crp.vo';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { ChangePassworDto } from './dto/change-password.dto';
+import { Day } from './vo/days.enum';
+import { formatTime } from '../helpers/format-time';
+import { Times } from './interfaces/times.interface';
 
 @Injectable()
 export class PsychologistsService {
@@ -118,20 +121,24 @@ export class PsychologistsService {
     }
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, relations: boolean = true) {
     try {
-      const psychologist = await this.psychologistsRepository
+      const queryBuilder = this.psychologistsRepository
         .createQueryBuilder('psychologist')
-        .leftJoinAndSelect('psychologist.user', 'user')
         .where('psychologist.id = :id', { id })
-        .getOneOrFail();
-      psychologist.user.person = await this.personsService.findOneByUserId(
-        psychologist.user.id.id
-      );
+
+      if (relations) {
+        queryBuilder
+          .leftJoinAndSelect('psychologist.user', 'user')
+          .leftJoinAndSelect('user.person', 'person')
+          .leftJoinAndSelect('person.address', 'address');
+      }
+      const psychologist = await queryBuilder.getOneOrFail();
+
       psychologist.meetValue = +psychologist.meetValue;
       return psychologist;
     } catch (err) {
-      throw new BadRequestException(err?.message);
+      throw new NotFoundException('Nenhum psicologo encontrado');
     }
   }
 
@@ -164,14 +171,12 @@ export class PsychologistsService {
         crp;
       }
       Object.assign(foundPsychologist, otherFields);
-      await Promise.all([
-        this.psychologistsRepository.update(id, foundPsychologist),
-        ...updateTasks,
-      ]);
+      await this.psychologistsRepository.update(id, foundPsychologist);
+      await Promise.all([...updateTasks]);
       foundPsychologist = await this.findOne(id);
       return foundPsychologist;
     } catch (err) {
-      throw new BadRequestException(err?.message);
+      throw new InternalServerErrorException('problemas ao atualizar o psicologo');
     }
   }
 
@@ -201,6 +206,7 @@ export class PsychologistsService {
   async updatePassword(id: string, changePasswordDto: ChangePassworDto) {
     try {
       const person = await this.findOne(id);
+
       await this.usersService.updatePassword(
         person.user.email.email,
         changePasswordDto
@@ -210,4 +216,36 @@ export class PsychologistsService {
       throw new BadRequestException(err?.message);
     }
   }
+
+  async getTimes(id: string, dayOfAgenda?: Day): Promise<Times> {
+  const psychologist = await this.psychologistsRepository
+    .createQueryBuilder('psychologist')
+    .where('psychologist.id = :id', { id })
+    .leftJoinAndSelect('psychologist.agendas', 'agendas')
+    .getOneOrFail();
+
+  let avaliableTimes: { day: Day, times: string[] }[] = [];
+  psychologist.agendas.filter((value) => dayOfAgenda === value.day).forEach((agenda) => {
+    let times = []
+    const start = new Date('2024-12-04T' + agenda.startTime + 'z');
+    const end = new Date('2024-12-04T' + agenda.endTime + 'z');
+    if (start > end) {
+      throw new BadRequestException('Start time must be before end time');
+    }
+    while (start < end) {
+      times.push(formatTime(start));
+      start.setMinutes(start.getMinutes() + psychologist.meetDuration);
+    };
+    avaliableTimes.push({
+      day: agenda.day,
+      times
+    });
+  })
+    return {
+    meetDuration: psychologist.meetDuration,
+    avaliableTimes
+  };
+}
+
+
 }
