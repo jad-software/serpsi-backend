@@ -1,4 +1,4 @@
-import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';
 import { create } from '../application/create/create';
@@ -16,8 +16,9 @@ import { modifyStatus } from '../application/modifyStatus/modify-status';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { createManySessions } from '../application/create/create-many-sessions';
 import { FrequencyEnum } from './dto/frequency.enum';
-import { Day, numberToDay } from '../../psychologists/vo/days.enum';
+import { numberToDay } from '../../psychologists/vo/days.enum';
 import { checkAvaliableTime } from '../application/checkAvaliableTime/check-avaliable-time';
+import { DocumentsService } from 'src/documents/documents.service';
 
 @Injectable()
 export class MeetingsService {
@@ -26,7 +27,9 @@ export class MeetingsService {
     private meetingsRepository: Repository<Meeting>,
     private readonly psychologistService: PsychologistsService,
     @Inject(forwardRef(() => PatientsService))
-    private readonly patientService: PatientsService
+    private readonly patientService: PatientsService,
+    @Inject(forwardRef(() => DocumentsService))
+    private readonly documentsService: DocumentsService
   ) { }
 
   async create(createMeetingDto: CreateMeetingDto) {
@@ -82,6 +85,16 @@ export class MeetingsService {
   }
 
   async remove(id: string) {
-    return await remove(id, this.meetingsRepository);
+    const meeting = await getOneSession(id, this.meetingsRepository, true);
+    try {
+      let promiseDocuments = []
+      meeting.documents.forEach((document) => {
+        promiseDocuments.push(this.documentsService.remove(document.id.id));
+      });
+      await Promise.all(promiseDocuments);
+      return await remove(id, this.meetingsRepository);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 }
