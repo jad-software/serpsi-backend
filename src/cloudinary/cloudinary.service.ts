@@ -14,8 +14,7 @@ export class CloudinaryService {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           resource_type: isPdf ? 'raw' : 'auto',
-          // public_id: `${file.originalname.split('.')[0]}.pdf`, // Garante que tenha a extensão .pdf
-          // format: 'pdf'
+          format: file.originalname.split('.').at(-1),
         },
         (error, result) => {
           if (error) return reject(error);
