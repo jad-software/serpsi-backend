@@ -28,7 +28,7 @@ import { School } from './entities/school.entity';
 import { Person } from '../persons/entities/person.enitiy';
 import { PsychologistsService } from '../psychologists/psychologists.service';
 import { Meeting } from '../meetings/domain/entities/meeting.entity';
-import { StatusType } from 'src/meetings/domain/vo/statustype.enum';
+import { StatusType } from '../meetings/domain/vo/statustype.enum';
 
 @Injectable()
 export class PatientsService {

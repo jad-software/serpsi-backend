@@ -16,6 +16,9 @@ async function bootstrap() {
     .addTag('users')
     .addTag('auth')
     .addTag('patients')
+    .addTag('psychologists')
+    .addTag('meetings')
+    .addTag('documents')
     .addBearerAuth({
       type: 'http',
       scheme: 'bearer',

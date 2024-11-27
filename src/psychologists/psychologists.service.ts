@@ -12,6 +12,8 @@ import { ChangePassworDto } from './dto/change-password.dto';
 import { Day } from './vo/days.enum';
 import { formatTime } from '../helpers/format-time';
 import { Times } from './interfaces/times.interface';
+import { formatDate } from '../helpers/format-date';
+import { Unusual } from './entities/unusual.entity';
 
 @Injectable()
 export class PsychologistsService {
@@ -24,7 +26,7 @@ export class PsychologistsService {
     private personsService: PersonsService,
     @Inject()
     private cloudinaryService: CloudinaryService
-  ) {}
+  ) { }
 
   async create(
     createPsychologistDto: CreatePsychologistDto,
@@ -218,34 +220,57 @@ export class PsychologistsService {
   }
 
   async getTimes(id: string, dayOfAgenda?: Day): Promise<Times> {
-  const psychologist = await this.psychologistsRepository
-    .createQueryBuilder('psychologist')
-    .where('psychologist.id = :id', { id })
-    .leftJoinAndSelect('psychologist.agendas', 'agendas')
-    .getOneOrFail();
+    const psychologist = await this.psychologistsRepository
+      .createQueryBuilder('psychologist')
+      .where('psychologist.id = :id', { id })
+      .leftJoinAndSelect('psychologist.agendas', 'agendas')
+      .getOneOrFail();
 
-  let avaliableTimes: { day: Day, times: string[] }[] = [];
-  psychologist.agendas.filter((value) => dayOfAgenda === value.day).forEach((agenda) => {
-    let times = []
-    const start = new Date('2024-12-04T' + agenda.startTime + 'z');
-    const end = new Date('2024-12-04T' + agenda.endTime + 'z');
-    if (start > end) {
-      throw new BadRequestException('Start time must be before end time');
-    }
-    while (start < end) {
-      times.push(formatTime(start));
-      start.setMinutes(start.getMinutes() + psychologist.meetDuration);
-    };
-    avaliableTimes.push({
-      day: agenda.day,
-      times
-    });
-  })
+    let avaliableTimes: { day: Day, times: string[] }[] = [];
+    psychologist.agendas.filter((value) => dayOfAgenda === value.day).forEach((agenda) => {
+      let times = []
+      const start = new Date('2024-12-04T' + agenda.startTime + 'z');
+      const end = new Date('2024-12-04T' + agenda.endTime + 'z');
+      if (start > end) {
+        throw new BadRequestException('Start time must be before end time');
+      }
+      while (start < end) {
+        times.push(formatTime(start));
+        start.setMinutes(start.getMinutes() + psychologist.meetDuration);
+      };
+      avaliableTimes.push({
+        day: agenda.day,
+        times
+      });
+    })
     return {
-    meetDuration: psychologist.meetDuration,
-    avaliableTimes
-  };
-}
+      meetDuration: psychologist.meetDuration,
+      avaliableTimes
+    };
+  }
 
+  async getUnusualTimes(psychologistId: string, date: Date): Promise<Unusual[]> {
+    const psychologist = await this.psychologistsRepository
+      .createQueryBuilder('psychologist')
+      .where('psychologist.id = :psychologistId', { psychologistId })
+      .leftJoinAndSelect('psychologist.unusuals', 'unusuals')
+      .getOneOrFail();
+
+    let unavaliableTimes: Unusual[] = [];
+    psychologist.unusuals.filter((value) => formatDate(date).split(' ').at(0) === formatDate(value.date).split(' ').at(0))
+    .forEach((agenda) => {
+      const start = new Date('2024-12-04T' + agenda.startTime + 'z');
+      const end = new Date('2024-12-04T' + agenda.endTime + 'z');
+      if (start > end) {
+        throw new BadRequestException('Start time must be before end time');
+      }
+      unavaliableTimes.push(new Unusual({
+        date: date,
+        startTime: formatTime(start),
+        endTime: formatTime(end)
+      }));
+    })
+    return unavaliableTimes;
+  }
 
 }

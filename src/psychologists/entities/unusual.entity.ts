@@ -1,23 +1,17 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { EntityBase } from '../../entity-base/entities/entity-base';
-import { Day } from '../vo/days.enum';
-import { IAgenda } from '../interfaces/agenda.interface';
 import { Psychologist } from './psychologist.entity';
+import { IUnusual } from '../interfaces/unusual.interface';
 
 @Entity()
-export class Agenda extends EntityBase implements IAgenda {
-  constructor(partial: Partial<Agenda>) {
+export class Unusual extends EntityBase implements IUnusual {
+  constructor(partial: Partial<Unusual>) {
     super();
     Object.assign(this, partial);
   }
 
-  @Column({
-    type: 'enum',
-    name: 'day',
-    enum: Day,
-    default: Day.SEGUNDA,
-  })
-  private _day: Day;
+  @Column({ type: 'timestamptz', name: 'date' })
+  private _date: Date;
 
   @Column({ name: 'startTime', type: 'time' })
   private _startTime: string;
@@ -30,12 +24,12 @@ export class Agenda extends EntityBase implements IAgenda {
   })
   psychologist: Psychologist;
 
-  get day(): Day {
-    return this._day;
+  get date(): Date {
+    return this._date;
   }
 
-  set day(day: Day) {
-    this._day = day;
+  set date(day: Date) {
+    this._date = day;
   }
 
   get startTime(): string {

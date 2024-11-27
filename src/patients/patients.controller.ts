@@ -6,10 +6,8 @@ import {
   Param,
   Delete,
   Put,
-  Query,
   UseInterceptors,
   UploadedFiles,
-  UploadedFile,
   BadRequestException,
 } from '@nestjs/common';
 import { PatientsService } from './patients.service';
@@ -27,13 +25,11 @@ import { CreateComorbidityDto } from './dto/comorbities/create-comorbidity.dto';
 import { CreateMedicamentInfoDto } from './dto/medicine/create-medicament-info.dto';
 import {
   AnyFilesInterceptor,
-  FileInterceptor,
-  FilesInterceptor,
 } from '@nestjs/platform-express';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import { extname } from 'path';
-import { User } from 'src/auth/providers/user.decorator';
+import { User } from '../auth/providers/user.decorator';
 
 @ApiTags('patients')
 @ApiBearerAuth()
