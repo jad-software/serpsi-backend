@@ -127,7 +127,7 @@ describe("checkAvaliableTime", () => {
 
     expect(result).toEqual([{
       day: Day.SEGUNDA,
-      availableTimes: ["09:00:00", "13:00:00"]
+      availableTimes: ["09:00:00", "12:00:00", "13:00:00"]
     }]);
   });
 });

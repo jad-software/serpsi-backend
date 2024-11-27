@@ -1,6 +1,6 @@
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateUnusualDto } from './dto/create-unusual.dto';
-import { data_providers } from 'src/constants';
+import { data_providers } from '../constants';
 import { Repository } from 'typeorm';
 import { Unusual } from './entities/unusual.entity';
 import { PsychologistsService } from './psychologists.service';
@@ -50,3 +50,4 @@ export class UnusualService {
     return await this.unusualRepository.delete(id);
   }
 }
+
