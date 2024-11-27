@@ -7,6 +7,7 @@ import { UsersModule } from '../users/users.module';
 import { PersonsModule } from '../persons/persons.module';
 import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 import { AgendasModule } from './agendas.module';
+import { UnusualModule } from './unusual.module';
 
 @Module({
   controllers: [PsychologistsController],
@@ -17,7 +18,8 @@ import { AgendasModule } from './agendas.module';
     PersonsModule,
     CloudinaryModule,
     forwardRef(() => AgendasModule),
+    forwardRef(() => UnusualModule)
   ],
   providers: [...psychologistProvider, PsychologistsService],
 })
-export class PsychologistsModule {}
+export class PsychologistsModule { }

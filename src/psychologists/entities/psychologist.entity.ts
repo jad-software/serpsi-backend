@@ -14,6 +14,7 @@ import { User } from '../../users/entities/user.entity';
 import { Agenda } from './agenda.entity';
 import { Patient } from '../../patients/entities/patient.entity';
 import { Meeting } from '../../meetings/domain/entities/meeting.entity';
+import { Unusual } from './unusual.entity';
 
 @Entity()
 export class Psychologist extends EntityBase {
@@ -48,6 +49,9 @@ export class Psychologist extends EntityBase {
   @OneToMany(() => Agenda, (agenda) => agenda.psychologist)
   agendas: Agenda[];
 
+  @OneToMany(() => Unusual, (unusual) => unusual.psychologist)
+  unusuals: Unusual[];
+  
   @OneToMany(() => Patient, (patient) => patient.psychologist)
   private _patients: Patient[];
 
