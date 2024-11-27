@@ -2,7 +2,6 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 import { EntityBase } from '../../entity-base/entities/entity-base';
 import { Day } from '../vo/days.enum';
 import { IAgenda } from '../interfaces/agenda.interface';
-import { CreateAgendaDto } from '../dto/create-agenda.dto';
 import { Psychologist } from './psychologist.entity';
 
 @Entity()
