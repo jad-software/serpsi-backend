@@ -18,7 +18,7 @@ import { createManySessions } from '../application/create/create-many-sessions';
 import { FrequencyEnum } from './dto/frequency.enum';
 import { numberToDay } from '../../psychologists/vo/days.enum';
 import { checkAvaliableTime } from '../application/checkAvaliableTime/check-avaliable-time';
-import { DocumentsService } from 'src/documents/documents.service';
+import { DocumentsService } from '../../documents/documents.service';
 
 @Injectable()
 export class MeetingsService {
@@ -61,11 +61,12 @@ export class MeetingsService {
   async AvaliableTimes(psychologistId: string, startDate: Date) {
     let days = numberToDay(startDate.getDay() + 1);
 
-    const [schedule, times] = await Promise.all([
+    const [schedule, times, unusuals] = await Promise.all([
       getSchedule({ psychologistId, startDate, isEntity: true }, this.meetingsRepository),
-      this.psychologistService.getTimes(psychologistId, days)
+      this.psychologistService.getTimes(psychologistId, days),
+      this.psychologistService.getUnusualTimes(psychologistId, startDate)
     ])
-    return await checkAvaliableTime(times, schedule);
+    return await checkAvaliableTime(times, schedule, unusuals);
   }
 
   async findOne(id: string, relations: boolean = true) {

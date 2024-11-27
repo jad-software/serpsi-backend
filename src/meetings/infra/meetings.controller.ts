@@ -17,6 +17,7 @@ import { User } from '../../auth/providers/user.decorator';
 import { GetScheduleDAO } from '../application/getSchedule/getSchedule.dao';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';
+import { checkAvaliableTimeDAO } from '../application/checkAvaliableTime/check-avaliable-time.dao';
 
 @ApiTags('meetings')
 @ApiBearerAuth()
@@ -40,9 +41,9 @@ export class MeetingsController {
     );
   }
 
-  @ApiOperation({ summary: 'retorna os horários disponiveis de um dia específico (não adianta passar endDate)' })
+  @ApiOperation({ summary: 'retorna os horários disponiveis de um dia específico' })
   @Get('/avaliable_times')
-  async getAvaliableTimes(@User() userInfo, @Query() search: GetScheduleDAO) {
+  async getAvaliableTimes(@User() userInfo, @Query() search: checkAvaliableTimeDAO) {
     const startDate = new Date(search.startDate);
     return await this.meetingsService.AvaliableTimes(
       userInfo.id,
