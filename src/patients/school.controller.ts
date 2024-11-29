@@ -12,7 +12,6 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FindSchoolDto } from './dto/school/find-school.dto';
 import { SchoolService } from './school.service';
 
-@ApiTags('school')
 @ApiBearerAuth()
 @Controller('school')
 export class SchoolController {
