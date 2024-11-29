@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { BillsService } from 'src/bills/infra/bills.service';
 import getCount from '../getCount/getCount';
 
-export async function create(data: { meeting: Meeting, dueDate?: Date }, service: { repository: Repository<Meeting>, billsService: BillsService }, isMany: boolean = false) {
+export async function create(data: { meeting: Meeting, amount?: number, dueDate?: Date }, service: { repository: Repository<Meeting>, billsService: BillsService }, isMany: boolean = false) {
   try {
     const checkSchedule = await getCount(data.meeting, service.repository);
 
@@ -18,7 +18,7 @@ export async function create(data: { meeting: Meeting, dueDate?: Date }, service
       }
     }
     if (data.meeting.status !== StatusType.CREDIT) {
-      await service.billsService.createWithMeeting(data.meeting, data.dueDate);
+      await service.billsService.createWithMeeting(data.meeting, data.dueDate, data.amount);
     }
     return await service.repository.save(data.meeting);
   }

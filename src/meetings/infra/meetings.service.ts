@@ -44,7 +44,7 @@ export class MeetingsService {
     meeting.psychologist = psychologist;
     if (createMeetingDto.quantity === 1 || createMeetingDto.frequency === FrequencyEnum.AVULSO) {
       return await create(
-        { meeting },
+        { meeting, amount: createMeetingDto.amount },
         {
           repository: this.meetingsRepository,
           billsService: this.billsService
@@ -53,7 +53,8 @@ export class MeetingsService {
     return await createManySessions({
       meeting,
       frequency: createMeetingDto.frequency,
-      quantity: createMeetingDto.quantity
+      quantity: createMeetingDto.quantity,
+      amount: createMeetingDto.amount
     }, {
       repository: this.meetingsRepository,
       billsService: this.billsService

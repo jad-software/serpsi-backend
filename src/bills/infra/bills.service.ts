@@ -28,10 +28,10 @@ export class BillsService {
     return await create(bill, this.BillRepository);
   }
 
-  async createWithMeeting(meeting: Meeting, dueDate?: Date) {
+  async createWithMeeting(meeting: Meeting, dueDate?: Date, amount?: number) {
     const psychologist = await this.psychologistsService.findOne(meeting.psychologist.id.id);
     const bill = new Bill({
-      amount: psychologist.meetValue,
+      amount: amount ?? psychologist.meetValue,
       title: meeting.patient.person.name,
       billType: BillType.to_receive,
       dueDate: dueDate ?? meeting.schedule

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsString, MinDate } from 'class-validator';
+import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MinDate } from 'class-validator';
 import { IMeetings } from '../../../meetings/domain/intefaces/meetings.interface';
 import { FrequencyEnum } from './frequency.enum';
 import { Transform } from 'class-transformer';
@@ -49,4 +49,12 @@ export class CreateMeetingDto implements IMeetings {
   @IsNotEmpty()
   @IsEnum(FrequencyEnum)
   frequency: FrequencyEnum;
+
+  @ApiProperty({
+    example: '100.50',
+    description: 'O valor caso queira alterar',
+  })
+  @IsOptional()
+  @IsNumber()
+  amount: number; 
 }
