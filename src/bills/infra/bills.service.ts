@@ -10,7 +10,8 @@ import { Delete } from '../application/delete/delete';
 import { GetOne } from '../application/getOne/getOne';
 import { Update } from '../application/update/update';
 import { PsychologistsService } from 'src/psychologists/psychologists.service';
-import { MeetingsService } from 'src/meetings/infra/meetings.service';
+import { Meeting } from 'src/meetings/domain/entities/meeting.entity';
+import { BillType } from '../domain/vo/bill-type.enum';
 
 
 @Injectable()
@@ -18,16 +19,29 @@ export class BillsService {
   constructor(
     @Inject(data_providers.BILLS_REPOSITORY)
     private readonly BillRepository: Repository<Bill>,
-    private readonly psychologistsService: PsychologistsService,
-    private readonly meetingsService: MeetingsService
+    private readonly psychologistsService: PsychologistsService
   ) { }
   async create(createBillDto: CreateBillDto) {
     const psychologist = await this.psychologistsService.findOne(createBillDto.psychologist_id);
-    console.log(psychologist.user);
     const bill = new Bill(createBillDto);
     bill.user = psychologist.user;
     return await create(bill, this.BillRepository);
   }
+
+  async createWithMeeting(meeting: Meeting, dueDate?: Date) {
+    const psychologist = await this.psychologistsService.findOne(meeting.psychologist.id.id);
+    const bill = new Bill({
+      amount: psychologist.meetValue,
+      title: meeting.patient.person.name,
+      billType: BillType.to_receive,
+      dueDate: dueDate ?? meeting.schedule
+    });
+    bill.user = psychologist.user;
+    bill.meeting = meeting;
+    console.log(bill)
+    return await create(bill, this.BillRepository);
+  }
+
 
   async findAll(psychologist_id: string) {
     const psychologist = await this.psychologistsService.findOne(psychologist_id);

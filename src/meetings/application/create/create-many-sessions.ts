@@ -3,42 +3,63 @@ import { Meeting } from '../../../meetings/domain/entities/meeting.entity';
 import { FrequencyEnum } from '../../../meetings/infra/dto/frequency.enum';
 import { Repository } from 'typeorm';
 import { create } from './create';
-import { formatDate } from '../../../helpers/format-date';
 import { StatusType } from '../../../meetings/domain/vo/statustype.enum';
+import { BillsService } from 'src/bills/infra/bills.service';
+import { PaymentPlan } from 'src/patients/vo/PaymentPlan.enum';
+import { formatDate } from 'src/helpers/format-date';
 
-export async function createManySessions(meeting: Meeting, frequency: FrequencyEnum, quantity: number, repository: Repository<Meeting>) {
-  const sessions: Meeting[] = [];
+export async function createManySessions(data: { meeting: Meeting, frequency: FrequencyEnum, quantity: number }, service: { repository: Repository<Meeting>, billsService: BillsService }) {
+  let dueDate = modifyDueDate(new Date(data.meeting.schedule), data.meeting.patient.paymentPlan);
+  console.log(data.meeting.patient.paymentPlan)
   const conflicts: string[] = [];
-
-  for (let i = 0; i < quantity; i++) {
-    const date = new Date(meeting.schedule);
-    if (frequency === FrequencyEnum.MONTHLY) {
+  const sessions: Meeting[] = [];
+  for (let i = 0; i < data.quantity; i++) {
+    const date = new Date(data.meeting.schedule);
+    if (data.frequency === FrequencyEnum.MONTHLY) {
       date.setMonth(date.getMonth() + i);
     }
     else {
-      date.setDate(date.getDate() + (frequency * i * 7));
+      date.setDate(date.getDate() + (data.frequency * i * 7));
     }
 
-    const newMeeting: Meeting = new Meeting({
-      ...meeting,
+    if (date >= dueDate) {
+      dueDate = modifyDueDate(new Date(date), data.meeting.patient.paymentPlan);
+    }
+
+    const meeting: Meeting = new Meeting({
+      ...data.meeting,
       schedule: date,
     })
 
-    const session = await create(newMeeting, repository, true)
+    const session = await create({ meeting, dueDate }, service, true)
 
     if (session.status === StatusType.CREDIT)
-      conflicts.push(`${formatDate(newMeeting.schedule)}`);
-    else {
-      sessions.push(session);
+        conflicts.push(`${formatDate(meeting.schedule)}`);
+      else {
+        sessions.push(session);
+      }
     }
-  }
-  if (sessions.length === 0) {
-    throw new BadRequestException(
-      'problemas ao criar sessões'
-    );
+    if (sessions.length === 0) {
+      throw new BadRequestException(
+        'problemas ao criar sessões'
+      );
   }
   return {
     sessions,
     conflicts
   }
+}
+
+
+function modifyDueDate(dueDate: Date, paymentPlan: PaymentPlan): Date {
+  const daysToAdd = {
+    [PaymentPlan.AVULSA]: 1,
+    [PaymentPlan.MENSAL]: 28, // 4 * 7
+    [PaymentPlan.BIMESTRAL]: 56, // 8 * 7 
+    [PaymentPlan.TRIMESTRAL]: 84 // 12 * 7
+  };
+
+  const dateNumber = dueDate.getDate() + (daysToAdd[paymentPlan] || 0);
+  dueDate.setDate(dateNumber);
+  return dueDate;
 }

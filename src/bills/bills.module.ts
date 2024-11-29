@@ -9,7 +9,7 @@ import { MeetingsModule } from 'src/meetings/meetings.module';
 @Module({
   controllers: [BillsController],
   providers: [BillsService, ...billsProvider],
-  imports: [DatabaseModule, PsychologistsModule, MeetingsModule],
+  imports: [DatabaseModule, PsychologistsModule],
   exports: [BillsService],
 })
 export class BillsModule { }

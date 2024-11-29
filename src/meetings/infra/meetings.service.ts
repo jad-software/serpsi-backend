@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';
 import { create } from '../application/create/create';
@@ -19,6 +19,7 @@ import { FrequencyEnum } from './dto/frequency.enum';
 import { numberToDay } from '../../psychologists/vo/days.enum';
 import { checkAvaliableTime } from '../application/checkAvaliableTime/check-avaliable-time';
 import { DocumentsService } from '../../documents/documents.service';
+import { BillsService } from 'src/bills/infra/bills.service';
 
 @Injectable()
 export class MeetingsService {
@@ -29,26 +30,34 @@ export class MeetingsService {
     @Inject(forwardRef(() => PatientsService))
     private readonly patientService: PatientsService,
     @Inject(forwardRef(() => DocumentsService))
-    private readonly documentsService: DocumentsService
+    private readonly documentsService: DocumentsService,
+    private billsService: BillsService
   ) { }
 
   async create(createMeetingDto: CreateMeetingDto) {
     const meeting = new Meeting(createMeetingDto);
-    try {
-      const [patient, psychologist] = await Promise.all([
-        this.patientService.findOne(createMeetingDto.patient, false),
-        this.psychologistService.findOne(createMeetingDto.psychologist, false)
-      ]);
-      meeting.patient = patient;
-      meeting.psychologist = psychologist;
-      if (createMeetingDto.quantity === 1 || createMeetingDto.frequency === FrequencyEnum.AVULSO) {
-        return await create(meeting, this.meetingsRepository);
-      }
-      return await createManySessions(meeting, createMeetingDto.frequency, createMeetingDto.quantity, this.meetingsRepository);
+    const [patient, psychologist] = await Promise.all([
+      this.patientService.findOne(createMeetingDto.patient, false),
+      this.psychologistService.findOne(createMeetingDto.psychologist, false)
+    ]);
+    meeting.patient = patient;
+    meeting.psychologist = psychologist;
+    if (createMeetingDto.quantity === 1 || createMeetingDto.frequency === FrequencyEnum.AVULSO) {
+      return await create(
+        { meeting },
+        {
+          repository: this.meetingsRepository,
+          billsService: this.billsService
+        });
     }
-    catch (error) {
-      throw error;
-    }
+    return await createManySessions({
+      meeting,
+      frequency: createMeetingDto.frequency,
+      quantity: createMeetingDto.quantity
+    }, {
+      repository: this.meetingsRepository,
+      billsService: this.billsService
+    });
   }
 
   async getBusyDays(psychologistId: string, month?: number) {

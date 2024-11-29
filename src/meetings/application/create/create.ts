@@ -2,25 +2,25 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Meeting } from '../../../meetings/domain/entities/meeting.entity';
 import { StatusType } from '../../../meetings/domain/vo/statustype.enum';
 import { Repository } from 'typeorm';
+import { BillsService } from 'src/bills/infra/bills.service';
+import getCount from '../getCount/getCount';
 
-export async function create(meeting: Meeting, repository: Repository<Meeting>, isMany: boolean = false) {
+export async function create(data: { meeting: Meeting, dueDate?: Date }, service: { repository: Repository<Meeting>, billsService: BillsService }, isMany: boolean = false) {
   try {
-    const checkSchedule = await repository.createQueryBuilder("meeting")
-      .where("meeting.schedule = :schedule", { schedule: meeting.schedule })
-      .andWhere("meeting.Psychologist_id = :psychologist", { psychologist: meeting.psychologist.id.id })
-      .andWhere("meeting.status != :status", { status: StatusType.CREDIT })
-      .andWhere("meeting.status != :status", { status: StatusType.CANCELED })
-      .getCount();
+    const checkSchedule = await getCount(data.meeting, service.repository);
 
     if (checkSchedule > 0) {
-      meeting.status = StatusType.CREDIT;
+      data.meeting.status = StatusType.CREDIT;
       if (!isMany) {
         throw new InternalServerErrorException(
           'problemas ao criar sessão'
         );
       }
     }
-    return await repository.save(meeting);
+    if (data.meeting.status !== StatusType.CREDIT) {
+      await service.billsService.createWithMeeting(data.meeting, data.dueDate);
+    }
+    return await service.repository.save(data.meeting);
   }
   catch (error) {
     throw new InternalServerErrorException(

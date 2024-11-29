@@ -14,7 +14,7 @@ export class Bill extends EntityBase implements IBill {
     Object.assign(this, partial);
   }
 
-  @Column({ name: 'amount' })
+  @Column({ name: 'amount', type: "float" })
   private _amount: number;
   @Column({ name: 'dueDate', type: 'date' })
   private _dueDate: Date;
