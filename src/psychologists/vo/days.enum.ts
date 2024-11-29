@@ -9,22 +9,19 @@ export enum Day {
 }
 
 export function numberToDay(day: number): Day {
-  switch (day) {
-    case 1:
-      return Day.SEGUNDA;
-    case 2:
-      return Day.TERCA;
-    case 3:
-      return Day.QUARTA;
-    case 4:
-      return Day.QUINTA;
-    case 5:
-      return Day.SEXTA;
-    case 6:
-      return Day.SABADO;
-    case 7:
-      return Day.DOMINGO;
-    default:
-      throw new Error('Invalid day number');
+  const dayMap: Record<number, Day> = {
+    1: Day.SEGUNDA,
+    2: Day.TERCA,
+    3: Day.QUARTA,
+    4: Day.QUINTA,
+    5: Day.SEXTA,
+    6: Day.SABADO,
+    7: Day.DOMINGO
+  };
+
+  if (!(day in dayMap)) {
+    throw new Error('Invalid day number');
   }
+
+  return dayMap[day];
 }
