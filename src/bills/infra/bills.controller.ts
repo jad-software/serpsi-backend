@@ -13,9 +13,11 @@ export class BillsController {
 
   @ApiOperation({ summary: 'Criar uma conta com o id ou da reunião ou do psicólogo' })
   @Post()
-  async create(@Body() createBillDto: CreateBillDto) {
+  async create(@User() userInfo, @Body() createBillDto: CreateBillDto) {
+    createBillDto.psychologist_id = userInfo.id;
     return await this.billsService.create(createBillDto);
   }
+
   @ApiOperation({ summary: 'Lista todas as contas do psicólogo logado' })
   @Get()
   async findAll(@User() userInfo) {

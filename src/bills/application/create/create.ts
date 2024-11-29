@@ -1,7 +1,14 @@
+import { InternalServerErrorException } from "@nestjs/common";
 import { Bill } from "src/bills/domain/entities/bill.entity";
-import { CreateBillDto } from "src/bills/infra/dto/create-bill.dto";
 import { Repository } from "typeorm";
 
-export default async function create(data: CreateBillDto, repository: Repository<Bill>): Promise<Bill>{
-  return new Bill(data);
+export default async function create(data: Bill, repository: Repository<Bill>): Promise<Bill> {
+  try {
+    const newBill = repository.create(data);
+    await repository.save(newBill);
+    return newBill;
+  }
+  catch (error) {
+    throw new InternalServerErrorException('Erro ao criar conta');
+  }
 }

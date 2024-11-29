@@ -5,18 +5,17 @@ import { Repository } from "typeorm";
 import { GetOne } from "../getOne/getOne";
 
 export async function Update(id: string, updateBillDto: UpdateBillDto, repository: Repository<Bill>) {
+  let bill = await GetOne(id, repository);
   try {
-    let bill = await GetOne(id, repository);
-
     let updatedBill = new Bill(updateBillDto);
     await repository.update(id, updatedBill);
-    bill = await GetOne(id, repository);
-
-    return bill;
   }
   catch (error) {
     throw new InternalServerErrorException(
       'problemas ao atualizar uma conta'
     );
   }
+
+  bill = await GetOne(id, repository);
+  return bill;
 }

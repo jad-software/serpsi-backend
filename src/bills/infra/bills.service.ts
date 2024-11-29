@@ -9,19 +9,29 @@ import { GetBillsFromPsi } from '../application/getBillsFromPsi/getBillsFromPsi'
 import { Delete } from '../application/delete/delete';
 import { GetOne } from '../application/getOne/getOne';
 import { Update } from '../application/update/update';
+import { PsychologistsService } from 'src/psychologists/psychologists.service';
+import { MeetingsService } from 'src/meetings/infra/meetings.service';
+
 
 @Injectable()
 export class BillsService {
   constructor(
     @Inject(data_providers.BILLS_REPOSITORY)
-    private readonly BillRepository: Repository<Bill>
+    private readonly BillRepository: Repository<Bill>,
+    private readonly psychologistsService: PsychologistsService,
+    private readonly meetingsService: MeetingsService
   ) { }
   async create(createBillDto: CreateBillDto) {
-    return await create(createBillDto, this.BillRepository);
+    const psychologist = await this.psychologistsService.findOne(createBillDto.psychologist_id);
+    console.log(psychologist.user);
+    const bill = new Bill(createBillDto);
+    bill.user = psychologist.user;
+    return await create(bill, this.BillRepository);
   }
 
-  async findAll(psychologis_id: string) {
-    return await GetBillsFromPsi(psychologis_id, this.BillRepository);
+  async findAll(psychologist_id: string) {
+    const psychologist = await this.psychologistsService.findOne(psychologist_id);
+    return await GetBillsFromPsi(psychologist.user.id.id, this.BillRepository);
   }
 
   async findOne(id: string) {
