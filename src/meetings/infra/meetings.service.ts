@@ -92,7 +92,7 @@ export class MeetingsService {
   }
 
   async updateStatus(id: string, newStatus: UpdateStatusDto) {
-    return await modifyStatus(id, newStatus.status, this.meetingsRepository);
+    return await modifyStatus(id, newStatus.status, {repository: this.meetingsRepository, billService: this.billsService});
   }
 
   async remove(id: string) {
