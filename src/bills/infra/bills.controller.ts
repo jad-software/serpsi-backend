@@ -4,6 +4,7 @@ import { CreateBillDto } from './dto/create-bill.dto';
 import { UpdateBillDto } from './dto/update-bill.dto';
 import { User } from 'src/auth/providers/user.decorator';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UpdatePaymentManyDto } from './dto/update-payment-many.dto';
 
 @ApiTags('bills')
 @ApiBearerAuth()
@@ -34,6 +35,12 @@ export class BillsController {
   @Put(':id')
   async update(@Param('id') id: string, @Body() updateBillDto: UpdateBillDto) {
     return await this.billsService.update(id, updateBillDto);
+  }
+
+  @ApiOperation({ summary: 'atualiza a forma de pagamento de várias contas' })
+  @Put('payment/:id')
+  async updateMany(@Body() updateBillDto: UpdatePaymentManyDto) {
+    return await this.billsService.updateMany(updateBillDto);
   }
 
   @ApiOperation({ summary: 'deleta uma conta pelo id' })

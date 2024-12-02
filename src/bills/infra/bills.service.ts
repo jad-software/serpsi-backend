@@ -12,6 +12,8 @@ import { Update } from '../application/update/update';
 import { PsychologistsService } from 'src/psychologists/psychologists.service';
 import { Meeting } from 'src/meetings/domain/entities/meeting.entity';
 import { BillType } from '../domain/vo/bill-type.enum';
+import { UpdateMany } from '../application/updateMany/updatemany';
+import { UpdatePaymentManyDto } from './dto/update-payment-many.dto';
 
 
 @Injectable()
@@ -53,6 +55,10 @@ export class BillsService {
 
   async update(id: string, updateBillDto: UpdateBillDto) {
     return await Update(id, updateBillDto, this.BillRepository);
+  }
+  
+  async updateMany(updateBillDto: UpdatePaymentManyDto) {
+    return await UpdateMany(updateBillDto, this.BillRepository);
   }
 
   async remove(id: string) {

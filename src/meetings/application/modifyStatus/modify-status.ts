@@ -18,9 +18,9 @@ export async function modifyStatus(id: string, status: StatusType, { repository,
   session.documents = undefined;
   session.bill = undefined;
   session.psychologist = undefined;
-  await repository.update(id, session);
-  return session;
   try {
+    await repository.update(id, session);
+    return session;
   }
   catch (error) {
     throw new InternalServerErrorException(
