@@ -13,6 +13,7 @@ export async function getOneSession(sessionId: string, repository: Repository<Me
         .leftJoinAndSelect("patient._person", "patient_person")
         .leftJoinAndSelect("patient._parents", "patient_parents")
         .leftJoinAndSelect("meeting._psychologist", "psychologist")
+        .leftJoinAndSelect("meeting._bill", "bill")
     }
     return await querybuilder.getOneOrFail();
 

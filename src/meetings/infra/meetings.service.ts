@@ -102,7 +102,7 @@ export class MeetingsService {
       meeting.documents.forEach((document) => {
         promiseDocuments.push(this.documentsService.remove(document.id.id));
       });
-      await Promise.all(promiseDocuments);
+      await Promise.all([...promiseDocuments, this.billsService.remove(meeting.bill.id.id)]);
       return await remove(id, this.meetingsRepository);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
