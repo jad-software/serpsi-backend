@@ -38,7 +38,6 @@ export class BillsService {
     });
     bill.user = psychologist.user;
     bill.meeting = meeting;
-    console.log(bill)
     return await create(bill, this.BillRepository);
   }
 
