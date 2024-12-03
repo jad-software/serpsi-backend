@@ -7,14 +7,16 @@ export interface visualizer {
 }
 export async function getBusyDays(search: FindBusyDaysDAO, repository: Repository<Meeting>) {
   let busyDays: visualizer[] = [];
-  for (let i = 1; i <= 31; i++) {
+  const querybuilder =  repository.createQueryBuilder("meeting");
+  for (let i = 1; i <= daysInMonth(search.month, search.year); i++) {
     let existsSession = false;
-    const day = await repository.createQueryBuilder("meeting")
+    const day = await querybuilder
       .where("meeting.Psychologist_id = :psychologistId", { psychologistId: search.psychologistId })
+      .andWhere("EXTRACT(YEAR FROM meeting._schedule) = :year", { year: search.year })
       .andWhere("EXTRACT(MONTH FROM meeting._schedule) = :month", { month: search.month })
       .andWhere("EXTRACT(DAY FROM meeting._schedule) = :day", { day: i })
-      .getOne();
-    if (day) {
+      .getCount();
+    if (day > 0) {
       existsSession = true;
     }
     busyDays.push({ day: i, existsSession });
@@ -23,3 +25,6 @@ export async function getBusyDays(search: FindBusyDaysDAO, repository: Repositor
   return busyDays;
 }
 
+function daysInMonth (month: number, year: number): number {
+  return new Date(year, month, 0).getDate();
+}

@@ -35,10 +35,10 @@ export class MeetingsController {
   @ApiOperation({ summary: 'retorna todos os dias cheios e vazios do mês selecionado' })
   @Get('/busydays')
   async getAllBusyDays(@User() userInfo, @Query() search: FindBusyDaysDAO) {
-    return await this.meetingsService.getBusyDays(
-      userInfo.id,
-      search.month
-    );
+    search.psychologistId = userInfo.id;
+    search.month = search.month ?? new Date().getMonth();
+    search.year = search.year ?? new Date().getFullYear();
+    return await this.meetingsService.getBusyDays(search);
   }
 
   @ApiOperation({ summary: 'retorna os horários disponiveis de um dia específico' })
