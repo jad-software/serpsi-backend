@@ -5,14 +5,14 @@ import { Repository } from 'typeorm';
 import { Bill } from '../domain/entities/bill.entity';
 import { data_providers } from '../../constants';
 import create from '../application/create/create';
-import { GetBillsFromPsi } from '../application/getBillsFromPsi/getBillsFromPsi';
+import { GetBillsFromPsi } from '../application/getBillsFromPsi/get-bills-from-psi';
 import { Delete } from '../application/delete/delete';
-import { GetOne } from '../application/getOne/getOne';
+import { GetOne } from '../application/getOne/get-one';
 import { Update } from '../application/update/update';
 import { PsychologistsService } from '../../psychologists/psychologists.service';
 import { Meeting } from '../../meetings/domain/entities/meeting.entity';
 import { BillType } from '../domain/vo/bill-type.enum';
-import { UpdateMany } from '../application/updateMany/updatemany';
+import { UpdateMany } from '../application/updateMany/update-many';
 import { UpdatePaymentManyDto } from './dto/update-payment-many.dto';
 
 

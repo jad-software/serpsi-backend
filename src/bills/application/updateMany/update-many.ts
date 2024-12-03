@@ -1,7 +1,7 @@
 import { InternalServerErrorException } from "@nestjs/common";
 import { Bill } from "../../domain/entities/bill.entity";
 import { Repository } from "typeorm";
-import { GetOne } from "../getOne/getOne";
+import { GetOne } from "../getOne/get-one";
 import { UpdatePaymentManyDto } from "../../infra/dto/update-payment-many.dto";
 
 export async function UpdateMany(updatePaymentManyDto: UpdatePaymentManyDto, repository: Repository<Bill>) {

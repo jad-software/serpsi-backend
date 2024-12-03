@@ -7,3 +7,4 @@ export async function GetBillsFromPsi(user_id: string, repository: Repository<Bi
     .orderBy("bill.dueDate", "ASC")
     .getMany();
 }
+

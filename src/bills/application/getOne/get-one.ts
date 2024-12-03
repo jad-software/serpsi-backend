@@ -12,3 +12,4 @@ export async function GetOne(id: string, repository: Repository<Bill>) {
     throw new NotFoundException('conta não encontrada');
   }
 }
+

@@ -2,7 +2,7 @@ import { InternalServerErrorException } from "@nestjs/common";
 import { Bill } from "../../domain/entities/bill.entity";
 import { UpdateBillDto } from "../../infra/dto/update-bill.dto";
 import { Repository } from "typeorm";
-import { GetOne } from "../getOne/getOne";
+import { GetOne } from "../getOne/get-one";
 
 export async function Update(id: string, updateBillDto: UpdateBillDto, repository: Repository<Bill>) {
   let bill = await GetOne(id, repository);
