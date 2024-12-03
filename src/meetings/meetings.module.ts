@@ -6,7 +6,7 @@ import { DatabaseModule } from '../database/database.module';
 import { PsychologistsModule } from '../psychologists/psychologists.module';
 import { PatientsModule } from '../patients/patients.module';
 import { DocumentsModule } from '../documents/documents.module';
-import { BillsModule } from 'src/bills/bills.module';
+import { BillsModule } from '../bills/bills.module';
 
 @Module({
   controllers: [MeetingsController],

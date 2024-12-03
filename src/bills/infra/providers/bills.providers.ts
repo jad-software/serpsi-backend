@@ -1,4 +1,4 @@
-import { Bill } from 'src/bills/domain/entities/bill.entity';
+import { Bill } from '../../domain/entities/bill.entity';
 import { data_providers } from '../../../constants';
 import { DataSource } from 'typeorm';
 

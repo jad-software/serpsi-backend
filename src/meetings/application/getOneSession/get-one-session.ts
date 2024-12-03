@@ -1,5 +1,5 @@
 import { NotFoundException } from "@nestjs/common";
-import { Meeting } from "src/meetings/domain/entities/meeting.entity";
+import { Meeting } from "../../domain/entities/meeting.entity";
 import { Repository } from "typeorm";
 
 export async function getOneSession(sessionId: string, repository: Repository<Meeting>, relations: boolean = true) {

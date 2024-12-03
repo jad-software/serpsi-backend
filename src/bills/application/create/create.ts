@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from "@nestjs/common";
-import { Bill } from "src/bills/domain/entities/bill.entity";
+import { Bill } from "../../domain/entities/bill.entity";
 import { Repository } from "typeorm";
 
 export default async function create(data: Bill, repository: Repository<Bill>): Promise<Bill> {

@@ -19,7 +19,7 @@ import { FrequencyEnum } from './dto/frequency.enum';
 import { numberToDay } from '../../psychologists/vo/days.enum';
 import { checkAvaliableTime } from '../application/checkAvaliableTime/check-avaliable-time';
 import { DocumentsService } from '../../documents/documents.service';
-import { BillsService } from 'src/bills/infra/bills.service';
+import { BillsService } from '../../bills/infra/bills.service';
 
 @Injectable()
 export class MeetingsService {

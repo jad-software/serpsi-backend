@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from "@nestjs/common";
-import { Bill } from "src/bills/domain/entities/bill.entity";
-import { UpdateBillDto } from "src/bills/infra/dto/update-bill.dto";
+import { Bill } from "../../domain/entities/bill.entity";
+import { UpdateBillDto } from "../../infra/dto/update-bill.dto";
 import { Repository } from "typeorm";
 import { GetOne } from "../getOne/getOne";
 

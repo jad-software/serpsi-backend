@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import { FindBusyDaysDAO } from './findBusyDays.dao';
-import { Meeting } from '../../../meetings/domain/entities/meeting.entity';
+import { Meeting } from '../../domain/entities/meeting.entity';
 export interface visualizer {
   day: number;
   existsSession: boolean;

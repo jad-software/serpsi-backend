@@ -6,7 +6,7 @@ import { Psychologist } from '../../../psychologists/entities/psychologist.entit
 import { StatusType } from '../vo/statustype.enum';
 import { Document } from '../../../documents/entities/document.entity';
 import { CreateMeetingDto } from '../../../meetings/infra/dto/create-meeting.dto';
-import { Bill } from 'src/bills/domain/entities/bill.entity';
+import { Bill } from '../../../bills/domain/entities/bill.entity';
 
 @Entity()
 export class Meeting extends EntityBase implements IMeetings {

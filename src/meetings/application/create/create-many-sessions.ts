@@ -1,12 +1,12 @@
 import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
-import { Meeting } from '../../../meetings/domain/entities/meeting.entity';
-import { FrequencyEnum } from '../../../meetings/infra/dto/frequency.enum';
+import { Meeting } from '../../domain/entities/meeting.entity';
+import { FrequencyEnum } from '../../infra/dto/frequency.enum';
 import { Repository } from 'typeorm';
 import { create } from './create';
-import { StatusType } from '../../../meetings/domain/vo/statustype.enum';
-import { BillsService } from 'src/bills/infra/bills.service';
-import { PaymentPlan } from 'src/patients/vo/PaymentPlan.enum';
-import { formatDate } from 'src/helpers/format-date';
+import { StatusType } from '../../domain/vo/statustype.enum';
+import { BillsService } from '../../../bills/infra/bills.service';
+import { PaymentPlan } from '../../../patients/vo/PaymentPlan.enum';
+import { formatDate } from '../../../helpers/format-date';
 
 export async function createManySessions(data: { meeting: Meeting, frequency: FrequencyEnum, quantity: number, amount?: number }, service: { repository: Repository<Meeting>, billsService: BillsService }) {
   let dueDate = modifyDueDate(new Date(data.meeting.schedule), data.meeting.patient.paymentPlan);

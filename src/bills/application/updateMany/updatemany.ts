@@ -1,8 +1,8 @@
 import { InternalServerErrorException } from "@nestjs/common";
-import { Bill } from "src/bills/domain/entities/bill.entity";
+import { Bill } from "../../domain/entities/bill.entity";
 import { Repository } from "typeorm";
 import { GetOne } from "../getOne/getOne";
-import { UpdatePaymentManyDto } from "src/bills/infra/dto/update-payment-many.dto";
+import { UpdatePaymentManyDto } from "../../infra/dto/update-payment-many.dto";
 
 export async function UpdateMany(updatePaymentManyDto: UpdatePaymentManyDto, repository: Repository<Bill>) {
   if (!updatePaymentManyDto.billIds || updatePaymentManyDto.billIds.length === 0) {

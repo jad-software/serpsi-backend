@@ -2,7 +2,6 @@ import { BadRequestException, InternalServerErrorException } from '@nestjs/commo
 import { Meeting } from '../../domain/entities/meeting.entity';
 import { FrequencyEnum } from '../../infra/dto/frequency.enum';
 import { Repository } from 'typeorm';
-import { create } from './create';
 import { StatusType } from '../../domain/vo/statustype.enum';
 import { createManySessions } from './create-many-sessions';
 import { Id } from '../../../entity-base/vo/id.vo';

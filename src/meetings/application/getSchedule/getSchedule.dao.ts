@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsDateString, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsDateString, IsOptional } from "class-validator";
 
 export class GetScheduleDAO {
   @ApiProperty({

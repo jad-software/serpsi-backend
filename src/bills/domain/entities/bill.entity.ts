@@ -1,11 +1,11 @@
-import { CreateBillDto } from "src/bills/infra/dto/create-bill.dto";
+import { CreateBillDto } from "../../infra/dto/create-bill.dto";
 import { EntityBase } from "../../../entity-base/entities/entity-base";
 import { IBill } from "../interfaces/bill.interface";
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
 import { BillType } from "../vo/bill-type.enum";
 import { PaymentMethod } from "../vo/payment-method.vo";
-import { User } from "src/users/entities/user.entity";
-import { Meeting } from "src/meetings/domain/entities/meeting.entity";
+import { User } from "../../../users/entities/user.entity";
+import { Meeting } from "../../../meetings/domain/entities/meeting.entity";
 
 @Entity()
 export class Bill extends EntityBase implements IBill {

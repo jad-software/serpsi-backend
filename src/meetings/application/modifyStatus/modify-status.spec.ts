@@ -1,5 +1,5 @@
-import { Meeting } from '../../../meetings/domain/entities/meeting.entity';
-import { StatusType } from '../../../meetings/domain/vo/statustype.enum';
+import { Meeting } from '../../domain/entities/meeting.entity';
+import { StatusType } from '../../domain/vo/statustype.enum';
 import { Repository } from 'typeorm';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { modifyStatus } from './modify-status';

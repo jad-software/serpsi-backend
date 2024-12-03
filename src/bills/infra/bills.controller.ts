@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/
 import { BillsService } from './bills.service';
 import { CreateBillDto } from './dto/create-bill.dto';
 import { UpdateBillDto } from './dto/update-bill.dto';
-import { User } from 'src/auth/providers/user.decorator';
+import { User } from '../../auth/providers/user.decorator';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UpdatePaymentManyDto } from './dto/update-payment-many.dto';
 

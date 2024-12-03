@@ -1,8 +1,8 @@
-import { Meeting } from '../../../meetings/domain/entities/meeting.entity';
-import { StatusType } from '../../../meetings/domain/vo/statustype.enum';
+import { Meeting } from '../../domain/entities/meeting.entity';
+import { StatusType } from '../../domain/vo/statustype.enum';
 import { Repository } from 'typeorm';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { BillsService } from 'src/bills/infra/bills.service';
+import { BillsService } from '../../../bills/infra/bills.service';
 import { getOneSession } from '../getOneSession/get-one-session';
 
 export async function modifyStatus(id: string, status: StatusType, { repository, billService }: { repository: Repository<Meeting>, billService: BillsService }) {

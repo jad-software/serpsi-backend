@@ -1,8 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
 import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsPositive, IsString, MinDate } from "class-validator";
-import { IBill } from "src/bills/domain/interfaces/bill.interface";
-import { BillType } from "src/bills/domain/vo/bill-type.enum";
+import { IBill } from "../../domain/interfaces/bill.interface";
+import { BillType } from "../../domain/vo/bill-type.enum";
 
 
 export class CreateBillDto implements IBill {

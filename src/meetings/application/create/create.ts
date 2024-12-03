@@ -1,8 +1,8 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { Meeting } from '../../../meetings/domain/entities/meeting.entity';
-import { StatusType } from '../../../meetings/domain/vo/statustype.enum';
+import { Meeting } from '../../domain/entities/meeting.entity';
+import { StatusType } from '../../domain/vo/statustype.enum';
 import { Repository } from 'typeorm';
-import { BillsService } from 'src/bills/infra/bills.service';
+import { BillsService } from '../../../bills/infra/bills.service';
 import getCount from '../getCount/getCount';
 
 export async function create(data: { meeting: Meeting, amount?: number, dueDate?: Date }, service: { repository: Repository<Meeting>, billsService: BillsService }, isMany: boolean = false) {
@@ -30,3 +30,4 @@ export async function create(data: { meeting: Meeting, amount?: number, dueDate?
     );
   }
 }
+

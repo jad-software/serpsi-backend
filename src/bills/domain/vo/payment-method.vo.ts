@@ -1,6 +1,5 @@
-import { Column, Entity } from "typeorm";
+import { Column } from "typeorm";
 import { PaymentType } from "./payment-type.enum";
-import { EntityBase } from "src/entity-base/entities/entity-base";
 
 
 export class PaymentMethod {
