@@ -19,6 +19,7 @@ import { FrequencyEnum } from './dto/frequency.enum';
 import { numberToDay } from '../../psychologists/vo/days.enum';
 import { checkAvaliableTime } from '../application/checkAvaliableTime/check-avaliable-time';
 import { DocumentsService } from '../../documents/documents.service';
+import { FindBusyDaysDAO } from '../application/getBusyDays/findBusyDays.dao';
 
 @Injectable()
 export class MeetingsService {
@@ -51,11 +52,8 @@ export class MeetingsService {
     }
   }
 
-  async getBusyDays(psychologistId: string, month?: number) {
-    return await getBusyDays({
-      psychologistId,
-      month: month ?? new Date().getMonth(),
-    }, this.meetingsRepository);
+  async getBusyDays(search: FindBusyDaysDAO) {
+    return await getBusyDays(search, this.meetingsRepository);
   }
 
   async AvaliableTimes(psychologistId: string, startDate: Date) {
