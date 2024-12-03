@@ -3,6 +3,7 @@ import { Repository } from 'typeorm';
 import { Bill } from '../../domain/entities/bill.entity';
 import { GetOne } from './get-one';
 import { NotFoundException } from '@nestjs/common';
+import { Id } from '../../../entity-base/vo/id.vo';
 
 describe('GetOne', () => {
   let repository: Repository<Bill>;
@@ -21,8 +22,8 @@ describe('GetOne', () => {
   });
 
   it('should get one bill successfully', async () => {
-    const mockBill = new Bill();
-    mockBill.id = '123';
+    const mockBill = new Bill({});
+    mockBill.id = new Id('123');
 
     const queryBuilder = {
       where: jest.fn().mockReturnThis(),

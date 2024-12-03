@@ -6,7 +6,7 @@ import { GetOne } from '../getOne/get-one';
 import { PaymentMethod } from 'src/bills/domain/vo/payment-method.vo';
 import { PaymentType } from 'src/bills/domain/vo/payment-type.enum';
 
-jest.mock('../getOne/getOne');
+jest.mock('../getOne/get-one');
 
 describe('UpdateMany', () => {
   let repository: Repository<Bill>;
