@@ -3,8 +3,8 @@ import { Bill } from '../../domain/entities/bill.entity';
 import { UpdateMany } from './update-many';
 import { InternalServerErrorException } from '@nestjs/common';
 import { GetOne } from '../getOne/get-one';
-import { PaymentMethod } from 'src/bills/domain/vo/payment-method.vo';
-import { PaymentType } from 'src/bills/domain/vo/payment-type.enum';
+import { PaymentMethod } from '../../domain/vo/payment-method.vo';
+import { PaymentType } from '../../domain/vo/payment-type.enum';
 
 jest.mock('../getOne/get-one');
 
@@ -38,7 +38,7 @@ describe('UpdateMany', () => {
       id: 1,
       paymentMethod: {
         paymentDate: new Date(),
-        paymentType: 'CASH'
+        paymentType: PaymentType.CASH
       }
     };
 
@@ -57,7 +57,7 @@ describe('UpdateMany', () => {
     expect(GetOne).toHaveBeenCalledTimes(2);
     expect(repository.update).toHaveBeenCalledTimes(2);
     expect(result).toHaveLength(2);
-    expect(result[0].paymentMethod.paymentType).toBe('CREDIT_CARD');
+    expect(result[0].paymentMethod.paymentType).toBe(PaymentType.CARD);
   });
 
   it('should throw error if update fails', async () => {

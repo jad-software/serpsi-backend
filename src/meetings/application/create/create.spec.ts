@@ -4,7 +4,8 @@ import { StatusType } from '../../domain/vo/statustype.enum';
 import { BillsService } from '../../../bills/infra/bills.service';
 import { create } from './create';
 import { InternalServerErrorException } from '@nestjs/common';
-import * as getCount from '../getCount/getCount';
+import getCount from '../getCount/getCount';
+
 
 jest.mock('../getCount/getCount');
 
@@ -28,7 +29,7 @@ describe('create', () => {
     const meeting = new Meeting({});
     meeting.status = StatusType.OPEN;
     
-    (getCount as unknown as jest.Mock).mockResolvedValue(0);
+    (getCount as jest.Mock).mockResolvedValue(0);
     mockRepository.save.mockResolvedValue(meeting);
     
     const result = await create(
@@ -44,7 +45,7 @@ describe('create', () => {
 
   it('should throw error when schedule exists and isMany is false', async () => {
     const meeting = new Meeting({});
-    (getCount as unknown as jest.Mock).mockResolvedValue(1);
+    (getCount as jest.Mock).mockResolvedValue(1);
 
     await expect(
       create(
@@ -59,7 +60,7 @@ describe('create', () => {
 
   it('should not throw error when schedule exists and isMany is true', async () => {
     const meeting = new Meeting({});
-    (getCount as unknown as jest.Mock).mockResolvedValue(1);
+    (getCount as jest.Mock).mockResolvedValue(1);
     mockRepository.save.mockResolvedValue(meeting);
 
     const result = await create(
@@ -76,7 +77,7 @@ describe('create', () => {
     const meeting = new Meeting({});
     meeting.status = StatusType.CREDIT;
     
-    (getCount as unknown as jest.Mock).mockResolvedValue(0);
+    (getCount as jest.Mock).mockResolvedValue(0);
     mockRepository.save.mockResolvedValue(meeting);
 
     await create(
@@ -90,7 +91,7 @@ describe('create', () => {
 
   it('should throw error when save fails', async () => {
     const meeting = new Meeting({});
-    (getCount as unknown as jest.Mock).mockResolvedValue(0);
+    (getCount as jest.Mock).mockResolvedValue(0);
     mockRepository.save.mockRejectedValue(new Error());
 
     await expect(

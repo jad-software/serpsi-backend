@@ -10,9 +10,9 @@ import { formatDate } from '../../../helpers/format-date';
 
 export async function createManySessions(data: { meeting: Meeting, frequency: FrequencyEnum, quantity: number, amount?: number }, service: { repository: Repository<Meeting>, billsService: BillsService }) {
   let dueDate = modifyDueDate(new Date(data.meeting.schedule), data.meeting.patient.paymentPlan);
-  console.log(data.meeting.patient.paymentPlan)
   const conflicts: string[] = [];
   const sessions: Meeting[] = [];
+
   for (let i = 0; i < data.quantity; i++) {
     const date = new Date(data.meeting.schedule);
     date.setDate(date.getDate() + (data.frequency * i * 7));
