@@ -27,20 +27,22 @@ describe('getBusyDays', () => {
       createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
       where: jest.fn().mockReturnThis(),
       andWhere: jest.fn().mockReturnThis(),
-      getOne: jest.fn()
+      getOne: jest.fn(),
+      getCount: jest.fn(),
     } as any;
   });
 
   it('should return array of busy days when meetings exist', async () => {
-    mockQueryBuilder.getOne.mockResolvedValueOnce({ id: 1 });
+    mockQueryBuilder.getCount.mockResolvedValueOnce(3);
 
     for (let i = 0; i < 30; i++) {
-      mockQueryBuilder.getOne.mockResolvedValueOnce(null);
+      mockQueryBuilder.getCount.mockResolvedValueOnce(0);
     }
 
     const search: FindBusyDaysDAO = {
       psychologistId: '1',
-      month: 1
+      month: 1,
+      year: 2023
     };
 
     const result = await getBusyDays(search, mockRepository);
@@ -52,12 +54,13 @@ describe('getBusyDays', () => {
 
   it('should return all days as not busy when no meetings exist', async () => {
     for (let i = 0; i < 31; i++) {
-      mockQueryBuilder.getOne.mockResolvedValueOnce(null);
+      mockQueryBuilder.getCount.mockResolvedValueOnce(0);
     }
 
     const search: FindBusyDaysDAO = {
       psychologistId: '1',
-      month: 1
+      month: 1,
+      year: 2023
     };
 
     const result = await getBusyDays(search, mockRepository);
@@ -69,11 +72,12 @@ describe('getBusyDays', () => {
   });
 
   it('should call repository with correct parameters', async () => {
-    mockQueryBuilder.getOne.mockResolvedValue(null);
+    mockQueryBuilder.getCount.mockResolvedValue(0);
 
     const search: FindBusyDaysDAO = {
       psychologistId: '2',
-      month: 3
+      month: 3,
+      year: 2023
     };
 
     await getBusyDays(search, mockRepository);
@@ -86,6 +90,10 @@ describe('getBusyDays', () => {
     expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
       'EXTRACT(MONTH FROM meeting._schedule) = :month',
       { month: 3 }
+    );
+    expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+      'EXTRACT(YEAR FROM meeting._schedule) = :year',
+      { year: 2023 }
     );
   });
 }); 
