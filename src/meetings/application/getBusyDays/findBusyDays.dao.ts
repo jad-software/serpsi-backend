@@ -12,4 +12,13 @@ export class FindBusyDaysDAO {
   })
   @IsNumberString({no_symbols: true})
   month?: number;
+
+  @ApiProperty({
+    type: Number,
+    description: 'número referente ao ano requisitado',
+    example: 2024,
+    nullable: true,
+  })
+  @IsNumberString({no_symbols: true})
+  year?: number;
 }
