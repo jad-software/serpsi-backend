@@ -1,8 +1,8 @@
-import { Meeting } from "../../../meetings/domain/entities/meeting.entity";
+import { Meeting } from "../../domain/entities/meeting.entity";
 import { formatTime } from "../../../helpers/format-time";
-import { StatusType } from "../../../meetings/domain/vo/statustype.enum";
+import { StatusType } from "../../domain/vo/statustype.enum";
 import { Times } from "../../../psychologists/interfaces/times.interface";
-import { Unusual } from "src/psychologists/entities/unusual.entity";
+import { Unusual } from "../../../psychologists/entities/unusual.entity";
 
 export async function checkAvaliableTime(times: Times, schedule: Meeting[], unusuals: Unusual[]) {
   schedule = schedule.filter((session) => session.status !== StatusType.CREDIT && session.status !== StatusType.CANCELED)

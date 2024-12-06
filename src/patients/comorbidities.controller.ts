@@ -17,7 +17,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-@ApiTags('comorbidities')
 @ApiBearerAuth()
 @Controller('comorbidities')
 export class ComorbiditiesController {

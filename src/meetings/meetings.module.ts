@@ -6,6 +6,7 @@ import { DatabaseModule } from '../database/database.module';
 import { PsychologistsModule } from '../psychologists/psychologists.module';
 import { PatientsModule } from '../patients/patients.module';
 import { DocumentsModule } from '../documents/documents.module';
+import { BillsModule } from '../bills/bills.module';
 
 @Module({
   controllers: [MeetingsController],
@@ -14,7 +15,8 @@ import { DocumentsModule } from '../documents/documents.module';
     DatabaseModule,
     PsychologistsModule,
     forwardRef(() => PatientsModule),
-    forwardRef(() => DocumentsModule)
+    forwardRef(() => DocumentsModule),
+    BillsModule
   ],
   exports: [MeetingsService],
 })

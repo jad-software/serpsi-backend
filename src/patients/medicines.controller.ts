@@ -11,7 +11,6 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MedicinesService } from './medicines.service';
 import { CreateMedicineDto } from './dto/medicine/create-medicine.dto';
 
-@ApiTags('medicines')
 @ApiBearerAuth()
 @Controller('medicines')
 export class MedicinesController {

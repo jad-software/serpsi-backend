@@ -1,4 +1,4 @@
-import { Meeting } from '../../../meetings/domain/entities/meeting.entity';
+import { Meeting } from '../../domain/entities/meeting.entity';
 import { getOneSession } from './get-one-session';
 
 describe("getOneSession", () => {

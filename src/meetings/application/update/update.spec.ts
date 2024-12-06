@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
-import { Meeting } from '../../../meetings/domain/entities/meeting.entity';
-import { UpdateMeetingDto } from '../../../meetings/infra/dto/update-meeting.dto';
+import { Meeting } from '../../domain/entities/meeting.entity';
+import { UpdateMeetingDto } from '../../infra/dto/update-meeting.dto';
 import { InternalServerErrorException } from '@nestjs/common';
 import { update } from './update';
 import { Id } from '../../../entity-base/vo/id.vo';

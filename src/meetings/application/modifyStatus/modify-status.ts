@@ -1,18 +1,24 @@
-import { Meeting } from '../../../meetings/domain/entities/meeting.entity';
-import { StatusType } from '../../../meetings/domain/vo/statustype.enum';
+import { Meeting } from '../../domain/entities/meeting.entity';
+import { StatusType } from '../../domain/vo/statustype.enum';
 import { Repository } from 'typeorm';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BillsService } from '../../../bills/infra/bills.service';
+import { getOneSession } from '../getOneSession/get-one-session';
 
-export async function modifyStatus(id: string, status: StatusType, repository: Repository<Meeting>) {
+export async function modifyStatus(id: string, status: StatusType, { repository, billService }: { repository: Repository<Meeting>, billService: BillsService }) {
+  const session = await getOneSession(id, repository, true);
+  if (status === StatusType.CREDIT || status === StatusType.CANCELED) {
+    await billService.remove(session.bill.id.id);
+    session.bill = null;
+  }
+  else if (!session.bill) {
+    await billService.createWithMeeting(session, session.schedule, session.psychologist.meetValue);
+  }
+  session.status = status;
+  session.documents = undefined;
+  session.bill = undefined;
+  session.psychologist = undefined;
   try {
-    const session = await repository.createQueryBuilder("meeting")
-      .where("meeting.id = :id", { id })
-      .getOneOrFail()
-      .catch(() => {
-        throw new NotFoundException('sessão não encontrada')
-      });
-
-    session.status = status;
     await repository.update(id, session);
     return session;
   }
