@@ -1,87 +1,105 @@
-import { InternalServerErrorException } from '@nestjs/common';
-import { Meeting } from '../../../meetings/domain/entities/meeting.entity';
-import { StatusType } from '../../../meetings/domain/vo/statustype.enum';
-import { create } from './create';
 import { Repository } from 'typeorm';
+import { Meeting } from '../../domain/entities/meeting.entity';
+import { StatusType } from '../../domain/vo/statustype.enum';
+import { BillsService } from '../../../bills/infra/bills.service';
+import { create } from './create';
+import { InternalServerErrorException } from '@nestjs/common';
+import getCount from '../getCount/getCount';
+
+
+jest.mock('../getCount/getCount');
 
 describe('create', () => {
-  let mockQueryBuilder: Partial<{
-    save: jest.Mock;
-    where: jest.Mock;
-    andWhere: jest.Mock;
-    select: jest.Mock;
-    leftJoinAndSelect: jest.Mock;
-    getOneOrFail: jest.Mock;
-    getCount: jest.Mock;
-  }> = {
-    where: jest.fn().mockReturnThis(),
-    andWhere: jest.fn().mockReturnThis(),
-    select: jest.fn().mockReturnThis(),
-    leftJoinAndSelect: jest.fn().mockReturnThis(),
-    getOneOrFail: jest.fn(),
-    getCount: jest.fn(),
-  };
-
-  const mockRepository: jest.Mocked<Partial<Repository<Meeting>>> = {
-    create: jest.fn(),
-    save: jest.fn(),
-    find: jest.fn(),
-    findOneOrFail: jest.fn(),
-    createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
-    update: jest.fn(),
-    delete: jest.fn(),
-  };
-
-  let meeting: Meeting;
-
+  let mockRepository: jest.Mocked<Repository<Meeting>>;
+  let mockBillsService: jest.Mocked<BillsService>;
+  
   beforeEach(() => {
-    meeting = {
-      schedule: new Date(),
-      psychologist: {
-        id: {
-          id: '123'
-        }
-      },
-      patient: {
-        id: {
-          id: '456'
-        }
-      },
-      status: StatusType.OPEN
-    } as Meeting;
+    mockRepository = {
+      save: jest.fn(),
+    } as any;
+
+    mockBillsService = {
+      createWithMeeting: jest.fn(),
+    } as any;
+
+    jest.clearAllMocks();
   });
 
-  it('should create meeting when no schedule conflict exists', async () => {
-    mockQueryBuilder.getCount.mockResolvedValue(0);
+  it('should create a meeting successfully', async () => {
+    const meeting = new Meeting({});
+    meeting.status = StatusType.OPEN;
+    
+    (getCount as jest.Mock).mockResolvedValue(0);
+    mockRepository.save.mockResolvedValue(meeting);
+    
+    const result = await create(
+      { meeting, amount: 100, dueDate: new Date() },
+      { repository: mockRepository, billsService: mockBillsService },
+      false
+    );
+
+    expect(result).toBe(meeting);
+    expect(mockRepository.save).toHaveBeenCalledWith(meeting);
+    expect(mockBillsService.createWithMeeting).toHaveBeenCalled();
+  });
+
+  it('should throw error when schedule exists and isMany is false', async () => {
+    const meeting = new Meeting({});
+    (getCount as jest.Mock).mockResolvedValue(1);
+
+    await expect(
+      create(
+        { meeting },
+        { repository: mockRepository, billsService: mockBillsService },
+        false
+      )
+    ).rejects.toThrow(InternalServerErrorException);
+
+    expect(meeting.status).toBe(StatusType.CREDIT);
+  });
+
+  it('should not throw error when schedule exists and isMany is true', async () => {
+    const meeting = new Meeting({});
+    (getCount as jest.Mock).mockResolvedValue(1);
     mockRepository.save.mockResolvedValue(meeting);
 
-    const result = await create(meeting, mockRepository as Repository<Meeting>);
+    const result = await create(
+      { meeting },
+      { repository: mockRepository, billsService: mockBillsService },
+      true
+    );
 
-    expect(result).toEqual(meeting);
-    expect(mockRepository.save).toHaveBeenCalledWith(meeting);
+    expect(result).toBe(meeting);
+    expect(meeting.status).toBe(StatusType.CREDIT);
   });
 
-  it('should throw error when schedule conflict exists and isMany is false', async () => {
-    mockQueryBuilder.getCount.mockResolvedValue(1);
+  it('should not create bill when meeting status is CREDIT', async () => {
+    const meeting = new Meeting({});
+    meeting.status = StatusType.CREDIT;
+    
+    (getCount as jest.Mock).mockResolvedValue(0);
+    mockRepository.save.mockResolvedValue(meeting);
 
-    await expect(create(meeting, mockRepository  as Repository<Meeting>)).rejects.toThrow(InternalServerErrorException);
-  });
+    await create(
+      { meeting },
+      { repository: mockRepository, billsService: mockBillsService },
+      false
+    );
 
-  it('should create meeting with CREDIT status when schedule conflict exists and isMany is true', async () => {
-    mockQueryBuilder.getCount.mockResolvedValue(1);
-    const creditMeeting = meeting;
-    creditMeeting.status = StatusType.CREDIT;
-    mockRepository.save.mockResolvedValue(creditMeeting);
-    const result = await create(meeting, mockRepository  as Repository<Meeting>, true);
-
-    expect(result.status).toBe(StatusType.CREDIT);
-    expect(mockRepository.save).toHaveBeenCalledWith(meeting);
+    expect(mockBillsService.createWithMeeting).not.toHaveBeenCalled();
   });
 
   it('should throw error when save fails', async () => {
-    mockQueryBuilder.getCount.mockResolvedValue(0);
+    const meeting = new Meeting({});
+    (getCount as jest.Mock).mockResolvedValue(0);
     mockRepository.save.mockRejectedValue(new Error());
 
-    await expect(create(meeting, mockRepository  as Repository<Meeting>)).rejects.toThrow(InternalServerErrorException);
+    await expect(
+      create(
+        { meeting },
+        { repository: mockRepository, billsService: mockBillsService },
+        false
+      )
+    ).rejects.toThrow(InternalServerErrorException);
   });
 });

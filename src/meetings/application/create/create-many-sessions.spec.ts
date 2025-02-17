@@ -2,15 +2,17 @@ import { BadRequestException, InternalServerErrorException } from '@nestjs/commo
 import { Meeting } from '../../domain/entities/meeting.entity';
 import { FrequencyEnum } from '../../infra/dto/frequency.enum';
 import { Repository } from 'typeorm';
-import { create } from './create';
 import { StatusType } from '../../domain/vo/statustype.enum';
 import { createManySessions } from './create-many-sessions';
 import { Id } from '../../../entity-base/vo/id.vo';
 import { Psychologist } from '../../../psychologists/entities/psychologist.entity';
 import { Patient } from '../../../patients/entities/patient.entity';
+import { BillsService } from '../../../bills/infra/bills.service';
 
 describe('createManySessions', () => {
   let mockMeeting: Meeting;
+  let mockBillsService: jest.Mocked<BillsService>;
+  let mockRepository: jest.Mocked<Repository<Meeting>>;
 
   let mockQueryBuilder: Partial<{
     save: jest.Mock;
@@ -29,17 +31,22 @@ describe('createManySessions', () => {
     getCount: jest.fn(),
   };
 
-  const mockRepository: jest.Mocked<Partial<Repository<Meeting>>> = {
-    create: jest.fn(),
-    save: jest.fn(),
-    find: jest.fn(),
-    findOneOrFail: jest.fn(),
-    createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
-    update: jest.fn(),
-    delete: jest.fn(),
-  };
+
 
   beforeEach(() => {
+    mockRepository = {
+      create: jest.fn(),
+      save: jest.fn(),
+      find: jest.fn(),
+      findOneOrFail: jest.fn(),
+      createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
+      update: jest.fn(),
+      delete: jest.fn(),
+    } as any;
+
+    mockBillsService = {
+      createWithMeeting: jest.fn(),
+    } as any;
 
     mockMeeting = new Meeting({
       schedule: new Date('2024-01-01'),
@@ -54,7 +61,11 @@ describe('createManySessions', () => {
     mockQueryBuilder.getCount.mockResolvedValue(0);
     mockRepository.save.mockResolvedValue(mockMeeting);
 
-    const result = await createManySessions(mockMeeting, FrequencyEnum.WEEKLY, 3, mockRepository as any);
+    const result = await createManySessions({
+      frequency: FrequencyEnum.WEEKLY,
+      meeting: mockMeeting,
+      quantity: 3,
+    }, { repository: mockRepository, billsService: mockBillsService });
 
     expect(result.sessions.length).toBe(3);
     expect(result.conflicts.length).toBe(0);
@@ -67,7 +78,11 @@ describe('createManySessions', () => {
     mockRepository.save.mockResolvedValueOnce(mockMeeting);
     mockRepository.save.mockResolvedValueOnce(new Meeting({ ...mockMeeting, status: StatusType.OPEN }));
 
-    const result = await createManySessions(mockMeeting, FrequencyEnum.MONTHLY, 2, mockRepository as any);
+    const result = await createManySessions({
+      frequency: FrequencyEnum.MONTHLY,
+      meeting: mockMeeting,
+      quantity: 2,
+    }, { repository: mockRepository, billsService: mockBillsService });
 
     expect(result.sessions.length).toBe(2);
     expect(result.conflicts.length).toBe(0);
@@ -81,7 +96,11 @@ describe('createManySessions', () => {
     mockRepository.save.mockResolvedValueOnce(new Meeting({ ...mockMeeting, status: StatusType.CREDIT }));
     mockRepository.save.mockResolvedValueOnce(new Meeting({ ...mockMeeting, status: StatusType.CREDIT }));
 
-    const result = await createManySessions(mockMeeting, FrequencyEnum.WEEKLY, 3, mockRepository as any);
+    const result = await createManySessions({
+      frequency: FrequencyEnum.WEEKLY,
+      meeting: mockMeeting,
+      quantity: 3,
+    }, { repository: mockRepository, billsService: mockBillsService });
 
     expect(result.sessions.length).toBe(1);
     expect(result.conflicts.length).toBe(2);
@@ -93,7 +112,11 @@ describe('createManySessions', () => {
     mockRepository.save.mockResolvedValueOnce(new Meeting({ ...mockMeeting, status: StatusType.CREDIT }));
     mockRepository.save.mockResolvedValueOnce(new Meeting({ ...mockMeeting, status: StatusType.CREDIT }));
 
-    await expect(createManySessions(mockMeeting, FrequencyEnum.WEEKLY, 2, mockRepository as any))
+    await expect(createManySessions({
+      frequency: FrequencyEnum.WEEKLY,
+      meeting: mockMeeting,
+      quantity: 2,
+    }, { repository: mockRepository, billsService: mockBillsService }))
       .rejects
       .toThrow(BadRequestException);
 
@@ -102,7 +125,11 @@ describe('createManySessions', () => {
   it('should throw BadRequestException when no sessions can be created', async () => {
     mockRepository.save.mockRejectedValue(BadRequestException)
 
-    await expect(createManySessions(mockMeeting, FrequencyEnum.WEEKLY, 1, mockRepository as any))
+    await expect(createManySessions({
+      frequency: FrequencyEnum.WEEKLY,
+      meeting: mockMeeting,
+      quantity: 1,
+    }, { repository: mockRepository, billsService: mockBillsService }))
       .rejects
       .toThrow(InternalServerErrorException);
   });

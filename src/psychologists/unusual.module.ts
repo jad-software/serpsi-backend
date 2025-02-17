@@ -3,7 +3,7 @@ import { UnusualService } from './unusual.service';
 import { UnusualController } from './unusual.controller';
 import { unusualProvider } from './providers/unusual.providers';
 import { PsychologistsModule } from './psychologists.module';
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from '../database/database.module';
 
 @Module({
   controllers: [UnusualController],

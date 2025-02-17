@@ -1,6 +1,6 @@
 
 import { Repository } from 'typeorm';
-import { Meeting } from '../../../meetings/domain/entities/meeting.entity';
+import { Meeting } from '../../domain/entities/meeting.entity';
 import { FindBusyDaysDAO } from './findBusyDays.dao';
 import { getBusyDays } from './get-busy-days';
 

@@ -1,5 +1,5 @@
 import { Repository } from "typeorm";
-import { Meeting } from "src/meetings/domain/entities/meeting.entity";
+import { Meeting } from "../../domain/entities/meeting.entity";
 import { getSchedule } from "./get-schedule";
 
 describe("getSchedule", () => {

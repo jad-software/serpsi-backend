@@ -1,11 +1,12 @@
 import { EntityBase } from '../../../entity-base/entities/entity-base';
 import { IMeetings } from '../intefaces/meetings.interface';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { Patient } from '../../../patients/entities/patient.entity';
 import { Psychologist } from '../../../psychologists/entities/psychologist.entity';
 import { StatusType } from '../vo/statustype.enum';
 import { Document } from '../../../documents/entities/document.entity';
 import { CreateMeetingDto } from '../../../meetings/infra/dto/create-meeting.dto';
+import { Bill } from '../../../bills/domain/entities/bill.entity';
 
 @Entity()
 export class Meeting extends EntityBase implements IMeetings {
@@ -34,6 +35,12 @@ export class Meeting extends EntityBase implements IMeetings {
     onDelete: 'CASCADE',
   })
   protected _psychologist: Psychologist;
+
+  @OneToOne(() => Bill, (bill) => bill.meeting, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  private _bill: Bill;
 
   @OneToMany(() => Document, (document) => document.meeting)
   protected _documents: Document[];
@@ -67,5 +74,11 @@ export class Meeting extends EntityBase implements IMeetings {
   }
   set documents(value: Document[]) {
     this._documents = value;
+  }
+  get bill(): Bill {
+    return this._bill;
+  }
+  set bill(value: Bill) {
+    this._bill = value;
   }
 }

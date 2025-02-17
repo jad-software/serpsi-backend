@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { Meeting } from '../../../meetings/domain/entities/meeting.entity';
-import { UpdateMeetingDto } from '../../../meetings/infra/dto/update-meeting.dto';
+import { Meeting } from '../../domain/entities/meeting.entity';
+import { UpdateMeetingDto } from '../../infra/dto/update-meeting.dto';
 import { Repository } from 'typeorm';
 
 export async function update(id: string, updateMeetingDto: UpdateMeetingDto, repository: Repository<Meeting>) {

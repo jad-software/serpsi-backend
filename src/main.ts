@@ -13,12 +13,16 @@ async function bootstrap() {
       'API docs for SerPSI backend, contains all routes opened to the public'
     )
     .setVersion('1.0')
-    .addTag('users')
     .addTag('auth')
-    .addTag('patients')
-    .addTag('psychologists')
-    .addTag('meetings')
+    .addTag('agendas')
+    .addTag('bills')
     .addTag('documents')
+    .addTag('meetings')
+    .addTag('patients')
+    .addTag('persons')
+    .addTag('psychologists')
+    .addTag('users')
+    .addTag('default')
     .addBearerAuth({
       type: 'http',
       scheme: 'bearer',

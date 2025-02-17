@@ -72,7 +72,7 @@ export class MeetingsController {
     return await this.meetingsService.updateStatus(id, updateStatusDTO);
   }
 
-  @ApiOperation({ summary: 'Atualiza o status de uma sessão' })
+  @ApiOperation({ summary: 'Atualiza uma sessão' })
   @Put(':id')
   async update(
     @Param('id') id: string,

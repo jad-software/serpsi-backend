@@ -1,7 +1,7 @@
 
-import { Meeting } from "../../../meetings/domain/entities/meeting.entity";
+import { Meeting } from "../../domain/entities/meeting.entity";
 import { Day } from "../../../psychologists/vo/days.enum";
-import { StatusType } from "../../../meetings/domain/vo/statustype.enum";
+import { StatusType } from "../../domain/vo/statustype.enum";
 import { checkAvaliableTime } from "./check-avaliable-time";
 import { Times } from "../../../psychologists/interfaces/times.interface";
 import { Unusual } from "../../../psychologists/entities/unusual.entity";
