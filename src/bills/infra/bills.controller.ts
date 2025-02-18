@@ -32,13 +32,13 @@ export class BillsController {
   }
 
   @ApiOperation({ summary: 'atualiza uma conta pelo id' })
-  @Put(':id')
+  @Put('editing/:id')
   async update(@Param('id') id: string, @Body() updateBillDto: UpdateBillDto) {
     return await this.billsService.update(id, updateBillDto);
   }
 
   @ApiOperation({ summary: 'atualiza a forma de pagamento de várias contas' })
-  @Put('payment/:id')
+  @Put('payment')
   async updateMany(@Body() updateBillDto: UpdatePaymentManyDto) {
     return await this.billsService.updateMany(updateBillDto);
   }
