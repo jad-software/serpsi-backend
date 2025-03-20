@@ -1,17 +1,18 @@
 import * as nodemailer from 'nodemailer';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import * as handlebars from 'handlebars';
+import * as Handlebars from 'handlebars';
 import * as fs from 'fs';
 import * as path from 'path';
 import { mailingService } from '../constants';
+import { HandlebarsService } from './handlebars.service';
 
 @Injectable()
 export class MailingService {
   private transporter: nodemailer.Transporter;
-  private confirmationTemplate: handlebars.TemplateDelegate;
-  private passwordResetTemplate: handlebars.TemplateDelegate;
+  private confirmationTemplate: Handlebars.TemplateDelegate;
+  private passwordResetTemplate: Handlebars.TemplateDelegate;
 
-  constructor() {
+  constructor(private readonly handleBarsService: HandlebarsService) {
     this.transporter = nodemailer.createTransport(
       {
         service: mailingService.SERVICE_TYPE,
@@ -28,35 +29,22 @@ export class MailingService {
           name: `(No-reply) SerPSI - agenda <${mailingService.MAIL_FROM}>`,
           address: mailingService.MAIL_FROM,
         },
-      },
+      }
     );
-    this.verifyTransporterConnection()
+    this.verifyTransporterConnection();
     // Load Handlebars templates
 
-    // this.confirmationTemplate = this.loadTemplate('confirmation.hbs');
-    // this.passwordResetTemplate = this.loadTemplate('passwordReset.hbs');
+    this.confirmationTemplate = this.handleBarsService.compileTemplate('confirmation', "Confirmação de email");
+    // this.passwordResetTemplate = this.loadTemplate('passwordReset');
   }
 
-  private loadTemplate(templateName: string): handlebars.TemplateDelegate {
-    const templatesFolderPath = path.join(__dirname, './templates');
-    const templatePath = path.join(templatesFolderPath, templateName);
 
-    const templateSource = fs.readFileSync(templatePath, 'utf8');
-    return handlebars.compile(templateSource);
-  }
-
-  async sendUserConfirmation(user: { id: string, email: string, name: string }, token: string) {
-    const confirmationLink = `${mailingService.CLIENT_URL}?token=${token}`;
-    const emailBody = `
-    <h1>Hello ${user.name},<h1>
-    \n
-    \n
-    <p>Welcome to our platform! Please click on the following link to confirm your email address: ${confirmationLink}
-    \n\n
-    Regards,
-    \nThe Team<p>`;
-
-
+  async sendUserConfirmation(
+    user: { id: string; email: string; name: string },
+    token: string
+  ) {
+    const confirmationUrl = `${mailingService.CLIENT_URL}?token=${token}`;
+    const emailBody = this.confirmationTemplate({ confirmationUrl: confirmationUrl, user: user });
     try {
       await this.transporter.sendMail({
         to: user.email,
@@ -64,11 +52,10 @@ export class MailingService {
         html: emailBody,
       });
       return {
-        message: 'Email enviado com sucesso! para' + user.email,
-        statusCode: 200
-      }
-    }
-    catch (err) {
+        message: 'Email enviado com sucesso! para ' + user.email,
+        statusCode: 200,
+      };
+    } catch (err) {
       console.log(err);
       throw new InternalServerErrorException('erro ao enviar o email');
     }
@@ -80,7 +67,7 @@ export class MailingService {
         console.error('Error connecting to the transporter:', error);
         throw new InternalServerErrorException('erro ao enviar o email');
       }
-      console.log("Server is ready to take our messages");
+      console.log('Server is ready to take our messages');
     });
   }
 }
