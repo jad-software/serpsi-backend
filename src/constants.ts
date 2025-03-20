@@ -34,7 +34,16 @@ export const bcrypt_salt = 10;
 export const email = {
   REGEX: '^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+[.]+[a-zA-Z]{2,}$',
 };
-
+export const mailingService = {
+  CLIENT_URL: process.env.CLIENT_URL,
+  MAIL_HOST: process.env.MAIL_HOST,
+  MAIL_PORT: process.env.MAIL_PORT,
+  MAIL_USER: process.env.MAIL_USER,
+  MAIL_PASSWORD: process.env.MAIL_PASSWORD,
+  MAIL_FROM: process.env.MAIL_FROM,
+  MAILER_SECURE: process.env.MAILER_SECURE,
+  SERVICE_TYPE: process.env.SERVICE_TYPE,
+}
 export const CLOUDNARY_KEYS = {
   CLOUDINARUY_NAME: process.env.CLOUDINARY_NAME,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,

@@ -11,6 +11,7 @@ import { JwtAuthGuard } from './guards/jwt.guards';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './guards/roles.guards';
 import { PsychologistsModule } from '../psychologists/psychologists.module';
+import { MailingService } from './mailing.service';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { PsychologistsModule } from '../psychologists/psychologists.module';
   ],
   providers: [
     AuthService,
+    MailingService,
     LocalStrategy,
     JwtStrategy,
     {
