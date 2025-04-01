@@ -41,7 +41,6 @@ export class AuthController {
   }
 
   @Public()
-  @UseGuards(LocalAuthGuard)
   @ApiOperation({ summary: 'Criação de um novo psicólogo' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({

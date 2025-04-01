@@ -14,6 +14,7 @@ import { PsychologistsModule } from './psychologists/psychologists.module';
 import { MeetingsModule } from './meetings/meetings.module';
 import { BillsModule } from './bills/bills.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { TokensModule } from './auth/tokens.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { NotificationsModule } from './notifications/notifications.module';
     PsychologistsModule,
     MeetingsModule,
     BillsModule,
-    NotificationsModule
+    NotificationsModule,
+    TokensModule,
   ],
   controllers: [AppController],
   providers: [AppService],

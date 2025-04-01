@@ -8,6 +8,8 @@ import { PersonsModule } from '../persons/persons.module';
 import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 import { AgendasModule } from './agendas.module';
 import { UnusualModule } from './unusual.module';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { TokensModule } from 'src/auth/tokens.module';
 
 @Module({
   controllers: [PsychologistsController],
@@ -18,8 +20,10 @@ import { UnusualModule } from './unusual.module';
     PersonsModule,
     CloudinaryModule,
     forwardRef(() => AgendasModule),
-    forwardRef(() => UnusualModule)
+    forwardRef(() => UnusualModule),
+    NotificationsModule,
+    TokensModule,
   ],
   providers: [...psychologistProvider, PsychologistsService],
 })
-export class PsychologistsModule { }
+export class PsychologistsModule {}

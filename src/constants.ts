@@ -22,6 +22,7 @@ export const data_providers = {
   MEETINGS_REPOSITORY: 'MEETINGS_REPOSITORY',
   UNUSUAL_REPOSITORY: 'UNUSUAL_REPOSITORY',
   BILLS_REPOSITORY: 'BILLS_REPOSITORY',
+  TOKENS_REPOSITORY: 'TOKENS_REPOSITORY',
 };
 export const POSTGRES_URL = process.env.POSTGRES_URL;
 export const TEST_POSTGRES_URL = process.env.TEST_POSTGRES_URL;
@@ -43,7 +44,7 @@ export const mailingService = {
   MAIL_FROM: process.env.MAIL_FROM,
   MAILER_SECURE: process.env.MAILER_SECURE,
   SERVICE_TYPE: process.env.SERVICE_TYPE,
-}
+};
 export const CLOUDNARY_KEYS = {
   CLOUDINARUY_NAME: process.env.CLOUDINARY_NAME,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,

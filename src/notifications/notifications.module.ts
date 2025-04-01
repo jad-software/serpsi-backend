@@ -6,5 +6,6 @@ import { HandlebarsService } from './handlebars.service';
 @Module({
   controllers: [NotificationsController],
   providers: [MailingService, HandlebarsService],
+  exports: [MailingService],
 })
 export class NotificationsModule {}
