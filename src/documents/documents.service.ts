@@ -38,7 +38,6 @@ export class DocumentsService {
           docLink: fileSaved.url,
         });
         document.meeting = meeting;
-        document.patient = meeting.patient;
         const createdDocument = await this.documentRepository.save(document);
         return createdDocument;
       }
