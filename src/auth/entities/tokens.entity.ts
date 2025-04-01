@@ -22,7 +22,6 @@ export class Token extends EntityBase {
   @Column({
     name: 'expiredAt',
     type: 'timestamptz',
-    default: () => "(CURRENT_TIMESTAMP + INTERVAL '1 hour')",
   })
   expiredAt: Date;
 
@@ -34,3 +33,4 @@ export class Token extends EntityBase {
     this._token = token;
   }
 }
+

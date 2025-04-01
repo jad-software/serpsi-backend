@@ -2,30 +2,30 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Token } from './entities/tokens.entity';
 import { data_providers } from '../constants';
-import { Id } from 'src/entity-base/vo/id.vo';
 import { User } from 'src/users/entities/user.entity';
+import { Email } from 'src/users/vo/email.vo';
 
 @Injectable()
 export class TokensService {
   constructor(
     @Inject(data_providers.TOKENS_REPOSITORY)
     private tokensRepository: Repository<Token>
-  ) {}
+  ) { }
 
   async create(userId: User) {
     const token = this.generateToken();
     const newToken = new Token({ token });
     newToken.user = userId;
+    newToken.expiredAt = newDate();
     return await this.tokensRepository.save(newToken);
   }
 
-  async use(token: string, callback: Function) {
+  async use(token: string, callback: (email: Email) => Promise<void>) {
     const tokenExists = await this.tokensRepository
-      .findOneOrFail({
-        where: {
-          token,
-        },
-      })
+      .createQueryBuilder('token')
+      .where('token._token = :token', { token })
+      .leftJoinAndSelect('token.user', 'user')
+      .getOneOrFail()
       .catch((err) => {
         throw new BadRequestException('Token not found');
       });
@@ -35,8 +35,11 @@ export class TokensService {
       throw new BadRequestException('Token expired');
     }
 
-    callback();
-    await this.tokensRepository.delete(tokenExists.id.id);
+    await callback(tokenExists.user.email).then(
+      async () => {
+        await this.tokensRepository.delete(tokenExists.id.id);
+      }
+    )
   }
 
   private generateToken(length: number = 100): string {
@@ -52,4 +55,10 @@ export class TokensService {
 
     return token;
   }
+}
+
+
+function newDate() {
+  const now = new Date();
+  return new Date(now.setHours(now.getHours() + 1));
 }

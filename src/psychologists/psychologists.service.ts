@@ -38,7 +38,7 @@ export class PsychologistsService {
     private mailingService: MailingService,
     @Inject()
     private tokensService: TokensService
-  ) {}
+  ) { }
 
   async create(
     createPsychologistDto: CreatePsychologistDto,
@@ -93,10 +93,10 @@ export class PsychologistsService {
       const savedPsychologist = await queryRunner.manager.save(psychologist);
 
       await queryRunner.commitTransaction();
-      
+
       const token = await this.tokensService.create(user);
       await this.mailingService.sendUserConfirmation(
-        { id: user.id.id, email: user.email.email, name: person.name },
+        { email: user.email.email, name: person.name },
         token.token
       );
       return savedPsychologist;

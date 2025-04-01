@@ -41,6 +41,7 @@ export class AuthController {
   }
 
   @Public()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Criação de um novo psicólogo' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
