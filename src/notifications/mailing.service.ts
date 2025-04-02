@@ -67,7 +67,7 @@ export class MailingService {
   }
 
   async sendUserConfirmation(user: { email: string; name: string }, token: string) {
-    const confirmationUrl = `${mailingService.CLIENT_URL}?token=${token}`;
+    const confirmationUrl = `${mailingService.CLIENT_URL}/confirm/${token}`;
     return this.sendEmail(user.email, 'Bem vindo! Confirme seu e-mail', 'confirmation', {
       confirmationUrl,
       user,
@@ -75,7 +75,7 @@ export class MailingService {
   }
 
   async sendPasswordReset(user: { email: string; name: string }, token: string) {
-    const resetUrl = `${mailingService.CLIENT_URL}?token=${token}`;
+    const resetUrl = `${mailingService.CLIENT_URL}/forgot-password/${token}`;
     return this.sendEmail(user.email, 'Redefinição de senha', 'passwordReset', {
       resetUrl,
       user,
