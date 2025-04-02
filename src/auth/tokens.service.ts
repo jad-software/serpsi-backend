@@ -4,6 +4,7 @@ import { Token } from './entities/tokens.entity';
 import { data_providers } from '../constants';
 import { User } from 'src/users/entities/user.entity';
 import { Email } from 'src/users/vo/email.vo';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class TokensService {
