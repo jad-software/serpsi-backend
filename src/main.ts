@@ -18,6 +18,7 @@ async function bootstrap() {
     .addTag('bills')
     .addTag('documents')
     .addTag('meetings')
+    .addTag('notifications')
     .addTag('patients')
     .addTag('persons')
     .addTag('psychologists')

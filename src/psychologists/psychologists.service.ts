@@ -1,8 +1,14 @@
-import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreatePsychologistDto } from './dto/create-psychologist.dto';
 import { UpdatePsychologistDto } from './dto/update-psychologist.dto';
 import { data_providers } from '../constants';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Psychologist } from './entities/psychologist.entity';
 import { UsersService } from '../users/users.service';
 import { PersonsService } from '../persons/persons.service';
@@ -14,6 +20,8 @@ import { formatTime } from '../helpers/format-time';
 import { Times } from './interfaces/times.interface';
 import { formatDate } from '../helpers/format-date';
 import { Unusual } from './entities/unusual.entity';
+import { MailingService } from '../notifications/mailing.service';
+import { TokensService } from 'src/auth/tokens.service';
 
 @Injectable()
 export class PsychologistsService {
@@ -25,7 +33,11 @@ export class PsychologistsService {
     @Inject()
     private personsService: PersonsService,
     @Inject()
-    private cloudinaryService: CloudinaryService
+    private cloudinaryService: CloudinaryService,
+    @Inject()
+    private mailingService: MailingService,
+    @Inject()
+    private tokensService: TokensService
   ) { }
 
   async create(
@@ -81,11 +93,17 @@ export class PsychologistsService {
       const savedPsychologist = await queryRunner.manager.save(psychologist);
 
       await queryRunner.commitTransaction();
+
+      const token = await this.tokensService.create(user);
+      await this.mailingService.sendUserConfirmation(
+        { email: user.email.email, name: person.name },
+        token.token
+      );
       return savedPsychologist;
     } catch (err) {
+      ids['person'] ? this.personsService.delete(ids['person']) : null
       const operations = [
         ids['user'] ? this.usersService.remove(ids['user']) : null,
-        ids['person'] ? this.personsService.delete(ids['person']) : null,
         ...publicsIds.map((publicID) =>
           this.cloudinaryService.deleteFileOtherThanImage(publicID)
         ),
@@ -127,7 +145,7 @@ export class PsychologistsService {
     try {
       const queryBuilder = this.psychologistsRepository
         .createQueryBuilder('psychologist')
-        .where('psychologist.id = :id', { id })
+        .where('psychologist.id = :id', { id });
 
       if (relations) {
         queryBuilder
@@ -178,7 +196,9 @@ export class PsychologistsService {
       foundPsychologist = await this.findOne(id);
       return foundPsychologist;
     } catch (err) {
-      throw new InternalServerErrorException('problemas ao atualizar o psicologo');
+      throw new InternalServerErrorException(
+        'problemas ao atualizar o psicologo'
+      );
     }
   }
 
@@ -226,30 +246,35 @@ export class PsychologistsService {
       .leftJoinAndSelect('psychologist.agendas', 'agendas')
       .getOneOrFail();
 
-    let avaliableTimes: { day: Day, times: string[] }[] = [];
-    psychologist.agendas.filter((value) => dayOfAgenda === value.day).forEach((agenda) => {
-      let times = []
-      const start = new Date('2024-12-04T' + agenda.startTime + 'z');
-      const end = new Date('2024-12-04T' + agenda.endTime + 'z');
-      if (start > end) {
-        throw new BadRequestException('Start time must be before end time');
-      }
-      while (start < end) {
-        times.push(formatTime(start));
-        start.setMinutes(start.getMinutes() + psychologist.meetDuration);
-      };
-      avaliableTimes.push({
-        day: agenda.day,
-        times
+    let avaliableTimes: { day: Day; times: string[] }[] = [];
+    psychologist.agendas
+      .filter((value) => dayOfAgenda === value.day)
+      .forEach((agenda) => {
+        let times = [];
+        const start = new Date('2024-12-04T' + agenda.startTime + 'z');
+        const end = new Date('2024-12-04T' + agenda.endTime + 'z');
+        if (start > end) {
+          throw new BadRequestException('Start time must be before end time');
+        }
+        while (start < end) {
+          times.push(formatTime(start));
+          start.setMinutes(start.getMinutes() + psychologist.meetDuration);
+        }
+        avaliableTimes.push({
+          day: agenda.day,
+          times,
+        });
       });
-    })
     return {
       meetDuration: psychologist.meetDuration,
-      avaliableTimes
+      avaliableTimes,
     };
   }
 
-  async getUnusualTimes(psychologistId: string, date: Date): Promise<Unusual[]> {
+  async getUnusualTimes(
+    psychologistId: string,
+    date: Date
+  ): Promise<Unusual[]> {
     const psychologist = await this.psychologistsRepository
       .createQueryBuilder('psychologist')
       .where('psychologist.id = :psychologistId', { psychologistId })
@@ -257,20 +282,26 @@ export class PsychologistsService {
       .getOneOrFail();
 
     let unavaliableTimes: Unusual[] = [];
-    psychologist.unusuals.filter((value) => formatDate(date).split(' ').at(0) === formatDate(value.date).split(' ').at(0))
-    .forEach((agenda) => {
-      const start = new Date('2024-12-04T' + agenda.startTime + 'z');
-      const end = new Date('2024-12-04T' + agenda.endTime + 'z');
-      if (start > end) {
-        throw new BadRequestException('Start time must be before end time');
-      }
-      unavaliableTimes.push(new Unusual({
-        date: date,
-        startTime: formatTime(start),
-        endTime: formatTime(end)
-      }));
-    })
+    psychologist.unusuals
+      .filter(
+        (value) =>
+          formatDate(date).split(' ').at(0) ===
+          formatDate(value.date).split(' ').at(0)
+      )
+      .forEach((agenda) => {
+        const start = new Date('2024-12-04T' + agenda.startTime + 'z');
+        const end = new Date('2024-12-04T' + agenda.endTime + 'z');
+        if (start > end) {
+          throw new BadRequestException('Start time must be before end time');
+        }
+        unavaliableTimes.push(
+          new Unusual({
+            date: date,
+            startTime: formatTime(start),
+            endTime: formatTime(end),
+          })
+        );
+      });
     return unavaliableTimes;
   }
-
 }

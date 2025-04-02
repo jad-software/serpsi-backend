@@ -14,13 +14,15 @@ import { Email } from './vo/email.vo';
 import { Id } from '../entity-base/vo/id.vo';
 import * as bcrypt from 'bcrypt';
 import { ChangePassworDto } from '../psychologists/dto/change-password.dto';
+import { ForgotPasswordDto } from 'src/auth/dto/forgotpassword.dto';
 
 @Injectable()
 export class UsersService {
+
   constructor(
     @Inject(data_providers.USER_REPOSITORY)
     private userRepository: Repository<User>
-  ) {}
+  ) { }
 
   async create(
     createUserDto: CreateUserDto,
@@ -61,8 +63,15 @@ export class UsersService {
     }
   }
 
-  async findOneByEmail(email: string): Promise<User> {
+  async findOneByEmail(email: string, relations: boolean = false): Promise<User> {
     try {
+      if (relations) {
+        return await this.userRepository
+          .createQueryBuilder('user')
+          .where('user.email = :email', { email })
+          .leftJoinAndSelect('user.person', 'person')
+          .getOneOrFail();
+      }
       return await this.userRepository
         .createQueryBuilder('user')
         .where('user.email = :email', { email })
@@ -71,8 +80,7 @@ export class UsersService {
           'user._email._email',
           'user._password',
           'user._role',
-        ])
-        .getOneOrFail();
+        ]).getOneOrFail();
     } catch (err) {
       throw new NotFoundException('Usuário não encontrado');
     }
@@ -127,5 +135,43 @@ export class UsersService {
     } catch (err) {
       throw new InternalServerErrorException(err?.message);
     }
+  }
+
+  async confirmUser(email: string) {
+
+    const user = await this.findOneByEmail(email)
+      .catch(() => {
+        throw new BadRequestException('Usuário não encontrado');
+      });
+    const id = user.id.id;
+    user.active = true;
+    this.userRepository.update(id, user);
+  }
+
+  async changePasswordByToken(email: string, forgotPasswordDto: ForgotPasswordDto) {
+    const isPasswordmatch = forgotPasswordDto.newPassword === forgotPasswordDto.confirmNewPassword;
+    if (!isPasswordmatch) {
+      throw new BadRequestException('As senhas não conferem');
+    }
+    
+    const user = await this.findOneByEmail(email);
+    const id = user.id.id;
+    
+    const isNewPasswordEqualOldPassword = await bcrypt.compare(
+      forgotPasswordDto.newPassword,
+      user.password
+    );
+    if (isNewPasswordEqualOldPassword) {
+      throw new BadRequestException(
+        'Senha Nova não deve ser igual a anterior'
+      );
+    }
+    const hashedPassword = await bcrypt.hash(
+      forgotPasswordDto.newPassword,
+      bcrypt_salt
+    );
+
+    user.password = hashedPassword;
+    this.userRepository.update(id, user);
   }
 }

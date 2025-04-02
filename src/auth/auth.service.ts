@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
+import { CreatePsychologistDto } from 'src/psychologists/dto/create-psychologist.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +18,7 @@ export class AuthService {
     private jwtService: JwtService,
     @Inject()
     private psychologistService: PsychologistsService
-  ) {}
+  ) { }
   async validateUser(email: string, password: string): Promise<User> {
     const user = await this.usersService.findOneByEmail(email);
     if (!user) {
@@ -48,5 +49,14 @@ export class AuthService {
       payload,
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  async register(
+    createPsychologistDto: CreatePsychologistDto,
+    profilePicture: Express.Multer.File,
+    crpFile?: Express.Multer.File,
+    identifyfile?: Express.Multer.File,
+    degreeFile?: Express.Multer.File) {
+    return await this.psychologistService.create(createPsychologistDto, profilePicture, crpFile, identifyfile, degreeFile);
   }
 }

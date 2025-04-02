@@ -29,6 +29,9 @@ export class User extends EntityBase implements IUser {
   })
   private _role: Role;
 
+  @Column({ name: 'active', default: false })
+  private _active: boolean;
+
   @OneToOne(() => Person, (person) => person.user)
   person: Person;
 
@@ -51,5 +54,13 @@ export class User extends EntityBase implements IUser {
   }
   set role(role: Role) {
     this._role = role;
+  }
+
+  get active(): boolean {
+    return this._active;
+  }
+
+  set active(active: boolean) {
+    this._active = active;
   }
 }

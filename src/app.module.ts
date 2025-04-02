@@ -13,6 +13,8 @@ import { DocumentsModule } from './documents/documents.module';
 import { PsychologistsModule } from './psychologists/psychologists.module';
 import { MeetingsModule } from './meetings/meetings.module';
 import { BillsModule } from './bills/bills.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { TokensModule } from './auth/tokens.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { BillsModule } from './bills/bills.module';
     PsychologistsModule,
     MeetingsModule,
     BillsModule,
+    NotificationsModule,
+    TokensModule,
   ],
   controllers: [AppController],
   providers: [AppService],
