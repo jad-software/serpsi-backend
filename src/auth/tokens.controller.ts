@@ -20,7 +20,7 @@ export class TokensController {
   ) { }
 
   @Public()
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBody({
     type: TokenDTO
   })
