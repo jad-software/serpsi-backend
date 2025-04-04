@@ -29,6 +29,7 @@ import { Person } from '../persons/entities/person.enitiy';
 import { PsychologistsService } from '../psychologists/psychologists.service';
 import { Meeting } from '../meetings/domain/entities/meeting.entity';
 import { StatusType } from '../meetings/domain/vo/statustype.enum';
+import { Bill } from 'src/bills/domain/entities/bill.entity';
 
 @Injectable()
 export class PatientsService {
@@ -192,6 +193,7 @@ export class PatientsService {
       .createQueryBuilder('patient')
       .leftJoinAndSelect('patient._person', 'person')
       .innerJoinAndMapMany('patient._meetings', Meeting, "meeting", "meeting.Patient_id = :id", { id })
+      .leftJoinAndMapOne('meeting._bill', 'meeting._bill', 'bill')
       .where('patient.id = :id', { id })
       .orderBy('meeting._schedule', 'DESC')
       .select([
@@ -199,6 +201,7 @@ export class PatientsService {
         'meeting.id',
         'meeting._schedule',
         'meeting._status',
+        'bill._paymentType'
       ])
       .getRawMany();
   }
