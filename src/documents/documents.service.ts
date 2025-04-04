@@ -107,18 +107,24 @@ export class DocumentsService {
 
   async findAllByPsychologist(psychologistId: string) {
     try {
+      console.log('psychologistId', psychologistId);
       const documents = await this.documentRepository
-        .createQueryBuilder('document')
-        .leftJoinAndSelect('document._patient', 'patient')
-        .leftJoinAndSelect('patient._person', 'person')
-        .leftJoinAndSelect('document.meeting', 'meeting')
-        .select('document._id._id', 'id')
-        .addSelect('document._title', 'title')
-        .addSelect('document._docLink', 'docLink')
-        .addSelect('person._name', 'name')
-        .addSelect('meeting.schedule', 'createDate')
-        .where('patient.Psychologist_id = :psychologistId', { psychologistId })
-        .getRawMany();
+      .createQueryBuilder('document')
+      .leftJoin('document.meeting', 'meeting')
+      .leftJoin('meeting._patient', 'meetingPatient')
+      .leftJoin('meetingPatient._person', 'meetingPerson')
+      .leftJoin('document._patient', 'docPatient')
+      .leftJoin('docPatient._person', 'docPerson')
+      .select('document._id._id', 'id')
+      .addSelect('document._title', 'title')
+      .addSelect('document._docLink', 'docLink')
+      .addSelect('COALESCE(meetingPerson._name, docPerson._name)', 'name') // 🔥 Aqui tá a mágica
+      .addSelect('meeting.schedule', 'createDate')
+      .addSelect('meeting._psychologist', 'psychologist')
+      .where('meeting._psychologist = :psychologistId', { psychologistId })
+      .orWhere('docPatient._psychologist = :psychologistId', { psychologistId })
+      .getRawMany();
+      
       return documents;
     } catch (err) {
       throw new BadRequestException(err?.message);
