@@ -117,10 +117,12 @@ export class PsychologistsService {
     }
   }
 
-  async findOneByUser(id: string): Promise<Psychologist> {
-    const allPsychologist = await this.findAll();
-    const psychologist = allPsychologist.filter((p) => p.user.id.id === id)[0];
-    return psychologist;
+  async findOneByUser(userId: string): Promise<Psychologist> {
+    return await this.psychologistsRepository
+      .createQueryBuilder('psychologist')
+      .leftJoinAndSelect('psychologist.user', 'user')
+      .where('user.id = :userId', { userId })
+      .getOneOrFail();
   }
   async findAll() {
     try {
