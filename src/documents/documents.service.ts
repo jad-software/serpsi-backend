@@ -26,11 +26,21 @@ export class DocumentsService {
   async create(
     documentName: string,
     meeetingId: string,
-    documentFile: Express.Multer.File
+    documentFile: Express.Multer.File,
+    isReport?: boolean
   ): Promise<Document> {
     try {
       const formatOfFile = documentFile.originalname.split(".").at(-1);
       const meeting = await this.meetingService.findOne(meeetingId, true);
+      if (isReport) {
+        const allReports = meeting.documents.filter(m => m.title === 'Relato de sessão');
+        if (allReports.length > 0) {
+          const promises = allReports.map(doc => {
+            this.remove(doc.id.id);
+          });
+          await Promise.all(promises);
+        }
+      }
       const fileSaved = await this.cloudinaryService.uploadFile(documentFile, formatOfFile === 'pdf');
       if (fileSaved) {
         const document = new Document({
