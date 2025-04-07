@@ -21,6 +21,7 @@ export class User extends EntityBase implements IUser {
   @Column({ name: 'password', select: false })
   private _password: string;
 
+
   @Column({
     type: 'enum',
     name: 'role',
@@ -31,6 +32,9 @@ export class User extends EntityBase implements IUser {
 
   @Column({ name: 'active', default: false })
   private _active: boolean;
+
+  @Column({name: 'firstLogin', default: true})
+  private _firstLogin: boolean;
 
   @OneToOne(() => Person, (person) => person.user)
   person: Person;
@@ -62,5 +66,13 @@ export class User extends EntityBase implements IUser {
 
   set active(active: boolean) {
     this._active = active;
+  }
+
+  get firstLogin(): boolean {
+    return this._firstLogin;
+  }
+
+  set firstLogin(fisrtLogin: boolean) {
+    this._firstLogin = fisrtLogin;
   }
 }

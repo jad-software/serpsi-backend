@@ -101,6 +101,16 @@ export class UsersService {
     }
   }
 
+  async updateFirstLogin(id: string) {
+    try {
+      let user = await this.findOneById(id);
+      user.firstLogin = false;
+      await this.userRepository.update(id, user);
+    }
+    catch (err) {
+      throw new InternalServerErrorException(err?.message);
+    }
+  }
   async remove(id: string): Promise<any> {
     return await this.userRepository.delete(id);
   }
@@ -153,10 +163,10 @@ export class UsersService {
     if (!isPasswordmatch) {
       throw new BadRequestException('As senhas não conferem');
     }
-    
+
     const user = await this.findOneByEmail(email);
     const id = user.id.id;
-    
+
     const isNewPasswordEqualOldPassword = await bcrypt.compare(
       forgotPasswordDto.newPassword,
       user.password

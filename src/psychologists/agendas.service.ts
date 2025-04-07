@@ -14,6 +14,7 @@ import { data_providers } from '../constants';
 import { Day } from './vo/days.enum';
 import { PsychologistsService } from './psychologists.service';
 import { UpdatePsychologistDto } from './dto/update-psychologist.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AgendasService {
@@ -21,7 +22,9 @@ export class AgendasService {
     @Inject(data_providers.AGENDA_REPOSITORY)
     private agendaRepository: Repository<Agenda>,
     @Inject(forwardRef(() => PsychologistsService))
-    private psychologistService: PsychologistsService
+    private psychologistService: PsychologistsService,
+    @Inject()
+    private usersService: UsersService
   ) { }
   async create(createAgendaDto: CreateAgendaDto) {
     const operations = [];
@@ -52,6 +55,11 @@ export class AgendasService {
         });
       });
 
+      if (psychologist.user.firstLogin === true) {
+        const user = psychologist.user;
+        await this.usersService.updateFirstLogin(user.id.id);
+
+      }
       await this.psychologistService.update(
         psychologist.id.id,
         updatePsychologist
