@@ -107,7 +107,6 @@ export class DocumentsService {
 
   async findAllByPsychologist(psychologistId: string) {
     try {
-      console.log('psychologistId', psychologistId);
       const documents = await this.documentRepository
       .createQueryBuilder('document')
       .leftJoin('document.meeting', 'meeting')
