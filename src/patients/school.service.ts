@@ -22,7 +22,7 @@ export class SchoolService {
     @Inject(data_providers.SCHOOL_REPOSITORY)
     private readonly schoolRepository: Repository<School>,
     private readonly addressService: AddressesService
-  ) {}
+  ) { }
 
   async create(
     createSchoolDto: CreateSchoolDto,
@@ -52,9 +52,10 @@ export class SchoolService {
     let requestedSchool = new School({});
     requestedSchool.id = new Id(id);
     try {
-      return await this.schoolRepository.findOneOrFail({
-        where: { ...requestedSchool },
-      });
+      return await this.schoolRepository.createQueryBuilder("school")
+        .leftJoinAndSelect('school._address', 'address')
+        .where('school.id = :id', { id: requestedSchool.id.id })
+        .getOneOrFail();
     } catch (err) {
       throw new NotFoundException(err?.message);
     }
@@ -86,13 +87,26 @@ export class SchoolService {
   }
 
   async update(id: string, updateSchoolDto: UpdateSchoolDto) {
-    let updatingSchool = new School(updateSchoolDto);
-
     try {
-      await this.schoolRepository.update(id, updatingSchool);
-      let school = await this.findOne(id);
-      return school;
+      const school = await this.findOne(id);
+
+      if (updateSchoolDto.name) school.name = updateSchoolDto.name;
+      if (updateSchoolDto.CNPJ) school.CNPJ = new CNPJ(updateSchoolDto.CNPJ);
+      if (updateSchoolDto.phone) {
+        school.phone = new Phone(updateSchoolDto.phone);
+      }
+
+      if (updateSchoolDto.address) {
+        const updatedAddress = await this.addressService.update(
+          school.address.id.id,
+          updateSchoolDto.address
+        );
+        school.address = updatedAddress;
+      }
+
+      return await this.schoolRepository.save(school);
     } catch (err) {
+      console.error('Erro ao atualizar escola:', err);
       throw new InternalServerErrorException(err?.message);
     }
   }
