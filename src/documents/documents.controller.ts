@@ -97,7 +97,7 @@ export class DocumentsController {
     await this.validateDocumentData(createDocumentDto);
     this.validateUploadedFile(document, 'md');
 
-    return await this.documentsService.create(title, meeting, document);
+    return await this.documentsService.create(title, meeting, document, true);
   }
 
   @Post('/aditional')
