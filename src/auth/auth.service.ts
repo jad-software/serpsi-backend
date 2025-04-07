@@ -33,17 +33,20 @@ export class AuthService {
 
   async login(user: User) {
     let id = user.id.id;
+    let isFirstLogin;
     if (user.role === 'PSI') {
       const psychologist = await this.psychologistService.findOneByUser(
         user.id.id
       );
       id = psychologist.id.id;
+      isFirstLogin = psychologist.user.firstLogin;
     }
 
     const payload = {
       email: user.email.email,
       sub: id,
       role: user.role,
+      firstLogin: isFirstLogin && isFirstLogin
     };
     return {
       payload,
