@@ -310,10 +310,6 @@ export class PatientsService {
         patient.person = await this.personsService.update(patient.person.id.id, person);
       }
 
-      if (school && patient.school?.id?.id) {
-        console.log("escola do paciente ",school);
-        patient.school = await this.schoolService.update(patient.school.id.id, school);
-      }
 
       if (comorbidities) {
         patient.comorbidities = (await this.addComorbities(id, comorbidities)).comorbidities;
@@ -329,9 +325,33 @@ export class PatientsService {
           })
         );
       }
+
+      if (school && patient.school?.id?.id) {
+        if (school.name === patient.school.name) {
+          patient.school = await this.schoolService.update(patient.school.id.id, school);
+        } else {
+          let newSchool = await this.schoolService.findOneBy({ name: school.name }).catch(
+            async (err) => {
+              if (err.status !== 404) {
+                throw err;
+              }
+              return this.schoolService.create(school as CreateSchoolDto, true);
+            }
+          );
+
+          const updatedPatient = await this.patientRepository.createQueryBuilder("patient")
+          .where("patient.id = :id", { id: patient.id.id })
+          .getOneOrFail();
+
+          updatedPatient.school = newSchool;
+          await this.patientRepository.save(updatedPatient);
+          patient.school = newSchool;
+        }
+      }
+
       return patient;
     } catch (err) {
-      throw new InternalServerErrorException(err?.message);
+      throw new InternalServerErrorException("Problemas ao atualizar paciente" + err?.message);
     }
   }
 
