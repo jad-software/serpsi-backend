@@ -45,7 +45,7 @@ export class DocumentsService {
       if (fileSaved) {
         const document = new Document({
           title: documentName,
-          docLink: fileSaved.url,
+          docLink: fileSaved.secure_url,
         });
         document.meeting = meeting;
         const createdDocument = await this.documentRepository.save(document);
@@ -81,7 +81,7 @@ export class DocumentsService {
         if (fileSaved) {
           const document = new Document({
             title: documentFile.originalname,
-            docLink: fileSaved.url,
+            docLink: fileSaved.secure_url,
           });
           document.patient = patient;
           publicsIds.push(document.docLink.split('/').slice(-1)[0]);
@@ -168,8 +168,8 @@ export class DocumentsService {
 
         const fileSaved = await this.cloudinaryService.uploadFile(documentFile);
         if (fileSaved) {
-          const document = new Document({ title, docLink: fileSaved.url });
-          foundDocument.docLink = fileSaved.url;
+          const document = new Document({ title, docLink: fileSaved.secure_url });
+          foundDocument.docLink = fileSaved.secure_url;
         }
       }
       const createdDocument = await this.documentRepository.save(foundDocument);
