@@ -300,20 +300,58 @@ export class PatientsService {
   }
 
   async update(id: string, updatePatientDto: UpdatePatientDto) {
-    let updatingPatient = new Patient(updatePatientDto);
-    updatingPatient.person = undefined;
+    const { person, school, comorbidities, parents, ...patientData } = updatePatientDto;
+
     try {
-      await this.patientRepository.update(id, updatingPatient);
+      await this.patientRepository.update(id, new Patient(patientData));
       let patient = await this.findOne(id);
-      if (updatePatientDto.person) {
-        patient.person = await this.personsService.update(
-          id,
-          updatePatientDto.person
+
+      if (person && patient.person?.id?.id) {
+        patient.person = await this.personsService.update(patient.person.id.id, person);
+      }
+
+
+      if (comorbidities) {
+        patient.comorbidities = (await this.addComorbities(id, comorbidities)).comorbidities;
+      }
+
+      if (parents) {
+        await Promise.all(
+          parents.map(async (parent) => {
+            const existing = patient.parents.find((v) => v.cpf.cpf === parent.cpf.cpf);
+            if (existing) {
+              return this.personsService.update(existing.id.id, parent);
+            }
+          })
         );
       }
+
+      if (school && patient.school?.id?.id) {
+        if (school.name === patient.school.name) {
+          patient.school = await this.schoolService.update(patient.school.id.id, school);
+        } else {
+          let newSchool = await this.schoolService.findOneBy({ name: school.name }).catch(
+            async (err) => {
+              if (err.status !== 404) {
+                throw err;
+              }
+              return this.schoolService.create(school as CreateSchoolDto, true);
+            }
+          );
+
+          const updatedPatient = await this.patientRepository.createQueryBuilder("patient")
+          .where("patient.id = :id", { id: patient.id.id })
+          .getOneOrFail();
+
+          updatedPatient.school = newSchool;
+          await this.patientRepository.save(updatedPatient);
+          patient.school = newSchool;
+        }
+      }
+
       return patient;
     } catch (err) {
-      throw new InternalServerErrorException(err?.message);
+      throw new InternalServerErrorException("Problemas ao atualizar paciente" + err?.message);
     }
   }
 
