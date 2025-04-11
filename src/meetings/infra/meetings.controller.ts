@@ -76,11 +76,9 @@ export class MeetingsController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateMeetingDTO: UpdateMeetingDto,
-    @User() userInfo
+    @Body() updateMeetingDTO: UpdateMeetingDto
   ) {
-    console.log(userInfo)
-    return await this.meetingsService.update(id, userInfo.id, updateMeetingDTO);
+    return await this.meetingsService.update(id, updateMeetingDTO);
   }
 
   @ApiOperation({ summary: 'Deleta uma sessão' })
