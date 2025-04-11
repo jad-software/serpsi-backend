@@ -4,14 +4,15 @@ import { Times } from "../../../psychologists/interfaces/times.interface";
 import { Unusual } from "../../../psychologists/entities/unusual.entity";
 import { formatTime } from "src/helpers/format-time";
 
-export async function checkAvaliableTime(times: Times, schedule: Meeting[], unusuals: Unusual[]) {
-  schedule = schedule.filter((session) => session.status !== StatusType.CREDIT && session.status !== StatusType.CANCELED)
-  console.log(times, schedule, unusuals)
-  const avaliableTimes = times.avaliableTimes.map((slots) => {
+export async function checkAvaliableTime(data: { date: Date, times: Times, schedule: Meeting[], unusuals: Unusual[] }) {
+  console.log(data.date)
+  data.schedule = data.schedule.filter((session) => session.status !== StatusType.CREDIT && session.status !== StatusType.CANCELED)
+  const avaliableTimes = data.times.avaliableTimes.map((slots) => {
     const day = slots.day;
     const availableTimes = slots.times.filter((time) => {
-      return !schedule.some(session => areIntervalsOverlappingAppointment(time, formatTime(session.schedule), times.meetDuration))
-        && !unusuals.some((unusual) => areIntervalsOverlappingUnusual(time, unusual.startTime, unusual.endTime, times.meetDuration));
+      return !areIntervalInPastTime(data.date, time)
+        && !data.schedule.some(session => areIntervalsOverlappingAppointment(time, formatTime(session.schedule), data.times.meetDuration))
+        && !data.unusuals.some((unusual) => areIntervalsOverlappingUnusual(time, unusual.startTime, unusual.endTime, data.times.meetDuration));
     });
     return {
       day,
@@ -21,15 +22,27 @@ export async function checkAvaliableTime(times: Times, schedule: Meeting[], unus
   return avaliableTimes;
 }
 
+function areIntervalInPastTime(date: Date, slot: string) {
+  const now = new Date();
+  const [hour, minute, second] = slot.split(':').map(Number);
 
+  // Cria uma nova data com a mesma data de `date` e hora local baseada em `slot`
+  const slotDay = new Date(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+    hour,
+    minute,
+    second
+  );
+  return now > slotDay;
+}
 // Function to check overlap for regular appointments
 function areIntervalsOverlappingAppointment(slot: string, appointment: string, meetDuration: number): boolean {
-  console.log("check overlapping", slot, appointment)
   const startInterval = new Date(`2024-01-01T${appointment}`);
   const endInterval = new Date(startInterval.getTime() + meetDuration * 60000);
   const startSlot = new Date(`2024-01-01T${slot}`);
   const endSlot = new Date(startSlot.getTime() + meetDuration * 60000);
-  console.log("check overlapping", startSlot, endSlot, startInterval, endInterval)
   return startSlot < endInterval && endSlot > startInterval;
 }
 

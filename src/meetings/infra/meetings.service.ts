@@ -74,7 +74,7 @@ export class MeetingsService {
       this.psychologistService.getTimes(psychologistId, days),
       this.psychologistService.getUnusualTimes(psychologistId, startDate)
     ]);
-    const avaliableTimes = await checkAvaliableTime(times, schedule, unusuals)
+    const avaliableTimes = await checkAvaliableTime({ date: startDate, times, schedule, unusuals })
     const response = {
       day: avaliableTimes[0].day,
       avaliableTimes: avaliableTimes.flatMap((time) => {
