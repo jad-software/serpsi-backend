@@ -73,8 +73,15 @@ export class MeetingsService {
       getSchedule({ psychologistId, startDate, isEntity: true }, this.meetingsRepository),
       this.psychologistService.getTimes(psychologistId, days),
       this.psychologistService.getUnusualTimes(psychologistId, startDate)
-    ])
-    return await checkAvaliableTime(times, schedule, unusuals);
+    ]);
+    const avaliableTimes = await checkAvaliableTime(times, schedule, unusuals)
+    const response = {
+      day: avaliableTimes[0].day,
+      avaliableTimes: avaliableTimes.flatMap((time) => {
+        return time.availableTimes
+      }).sort()
+    }
+    return response;
   }
 
   async findOne(id: string, relations: boolean = true) {
@@ -90,7 +97,7 @@ export class MeetingsService {
   }
 
   async updateStatus(id: string, newStatus: UpdateStatusDto) {
-    return await modifyStatus(id, newStatus.status, {repository: this.meetingsRepository, billService: this.billsService});
+    return await modifyStatus(id, newStatus.status, { repository: this.meetingsRepository, billService: this.billsService });
   }
 
   async remove(id: string) {
