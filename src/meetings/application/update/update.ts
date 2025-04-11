@@ -24,14 +24,18 @@ export async function update(id: string, updateMeetingDto: UpdateMeetingDto, ser
   try {
     updatedSession.status = StatusType.OPEN;
     await service.repository.update(id, updatedSession);
-    await service.billsService.createWithMeeting(updatedSession, null, updateMeetingDto.amount);
 
     session = await service.repository.createQueryBuilder("meeting")
+      .leftJoinAndSelect("meeting._bill", "bill")
       .where("meeting.id = :id", { id })
       .getOneOrFail();
+    if (session.bill) await service.billsService.remove(session.bill.id.id);
+    await service.billsService.createWithMeeting(updatedSession, session.schedule, updateMeetingDto.amount);
+    session.bill = undefined;
     return session;
   }
   catch (error) {
+    console.log(error);
     throw new InternalServerErrorException(
       'problemas ao atualizar uma sessão'
     );
