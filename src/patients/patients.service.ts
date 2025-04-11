@@ -235,6 +235,13 @@ export class PatientsService {
           .andWhere('meeting._status != :status', { status: StatusType.CANCELED })
           .andWhere('meeting._schedule > NOW()')
       }, 'count_meetings')
+      .addSelect((subquery) => {
+        return subquery
+          .select('COUNT(meeting.id)', 'count')
+          .from(Meeting, 'meeting')
+          .where('meeting.Patient_id = patient.id')
+          .andWhere('meeting._status = :statusCredit', { statusCredit: StatusType.CREDIT })
+      }, 'count_credits')
       .where('patient.Psychologist_id = :id', { id })
       .getRawMany();
   }
