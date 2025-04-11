@@ -92,8 +92,8 @@ export class MeetingsService {
     return await getSchedule({ psychologistId, startDate, endDate }, this.meetingsRepository);
   }
 
-  async update(id: string, updateMeetingDto: UpdateMeetingDto) {
-    return await update(id, updateMeetingDto, this.meetingsRepository);
+  async update(id: string, psychologistId: string, updateMeetingDto: UpdateMeetingDto) {
+    return await update(id, updateMeetingDto, { repository: this.meetingsRepository, billsService: this.billsService });
   }
 
   async updateStatus(id: string, newStatus: UpdateStatusDto) {
