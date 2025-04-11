@@ -5,7 +5,6 @@ import { Unusual } from "../../../psychologists/entities/unusual.entity";
 import { formatTime } from "src/helpers/format-time";
 
 export async function checkAvaliableTime(data: { date: Date, times: Times, schedule: Meeting[], unusuals: Unusual[] }) {
-  console.log(data.date)
   data.schedule = data.schedule.filter((session) => session.status !== StatusType.CREDIT && session.status !== StatusType.CANCELED)
   const avaliableTimes = data.times.avaliableTimes.map((slots) => {
     const day = slots.day;
