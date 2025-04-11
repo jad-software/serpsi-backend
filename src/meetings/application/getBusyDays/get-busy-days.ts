@@ -12,9 +12,9 @@ export async function getBusyDays(search: FindBusyDaysDAO, repository: Repositor
     let existsSession = false;
     const day = await querybuilder
       .where("meeting.Psychologist_id = :psychologistId", { psychologistId: search.psychologistId })
-      .andWhere("EXTRACT(YEAR FROM meeting._schedule) = :year", { year: search.year })
-      .andWhere("EXTRACT(MONTH FROM meeting._schedule) = :month", { month: search.month })
-      .andWhere("EXTRACT(DAY FROM meeting._schedule) = :day", { day: i })
+      .andWhere("EXTRACT(YEAR FROM meeting._schedule at time zone 'America/Sao_paulo') = :year", { year: search.year })
+      .andWhere("EXTRACT(MONTH FROM meeting._schedule at time zone 'America/Sao_paulo') = :month", { month: search.month })
+      .andWhere("EXTRACT(DAY FROM meeting._schedule at time zone 'America/Sao_paulo') = :day", { day: i })
       .getCount();
     if (day > 0) {
       existsSession = true;
