@@ -16,7 +16,7 @@ import { Crp } from './vo/crp.vo';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { ChangePassworDto } from './dto/change-password.dto';
 import { Day } from './vo/days.enum';
-import { formatTime } from '../helpers/format-time';
+import { formatTimeWithUTC } from '../helpers/format-time-utc';
 import { Times } from './interfaces/times.interface';
 import { formatDate } from '../helpers/format-date';
 import { Unusual } from './entities/unusual.entity';
@@ -259,7 +259,7 @@ export class PsychologistsService {
           throw new BadRequestException('Start time must be before end time');
         }
         while (start < end) {
-          times.push(formatTime(start));
+          times.push(formatTimeWithUTC(start));
           start.setMinutes(start.getMinutes() + psychologist.meetDuration);
         }
         avaliableTimes.push({
@@ -299,8 +299,8 @@ export class PsychologistsService {
         unavaliableTimes.push(
           new Unusual({
             date: date,
-            startTime: formatTime(start),
-            endTime: formatTime(end),
+            startTime: formatTimeWithUTC(start),
+            endTime: formatTimeWithUTC(end),
           })
         );
       });

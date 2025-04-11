@@ -12,8 +12,7 @@ export async function UpdateMany(updatePaymentManyDto: UpdatePaymentManyDto, rep
   try {
     for (const bill_id of updatePaymentManyDto.billIds) {
       let updatedBill = await GetOne(bill_id, repository);
-
-      updatedBill.paymentMethod.paymentDate = new Date(updatePaymentManyDto.paymentMethod.paymentDate);
+      updatedBill.paymentMethod.paymentDate = updatePaymentManyDto.paymentMethod.paymentDate;
       updatedBill.paymentMethod.paymentType = updatePaymentManyDto.paymentMethod.paymentType;
 
       await repository.update(bill_id, updatedBill); 

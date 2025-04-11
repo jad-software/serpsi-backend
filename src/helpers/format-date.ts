@@ -1,4 +1,4 @@
-import { formatTime } from "./format-time";
+import { formatTimeWithUTC } from "./format-time-utc";
 
 /**
  * Formats a Date object into a string with the pattern "DD/MM/YYYY HH:mm"
@@ -6,5 +6,5 @@ import { formatTime } from "./format-time";
  * @returns A string representation of the date in DD/MM/YYYY HH:mm format
  */
 export function formatDate(date: Date) {
-  return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' ' + formatTime(date);
+  return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' ' + formatTimeWithUTC(date);
 }
