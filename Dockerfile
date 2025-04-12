@@ -5,9 +5,12 @@ WORKDIR /app
 COPY package*.json ./
 
 RUN npm ci --omit=dev
-
-COPY . .
 RUN npm run build
-EXPOSE 3000
+COPY . .
 
+RUN useradd -m appuser
+USER appuser
+
+ENV TEST_INTEGRATION=false
+EXPOSE 3000
 CMD ["npm", "start"]
