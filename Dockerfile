@@ -6,10 +6,13 @@ COPY package*.json ./
 
 RUN npm ci
 COPY . .
-RUN npm run build
+
 
 RUN useradd -m appuser
+RUN chown -R appuser:appuser /app
 USER appuser
+
+RUN npm run build
 
 ENV TEST_INTEGRATION=false
 EXPOSE 3000
