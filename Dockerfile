@@ -4,9 +4,9 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm ci --omit=dev
-RUN npm run build
+RUN npm ci
 COPY . .
+RUN npm run build
 
 RUN useradd -m appuser
 USER appuser
