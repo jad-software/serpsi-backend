@@ -13,7 +13,7 @@ import { BillsModule } from '../bills/bills.module';
   providers: [MeetingsService, ...meetingsProvider],
   imports: [
     DatabaseModule,
-    PsychologistsModule,
+    forwardRef(() => PsychologistsModule),
     forwardRef(() => PatientsModule),
     forwardRef(() => DocumentsModule),
     BillsModule

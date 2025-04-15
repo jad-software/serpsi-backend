@@ -21,6 +21,9 @@ import { checkAvaliableTime } from '../application/checkAvaliableTime/check-aval
 import { DocumentsService } from '../../documents/documents.service';
 import { BillsService } from '../../bills/infra/bills.service';
 import { FindBusyDaysDAO } from '../application/getBusyDays/findBusyDays.dao';
+import { Unusual } from 'src/psychologists/entities/unusual.entity';
+import { AvailableTimeDto } from 'src/psychologists/dto/create-agenda.dto';
+import { StatusType } from '../domain/vo/statustype.enum';
 
 @Injectable()
 export class MeetingsService {
@@ -98,6 +101,21 @@ export class MeetingsService {
 
   async updateStatus(id: string, newStatus: UpdateStatusDto) {
     return await modifyStatus(id, newStatus.status, { repository: this.meetingsRepository, billService: this.billsService });
+  }
+
+  async updateSessionsAtUnusualAgendas(psychologistId: string, startDate: Date, endDate: Date) {
+    const schedules = await getSchedule({ psychologistId, startDate, endDate, isEntity: true }, this.meetingsRepository);
+    let count = 0;
+    await Promise.all(schedules.map(async (schedule) => {
+      const newSchedule = new Meeting(schedule);
+      if (newSchedule.status === StatusType.CREDIT || newSchedule.status === StatusType.CANCELED) {
+        return;
+      }
+      newSchedule.status = StatusType.CREDIT;
+      await this.meetingsRepository.save(newSchedule);
+      count += 1;
+    }));
+    return { message: 'Sessões atualizadas com sucesso', count };
   }
 
   async remove(id: string) {

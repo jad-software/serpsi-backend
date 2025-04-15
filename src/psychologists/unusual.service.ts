@@ -1,9 +1,10 @@
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateUnusualDto } from './dto/create-unusual.dto';
 import { data_providers } from '../constants';
 import { Repository } from 'typeorm';
 import { Unusual } from './entities/unusual.entity';
 import { PsychologistsService } from './psychologists.service';
+import { MeetingsService } from 'src/meetings/infra/meetings.service';
 
 @Injectable()
 export class UnusualService {
@@ -11,14 +12,15 @@ export class UnusualService {
     @Inject(data_providers.UNUSUAL_REPOSITORY)
     private unusualRepository: Repository<Unusual>,
     private psychologistService: PsychologistsService,
+    private meetingService: MeetingsService
   ) { }
 
 
-  async create(createUnusualDto: CreateUnusualDto) {
+  async create(createUnusualDto: CreateUnusualDto, psychologistId: string) {
     try {
-      const psychologist = await this.psychologistService.findOne(createUnusualDto.psychologistId, false);
+      const psychologist = await this.psychologistService.findOne(psychologistId, false);
       let unusuals = [];
-      createUnusualDto.avaliableTimes.forEach((time) => {
+      createUnusualDto.unavaliableTimes.forEach((time) => {
         const unusual = new Unusual({
           date: createUnusualDto.date,
           startTime: time._startTime,
@@ -27,7 +29,32 @@ export class UnusualService {
         });
         unusuals.push(unusual);
       });
-      return await this.unusualRepository.save(unusuals, { transaction: true });
+      const savedUnusuals = await this.unusualRepository.save(unusuals, { transaction: true });
+      let changedSessionsNumber = 0;
+      if (savedUnusuals.length === 0) {
+        throw new InternalServerErrorException('Erro ao criar horários indisponíveis');
+      }
+      const date = new Date(createUnusualDto.date);
+      console.log(date)
+      await Promise.all(savedUnusuals.map(async (unusual: Unusual) => {
+        const startDate = new Date(
+          date.getUTCFullYear(),
+          date.getUTCMonth(),
+          date.getUTCDate(),
+          parseInt(unusual.startTime.split(':')[0]),
+          parseInt(unusual.startTime.split(':')[1])
+        );
+        const endDate = new Date(
+          date.getUTCFullYear(),
+          date.getUTCMonth(),
+          date.getUTCDate(),
+          parseInt(unusual.endTime.split(':')[0]),
+          parseInt(unusual.endTime.split(':')[1])
+        );
+        console.log(startDate, endDate)
+        changedSessionsNumber += (await this.meetingService.updateSessionsAtUnusualAgendas(psychologistId, startDate, endDate)).count;
+      }));
+      return { message: 'Horários indisponíveis criados com sucesso', changedSessionsNumber, unusuals: savedUnusuals };
     }
     catch (err) {
       throw new InternalServerErrorException(err.message);

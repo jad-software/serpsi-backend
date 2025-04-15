@@ -3,6 +3,7 @@ import { UnusualService } from './unusual.service';
 import { CreateUnusualDto } from './dto/create-unusual.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AvailableTimeDto } from './dto/create-agenda.dto';
+import { User } from 'src/auth/providers/user.decorator';
 
 @ApiTags('agendas')
 @ApiBearerAuth()
@@ -12,7 +13,7 @@ export class UnusualController {
   validateAvaliableTime(unusual: CreateUnusualDto[]) {
     unusual.forEach((un) => {
       const ValidatedUnusual: AvailableTimeDto[] = [];
-      un.avaliableTimes.forEach((time) => {
+      un.unavaliableTimes.forEach((time) => {
         if (
           time._endTime.trim() === '' ||
           time._startTime.trim() === ''
@@ -43,15 +44,15 @@ export class UnusualController {
 
   @ApiOperation({ summary: 'Criação de uma nova agenda fora do comum' })
   @Post('')
-  @ApiBody({ type: [CreateUnusualDto] })
-  async create(@Body() createUnusualDto: CreateUnusualDto[]) {
-    try{
-      this.validateAvaliableTime(createUnusualDto);
+  @ApiBody({ type: CreateUnusualDto })
+  async create(@Body() createUnusualDto: CreateUnusualDto, @User() user) {
+    try {
+      this.validateAvaliableTime([createUnusualDto]);
     }
-    catch(e){
+    catch (e) {
       throw new BadRequestException(e.message);
     }
-    const promisesUnusuals = createUnusualDto.map((unusual) => this.unusualService.create(unusual));
+    const promisesUnusuals = [this.unusualService.create(createUnusualDto, user.id)];
     return await Promise.all(promisesUnusuals);
   }
 
