@@ -16,11 +16,11 @@ export class UnusualService {
   ) { }
 
 
-  async create(createUnusualDto: CreateUnusualDto) {
+  async create(createUnusualDto: CreateUnusualDto, psychologistId: string) {
     try {
-      const psychologist = await this.psychologistService.findOne(createUnusualDto.psychologistId, false);
+      const psychologist = await this.psychologistService.findOne(psychologistId, false);
       let unusuals = [];
-      createUnusualDto.avaliableTimes.forEach((time) => {
+      createUnusualDto.unavaliableTimes.forEach((time) => {
         const unusual = new Unusual({
           date: createUnusualDto.date,
           startTime: time._startTime,
@@ -52,7 +52,7 @@ export class UnusualService {
           parseInt(unusual.endTime.split(':')[1])
         );
         console.log(startDate, endDate)
-        changedSessionsNumber += (await this.meetingService.updateSessionsAtUnusualAgendas(createUnusualDto.psychologistId, startDate, endDate)).count;
+        changedSessionsNumber += (await this.meetingService.updateSessionsAtUnusualAgendas(psychologistId, startDate, endDate)).count;
       }));
       return { message: 'Horários indisponíveis criados com sucesso', changedSessionsNumber, unusuals: savedUnusuals };
     }

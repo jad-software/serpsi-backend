@@ -41,7 +41,7 @@ describe('UnusualController', () => {
         {
           date: new Date('2023-01-01'),
           psychologistId: '1',
-          avaliableTimes: [
+          unavaliableTimes: [
             {
               _startTime: '09:00',
               _endTime: '10:00'
@@ -61,7 +61,7 @@ describe('UnusualController', () => {
         {
           date: new Date('2023-01-01'),
           psychologistId: '1',
-          avaliableTimes: [
+          unavaliableTimes: [
             {
               _startTime: '10:00',
               _endTime: '09:00'
@@ -78,7 +78,7 @@ describe('UnusualController', () => {
         {
           date: new Date('2023-01-01'),
           psychologistId: '1',
-          avaliableTimes: [
+          unavaliableTimes: [
             {
               _startTime: '',
               _endTime: ''

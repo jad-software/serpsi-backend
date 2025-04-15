@@ -33,14 +33,5 @@ export class CreateUnusualDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => AvailableTimeDto)
-  avaliableTimes: AvailableTimeDto[];
-
-  @ApiProperty({
-    type: String,
-    description: 'id do psicólogo ao qual pertence a agenda fora do comum',
-    example: 'psychologist_id',
-  })
-  @IsNotEmpty()
-  @IsString()
-  psychologistId: string;
+  unavaliableTimes: AvailableTimeDto[];
 }
