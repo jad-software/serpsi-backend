@@ -20,10 +20,10 @@ import { PsychologistsModule } from '../psychologists/psychologists.module';
     PersonsModule,
     forwardRef(() => DocumentsModule),
     CloudinaryModule,
-    PsychologistsModule,
+    forwardRef(() => PsychologistsModule),
   ],
   controllers: [PatientsController],
   providers: [PatientsService, ...patientProvider],
   exports: [PatientsService],
 })
-export class PatientsModule {}
+export class PatientsModule { }

@@ -52,7 +52,7 @@ describe('UnusualService', () => {
     const mockCreateDto: CreateUnusualDto = {
       date: new Date(),
       psychologistId: '123',
-      avaliableTimes: [
+      unavaliableTimes: [
         { _startTime: '09:00', _endTime: '10:00' } as AvailableTimeDto,
         { _startTime: '10:00', _endTime: '11:00' } as AvailableTimeDto,
       ],
