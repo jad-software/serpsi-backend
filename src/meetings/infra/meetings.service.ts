@@ -105,12 +105,17 @@ export class MeetingsService {
 
   async updateSessionsAtUnusualAgendas(psychologistId: string, startDate: Date, endDate: Date) {
     const schedules = await getSchedule({ psychologistId, startDate, endDate, isEntity: true }, this.meetingsRepository);
+    let count = 0;
     await Promise.all(schedules.map(async (schedule) => {
       const newSchedule = new Meeting(schedule);
+      if (newSchedule.status === StatusType.CREDIT || newSchedule.status === StatusType.CANCELED) {
+        return;
+      }
       newSchedule.status = StatusType.CREDIT;
       await this.meetingsRepository.save(newSchedule);
+      count += 1;
     }));
-    return { message: 'Sessões atualizadas com sucesso', count: schedules.length };
+    return { message: 'Sessões atualizadas com sucesso', count };
   }
 
   async remove(id: string) {
