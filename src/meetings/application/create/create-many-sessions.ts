@@ -7,8 +7,13 @@ import { StatusType } from '../../domain/vo/statustype.enum';
 import { BillsService } from '../../../bills/infra/bills.service';
 import { PaymentPlan } from '../../../patients/vo/PaymentPlan.enum';
 import { formatDate } from '../../../helpers/format-date';
+import { Day } from 'src/psychologists/vo/days.enum';
 
-export async function createManySessions(data: { meeting: Meeting, frequency: FrequencyEnum, quantity: number, amount?: number }, service: { repository: Repository<Meeting>, billsService: BillsService }) {
+export async function createManySessions(data: { meeting: Meeting, frequency: FrequencyEnum, quantity: number, amount?: number }, service: {
+  repository: Repository<Meeting>,
+  billsService: BillsService,
+  avaliableTimes: (psychologistId: string, startDate: Date) => Promise<any>
+}) {
   let dueDate = modifyDueDate(new Date(data.meeting.schedule), data.meeting.patient.paymentPlan);
   const conflicts: string[] = [];
   const sessions: Meeting[] = [];
@@ -26,7 +31,7 @@ export async function createManySessions(data: { meeting: Meeting, frequency: Fr
       schedule: date,
     })
 
-    const session = await create({ meeting, dueDate, amount:data.amount }, service, true)
+    const session = await create({ meeting, dueDate, amount: data.amount }, service, true)
 
     if (session.status === StatusType.CREDIT)
       conflicts.push(`${formatDate(meeting.schedule)}`);

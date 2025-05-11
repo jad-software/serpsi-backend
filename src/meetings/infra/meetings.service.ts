@@ -21,8 +21,6 @@ import { checkAvaliableTime } from '../application/checkAvaliableTime/check-aval
 import { DocumentsService } from '../../documents/documents.service';
 import { BillsService } from '../../bills/infra/bills.service';
 import { FindBusyDaysDAO } from '../application/getBusyDays/findBusyDays.dao';
-import { Unusual } from 'src/psychologists/entities/unusual.entity';
-import { AvailableTimeDto } from 'src/psychologists/dto/create-agenda.dto';
 import { StatusType } from '../domain/vo/statustype.enum';
 
 @Injectable()
@@ -51,7 +49,8 @@ export class MeetingsService {
         { meeting, amount: createMeetingDto.amount },
         {
           repository: this.meetingsRepository,
-          billsService: this.billsService
+          billsService: this.billsService,
+          avaliableTimes: (psychologistId: string, startDate: Date) => this.AvaliableTimes(psychologistId, startDate)
         });
     }
     return await createManySessions({
@@ -61,7 +60,8 @@ export class MeetingsService {
       amount: createMeetingDto.amount
     }, {
       repository: this.meetingsRepository,
-      billsService: this.billsService
+      billsService: this.billsService,
+      avaliableTimes: (psychologistId: string, startDate: Date) => this.AvaliableTimes(psychologistId, startDate)
     });
   }
 
@@ -69,15 +69,19 @@ export class MeetingsService {
     return await getBusyDays(search, this.meetingsRepository);
   }
 
-  async AvaliableTimes(psychologistId: string, startDate: Date) {
-    let days = numberToDay(startDate.getDay() + 1);
-
+  async AvaliableTimes(psychologistId: string, date: Date) {
+    const startDate = new Date(date);
+    startDate.setUTCHours(0, 0, 0);
+    let days = numberToDay(startDate.getUTCDay());
     const [schedule, times, unusuals] = await Promise.all([
       getSchedule({ psychologistId, startDate, isEntity: true }, this.meetingsRepository),
       this.psychologistService.getTimes(psychologistId, days),
       this.psychologistService.getUnusualTimes(psychologistId, startDate)
     ]);
     const avaliableTimes = await checkAvaliableTime({ date: startDate, times, schedule, unusuals })
+    if (avaliableTimes.length === 0) {
+      throw new NotFoundException('Não há horários disponíveis para essa data');
+    }
     const response = {
       day: avaliableTimes[0].day,
       avaliableTimes: avaliableTimes.flatMap((time) => {
