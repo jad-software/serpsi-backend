@@ -13,6 +13,7 @@ import {
   BadRequestException,
   Put,
   UploadedFiles,
+  Res,
 } from '@nestjs/common';
 import { DocumentsService } from './documents.service';
 import { CreateDocumentDto } from './dto/create-document.dto';
@@ -30,6 +31,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Document } from './entities/document.entity';
+import { Response } from 'express';
 
 @ApiBearerAuth()
 @ApiTags('documents')
@@ -243,5 +245,16 @@ export class DocumentsController {
   })
   async remove(@Param('id') id: string) {
     return await this.documentsService.remove(id);
+  }
+
+  @Post('/generate-pdf')
+  async transformToPdf(@Body('mdUrl') mdUrl: string, @Res() res: Response){
+    const pdf = await this.documentsService.trasnformMdToPdf(mdUrl);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=document.pdf',
+    });
+
+    res.send(Buffer.from(pdf));
   }
 }
