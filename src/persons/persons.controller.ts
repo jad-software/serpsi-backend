@@ -183,6 +183,14 @@ export class PersonsController {
     return await this.personsService.findOneById(id);
   }
 
+  @Get('verify-exists/cpf/:cpf')
+  @ApiOperation({
+    summary: 'Verifica se existe uma Person de acordo com o cpf',
+  })
+  async verifyCPF(@Param('cpf') cpf: string): Promise<boolean> {
+    return await this.personsService.verifyIfCPFExists(cpf);
+  }
+
   @Put(':id')
   @ApiOperation({
     summary: 'Faz o updade de uma Person de acordo com o id',
