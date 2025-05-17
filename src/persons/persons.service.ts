@@ -126,6 +126,16 @@ export class PersonsService {
     }
   }
 
+  async verifyIfCPFExists(cpf: string): Promise<boolean> {
+    let cpf_vo = new Cpf(cpf);
+    try {
+      await this.findOneByCPF(cpf_vo);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
   async update(id: string, updatePersonDto: UpdatePersonDto) {
     try {
       const person = new Person(updatePersonDto);
