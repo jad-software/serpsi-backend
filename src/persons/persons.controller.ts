@@ -23,6 +23,7 @@ import {
   ParseFilePipe,
   Post,
   Put,
+  UnprocessableEntityException,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -34,7 +35,7 @@ import { validate } from 'class-validator';
 @ApiTags('persons')
 @Controller('persons')
 export class PersonsController {
-  constructor(private readonly personsService: PersonsService) {}
+  constructor(private readonly personsService: PersonsService) { }
 
   @Post()
   @ApiOperation({
@@ -229,13 +230,15 @@ export class PersonsController {
   @UseInterceptors(FileInterceptor('profilePicture'))
   async uploadPictore(
     @UploadedFile(
-      new ParseFilePipe({
-        validators: [new FileTypeValidator({ fileType: /(jpeg|png)$/ })],
-      })
+      new ParseFilePipe()
     )
     file: Express.Multer.File,
     @Param('id') id: string
   ) {
+
+    if (!/^image\/(jpe?g|png|webp)$/.test(file.mimetype)) {
+      throw new UnprocessableEntityException('Tipo de imagem inválido');
+    }
     return await this.personsService.savePersonPicture(file, id);
   }
 }
