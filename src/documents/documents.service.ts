@@ -10,6 +10,7 @@ import { Repository } from 'typeorm';
 import { Document } from './entities/document.entity';
 import { PatientsService } from '../patients/patients.service';
 import { MeetingsService } from '../meetings/infra/meetings.service';
+import mdToPdf from 'md-to-pdf';
 
 @Injectable()
 export class DocumentsService {
@@ -194,6 +195,27 @@ export class DocumentsService {
       }
     } catch (err) {
       throw new BadRequestException(err?.message);
+    }
+  }
+  async trasnformMdToPdf(mdUrl: string){
+    if (!mdUrl) {
+      throw new BadRequestException('Url é requerida');
+    }
+    try {
+      const mdResponse = await fetch(mdUrl);
+      if (!mdResponse.ok) {
+        throw new BadRequestException('Failed to fetch markdown file');
+      }
+      const markdown = await mdResponse.text();
+      const pdf = await mdToPdf({ content: markdown });
+
+      if (!pdf?.content) {
+        throw new BadRequestException('Failed to convert markdown to PDF');
+      }
+      
+      return pdf.content;
+    } catch (error) {
+      throw new BadRequestException('Erro ao gerar PDF:',error.message);
     }
   }
 }

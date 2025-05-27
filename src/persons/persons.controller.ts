@@ -23,6 +23,7 @@ import {
   ParseFilePipe,
   Post,
   Put,
+  UnprocessableEntityException,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -34,7 +35,7 @@ import { validate } from 'class-validator';
 @ApiTags('persons')
 @Controller('persons')
 export class PersonsController {
-  constructor(private readonly personsService: PersonsService) {}
+  constructor(private readonly personsService: PersonsService) { }
 
   @Post()
   @ApiOperation({
@@ -183,6 +184,14 @@ export class PersonsController {
     return await this.personsService.findOneById(id);
   }
 
+  @Get('verify-exists/cpf/:cpf')
+  @ApiOperation({
+    summary: 'Verifica se existe uma Person de acordo com o cpf',
+  })
+  async verifyCPF(@Param('cpf') cpf: string): Promise<boolean> {
+    return await this.personsService.verifyIfCPFExists(cpf);
+  }
+
   @Put(':id')
   @ApiOperation({
     summary: 'Faz o updade de uma Person de acordo com o id',
@@ -221,13 +230,15 @@ export class PersonsController {
   @UseInterceptors(FileInterceptor('profilePicture'))
   async uploadPictore(
     @UploadedFile(
-      new ParseFilePipe({
-        validators: [new FileTypeValidator({ fileType: /(jpeg|png)$/ })],
-      })
+      new ParseFilePipe()
     )
     file: Express.Multer.File,
     @Param('id') id: string
   ) {
+
+    if (!/^image\/(jpe?g|png|webp)$/.test(file.mimetype)) {
+      throw new UnprocessableEntityException('Tipo de imagem inválido');
+    }
     return await this.personsService.savePersonPicture(file, id);
   }
 }
