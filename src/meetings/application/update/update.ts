@@ -3,8 +3,8 @@ import { Meeting } from '../../domain/entities/meeting.entity';
 import { UpdateMeetingDto } from '../../infra/dto/update-meeting.dto';
 import { Repository } from 'typeorm';
 import getCount from '../getCount/getCount';
-import { StatusType } from 'src/meetings/domain/vo/statustype.enum';
-import { BillsService } from 'src/bills/infra/bills.service';
+import { StatusType } from '../../../meetings/domain/vo/statustype.enum';
+import { BillsService } from '../../../bills/infra/bills.service';
 
 export async function update(id: string, updateMeetingDto: UpdateMeetingDto, service: { repository: Repository<Meeting>, billsService: BillsService }) {
   let session = await service.repository.createQueryBuilder("meeting")

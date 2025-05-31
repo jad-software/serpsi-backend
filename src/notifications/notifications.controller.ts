@@ -1,6 +1,6 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guards';
+import { JwtAuthGuard } from '../auth/guards/jwt.guards';
 import { MailingService } from './mailing.service';
 
 @ApiTags('notifications')
