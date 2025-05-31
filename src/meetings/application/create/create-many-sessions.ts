@@ -7,7 +7,6 @@ import { StatusType } from '../../domain/vo/statustype.enum';
 import { BillsService } from '../../../bills/infra/bills.service';
 import { PaymentPlan } from '../../../patients/vo/PaymentPlan.enum';
 import { formatDate } from '../../../helpers/format-date';
-import { Day } from 'src/psychologists/vo/days.enum';
 
 export async function createManySessions(data: { meeting: Meeting, frequency: FrequencyEnum, quantity: number, amount?: number }, service: {
   repository: Repository<Meeting>,
@@ -40,7 +39,7 @@ export async function createManySessions(data: { meeting: Meeting, frequency: Fr
     }
   }
   if (sessions.length === 0) {
-    throw new BadRequestException(
+    throw new InternalServerErrorException(
       'problemas ao criar sessões'
     );
   }

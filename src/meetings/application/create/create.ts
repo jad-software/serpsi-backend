@@ -1,4 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
+import { DateTime } from 'luxon';
 import { Meeting } from '../../domain/entities/meeting.entity';
 import { StatusType } from '../../domain/vo/statustype.enum';
 import { Repository } from 'typeorm';
@@ -48,10 +49,8 @@ function hasAvaliableTime(date: Date, avaliableDay: {
   day: Day;
   avaliableTimes: string[];
 }) {
-  const hours = date.getHours().toString().padStart(2, '0');
-  const minutes = date.getMinutes().toString().padStart(2, '0');
-  const seconds = date.getSeconds().toString().padStart(2, '0');
-  const timeString = `${hours}:${minutes}:${seconds}`;
+  const time = DateTime.fromJSDate(date, { zone: 'America/Sao_Paulo' });
+  const timeString = time.toFormat('HH:mm:ss');
 
   return avaliableDay.avaliableTimes.includes(timeString);
 }
