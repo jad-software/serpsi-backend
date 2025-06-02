@@ -1,0 +1,28 @@
+# Ignora node_modules (vamos instalar no container)
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Git
+.git
+.gitignore
+
+# Logs
+*.log
+logs
+*.pid
+
+# Testes e configs locais
+coverage
+.vscode
+.env.local
+.env.development
+.env.test
+
+# Outros arquivos sensíveis ou inúteis no build
+Dockerfile
+.dockerignore
+README.md
+*.md
+*.tsbuildinfo
+*.tar

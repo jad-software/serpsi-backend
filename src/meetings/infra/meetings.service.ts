@@ -1,0 +1,139 @@
+import { forwardRef, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { CreateMeetingDto } from './dto/create-meeting.dto';
+import { UpdateMeetingDto } from './dto/update-meeting.dto';
+import { create } from '../application/create/create';
+import { remove } from '../application/remove/remove';
+import { update } from '../application/update/update';
+import { getBusyDays } from '../application/getBusyDays/get-busy-days';
+import { getOneSession } from '../application/getOneSession/get-one-session';
+import { data_providers } from '../../constants';
+import { Repository } from 'typeorm';
+import { Meeting } from '../domain/entities/meeting.entity';
+import { PsychologistsService } from '../../psychologists/psychologists.service';
+import { PatientsService } from '../../patients/patients.service';
+import { getSchedule } from '../application/getSchedule/get-schedule';
+import { modifyStatus } from '../application/modifyStatus/modify-status';
+import { UpdateStatusDto } from './dto/update-status.dto';
+import { createManySessions } from '../application/create/create-many-sessions';
+import { FrequencyEnum } from './dto/frequency.enum';
+import { numberToDay } from '../../psychologists/vo/days.enum';
+import { checkAvaliableTime } from '../application/checkAvaliableTime/check-avaliable-time';
+import { DocumentsService } from '../../documents/documents.service';
+import { BillsService } from '../../bills/infra/bills.service';
+import { FindBusyDaysDAO } from '../application/getBusyDays/findBusyDays.dao';
+import { StatusType } from '../domain/vo/statustype.enum';
+
+@Injectable()
+export class MeetingsService {
+  constructor(
+    @Inject(data_providers.MEETINGS_REPOSITORY)
+    private meetingsRepository: Repository<Meeting>,
+    private readonly psychologistService: PsychologistsService,
+    @Inject(forwardRef(() => PatientsService))
+    private readonly patientService: PatientsService,
+    @Inject(forwardRef(() => DocumentsService))
+    private readonly documentsService: DocumentsService,
+    private billsService: BillsService
+  ) { }
+
+  async create(createMeetingDto: CreateMeetingDto) {
+    const meeting = new Meeting(createMeetingDto);
+    const [patient, psychologist] = await Promise.all([
+      this.patientService.findOne(createMeetingDto.patient, false),
+      this.psychologistService.findOne(createMeetingDto.psychologist, false)
+    ]);
+    meeting.patient = patient;
+    meeting.psychologist = psychologist;
+    meeting.schedule = new Date(createMeetingDto.schedule);
+    if (createMeetingDto.quantity === 1 || createMeetingDto.frequency === FrequencyEnum.AVULSO) {
+      return await create(
+        { meeting, amount: createMeetingDto.amount },
+        {
+          repository: this.meetingsRepository,
+          billsService: this.billsService,
+          avaliableTimes: (psychologistId: string, startDate: Date) => this.AvaliableTimes(psychologistId, startDate)
+        });
+    }
+    return await createManySessions({
+      meeting,
+      frequency: createMeetingDto.frequency,
+      quantity: createMeetingDto.quantity,
+      amount: createMeetingDto.amount
+    }, {
+      repository: this.meetingsRepository,
+      billsService: this.billsService,
+      avaliableTimes: (psychologistId: string, startDate: Date) => this.AvaliableTimes(psychologistId, startDate)
+    });
+  }
+
+  async getBusyDays(search: FindBusyDaysDAO) {
+    return await getBusyDays(search, this.meetingsRepository);
+  }
+
+  async AvaliableTimes(psychologistId: string, date: Date) {
+    const startDate = new Date(date);
+    startDate.setUTCHours(0, 0, 0);
+    let days = numberToDay(startDate.getUTCDay());
+    const [schedule, times, unusuals] = await Promise.all([
+      getSchedule({ psychologistId, startDate, isEntity: true }, this.meetingsRepository),
+      this.psychologistService.getTimes(psychologistId, days),
+      this.psychologistService.getUnusualTimes(psychologistId, startDate)
+    ]);
+    const avaliableTimes = await checkAvaliableTime({ date: startDate, times, schedule, unusuals })
+    if (avaliableTimes.length === 0) {
+      throw new NotFoundException('Não há horários disponíveis para essa data');
+    }
+    const response = {
+      day: avaliableTimes[0].day,
+      avaliableTimes: avaliableTimes.flatMap((time) => {
+        return time.availableTimes
+      }).sort()
+    }
+    return response;
+  }
+
+  async findOne(id: string, relations: boolean = true) {
+    return await getOneSession(id, this.meetingsRepository, relations);
+  }
+
+  async getSessionsByInterval(psychologistId: string, startDate: Date, endDate: Date) {
+    return await getSchedule({ psychologistId, startDate, endDate }, this.meetingsRepository);
+  }
+
+  async update(id: string, updateMeetingDto: UpdateMeetingDto) {
+    return await update(id, updateMeetingDto, { repository: this.meetingsRepository, billsService: this.billsService });
+  }
+
+  async updateStatus(id: string, newStatus: UpdateStatusDto) {
+    return await modifyStatus(id, newStatus.status, { repository: this.meetingsRepository, billService: this.billsService });
+  }
+
+  async updateSessionsAtUnusualAgendas(psychologistId: string, startDate: Date, endDate: Date) {
+    const schedules = await getSchedule({ psychologistId, startDate, endDate, isEntity: true }, this.meetingsRepository);
+    let count = 0;
+    await Promise.all(schedules.map(async (schedule) => {
+      const newSchedule = new Meeting(schedule);
+      if (newSchedule.status === StatusType.CREDIT || newSchedule.status === StatusType.CANCELED) {
+        return;
+      }
+      newSchedule.status = StatusType.CREDIT;
+      await this.meetingsRepository.save(newSchedule);
+      count += 1;
+    }));
+    return { message: 'Sessões atualizadas com sucesso', count };
+  }
+
+  async remove(id: string) {
+    const meeting = await getOneSession(id, this.meetingsRepository, true);
+    try {
+      let promiseDocuments = []
+      meeting.documents.forEach((document) => {
+        promiseDocuments.push(this.documentsService.remove(document.id.id));
+      });
+      await Promise.all([...promiseDocuments, this.billsService.remove(meeting.bill.id.id)]);
+      return await remove(id, this.meetingsRepository);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+}

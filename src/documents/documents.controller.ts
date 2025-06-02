@@ -1,0 +1,258 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipe,
+  FileTypeValidator,
+  BadRequestException,
+  Put,
+  UploadedFiles,
+  Res,
+} from '@nestjs/common';
+import { DocumentsService } from './documents.service';
+import { CreateDocumentDto } from './dto/create-document.dto';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { extname } from 'path';
+import { plainToClass } from 'class-transformer';
+import { validate } from 'class-validator';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import { Document } from './entities/document.entity';
+import { Response } from 'express';
+
+@ApiBearerAuth()
+@ApiTags('documents')
+@Controller('documents')
+export class DocumentsController {
+  constructor(private readonly documentsService: DocumentsService) { }
+
+  private async validateDocumentData(createDocumentDto: CreateDocumentDto) {
+    const errors = await validate(createDocumentDto);
+    if (errors.length > 0) {
+      throw new BadRequestException(
+        `Validation Error in Field: ${errors[0].property}`
+      );
+    }
+  }
+
+  private validateUploadedFile(
+    document: Express.Multer.File,
+    typeOfExtention: string
+  ) {
+    if (!document) {
+      throw new BadRequestException('Document is required');
+    }
+    if (extname(document.originalname) !== `.${typeOfExtention}`) {
+      throw new BadRequestException(
+        `Only .${typeOfExtention} files are allowed!`
+      );
+    }
+  }
+
+  @Post()
+  @ApiOperation({
+    summary: 'Cria um documento com título, vinculo com reunião e arquivo',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        title: {
+          type: 'string',
+          example: 'relato da sessão',
+        },
+        meeting: {
+          type: 'string',
+          example: 'meeting_id',
+        },
+        document: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('document'))
+  async create(
+    @Body() { title, meeting }: { title: string; meeting: string },
+    @UploadedFile()
+    document: Express.Multer.File
+  ) {
+    const createDocumentDto = plainToClass(CreateDocumentDto, {
+      title,
+      meeting
+    });
+    await this.validateDocumentData(createDocumentDto);
+    this.validateUploadedFile(document, 'md');
+
+    return await this.documentsService.create(title, meeting, document, true);
+  }
+
+  @Post('/aditional')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        meeting: {
+          type: 'string',
+          example: 'meeting_id',
+        },
+        documents: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary'
+          },
+        },
+      },
+    },
+  })
+  @UseInterceptors(FilesInterceptor('documents', 20))
+  async createMany(
+    @Body() { meeting }: { meeting: string },
+    @UploadedFiles()
+    documents: Express.Multer.File[]
+  ) {
+    let promiseDocuments: Promise<Document>[] = [];
+    promiseDocuments = documents.map(async (doc) => {
+
+      let title = Buffer.from(
+        doc.originalname.split('.').slice(0, -1).join('_'),
+        'latin1'
+      ).toString('utf8');
+      const createDocumentDto = plainToClass(CreateDocumentDto, {
+        title,
+        meeting
+      });
+      await this.validateDocumentData(createDocumentDto);
+
+      return this.documentsService.create(title, meeting, doc);
+    });
+
+    let createdDocuments = await Promise.all(promiseDocuments);
+    return createdDocuments;
+  }
+
+  @Post('/followups')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        patient: {
+          type: 'string',
+          example: 'f35f827e-0899-4d63-976a-2b9aac7fb3ff',
+        },
+        documents: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary'
+          },
+        },
+      },
+    },
+  })
+  @UseInterceptors(FilesInterceptor('documents'))
+  async createFollowups(
+    @Body() { patient }: { patient: string },
+    @UploadedFiles()
+    documents: Express.Multer.File[]
+  ) {
+    if (patient === undefined) {
+      throw new BadRequestException(`Patient is required`);
+    }
+    documents.map((doc) => {
+      this.validateUploadedFile(doc, 'pdf');
+    });
+    return await this.documentsService.createFollowUps(patient, documents);
+  }
+
+  @Get('/patients/:id')
+  @ApiOperation({
+    summary:
+      'Retorna todos os documentos de um paciente de acordo com o id do prórpio paciente',
+  })
+  async findAllByPatient(@Param('id') id: string) {
+    return await this.documentsService.findAllByPatient(id);
+  }
+
+  @Get('/psychologist/:id')
+  @ApiOperation({
+    summary:
+      'Retorna todos os documentos de todos os pacientes de um psicólogo',
+  })
+  async findAllByPsychologist(@Param('id') id: string) {
+    return await this.documentsService.findAllByPsychologist(id);
+  }
+
+  @Get(':id')
+  @ApiOperation({
+    summary: 'Retorna um documento de acordo com o id',
+  })
+  async findOne(@Param('id') id: string) {
+    return await this.documentsService.findOne(id);
+  }
+
+  @Put(':id')
+  @ApiOperation({
+    summary: 'Atualiza um documento',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        title: {
+          type: 'string',
+          example: 'atualização de título de documento de sessão',
+        },
+        document: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('document'))
+  async update(
+    @Param('id') id: string,
+    @UploadedFile()
+    document?: Express.Multer.File,
+    @Body('title') updateDocumentDto?: string
+  ) {
+    return await this.documentsService.update(id, updateDocumentDto, document);
+  }
+
+  @Delete(':id')
+  @ApiOperation({
+    summary: 'Deleta um documento de acordo com o id no banco e no cloudinary',
+  })
+  async remove(@Param('id') id: string) {
+    return await this.documentsService.remove(id);
+  }
+
+  @Post('/generate-pdf')
+  async transformToPdf(@Body('mdUrl') mdUrl: string, @Res() res: Response){
+    const pdf = await this.documentsService.trasnformMdToPdf(mdUrl);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=document.pdf',
+    });
+
+    res.send(Buffer.from(pdf));
+  }
+}

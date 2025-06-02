@@ -3,13 +3,41 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { PersonsModule } from './persons/persons.module';
+import { AddressesModule } from './addresses/addresses.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { PatientsModule } from './patients/patients.module';
+import { DocumentsModule } from './documents/documents.module';
+import { PsychologistsModule } from './psychologists/psychologists.module';
+import { MeetingsModule } from './meetings/meetings.module';
+import { BillsModule } from './bills/bills.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { TokensModule } from './auth/tokens.module';
+import { LoggerModule } from './common/logger/logger.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
-    imports: [
-        ConfigModule.forRoot(),
-        DatabaseModule
-    ],
-    controllers: [AppController],
-    providers: [AppService],
+  imports: [
+    ConfigModule.forRoot(),
+    DatabaseModule,
+    UsersModule,
+    AuthModule,
+    PersonsModule,
+    AddressesModule,
+    CloudinaryModule,
+    PatientsModule,
+    DocumentsModule,
+    PsychologistsModule,
+    MeetingsModule,
+    BillsModule,
+    NotificationsModule,
+    TokensModule,
+    LoggerModule,
+    EventEmitterModule.forRoot()
+  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

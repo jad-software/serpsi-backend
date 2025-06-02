@@ -1,0 +1,187 @@
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
+import { bcrypt_salt, data_providers } from '../constants';
+import { Repository } from 'typeorm';
+import { Email } from './vo/email.vo';
+import { Id } from '../entity-base/vo/id.vo';
+import * as bcrypt from 'bcrypt';
+import { ChangePassworDto } from '../psychologists/dto/change-password.dto';
+import { ForgotPasswordDto } from 'src/auth/dto/forgotpassword.dto';
+
+@Injectable()
+export class UsersService {
+
+  constructor(
+    @Inject(data_providers.USER_REPOSITORY)
+    private userRepository: Repository<User>
+  ) { }
+
+  async create(
+    createUserDto: CreateUserDto,
+    hasTransaction: boolean = false
+  ): Promise<User> {
+    try {
+      const userEmail = new Email(createUserDto.email as string);
+      const hashedPassword = await bcrypt.hash(
+        createUserDto.password,
+        bcrypt_salt
+      );
+      const user = new User({
+        email: userEmail,
+        password: hashedPassword,
+        role: createUserDto.role,
+      });
+      return await this.userRepository.save(user, {
+        transaction: !hasTransaction,
+      });
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    }
+  }
+
+  async findAll(): Promise<User[]> {
+    return await this.userRepository.find();
+  }
+
+  async findOneById(id: string): Promise<User> {
+    let requestedUser = new User({});
+    requestedUser.id = new Id(id);
+    try {
+      return await this.userRepository.findOneOrFail({
+        where: { ...requestedUser },
+      });
+    } catch (err) {
+      throw new NotFoundException(err?.message);
+    }
+  }
+
+  async findOneByEmail(email: string, relations: boolean = false): Promise<User> {
+    try {
+      if (relations) {
+        return await this.userRepository
+          .createQueryBuilder('user')
+          .where('user.email = :email', { email })
+          .leftJoinAndSelect('user.person', 'person')
+          .getOneOrFail();
+      }
+      return await this.userRepository
+        .createQueryBuilder('user')
+        .where('user.email = :email', { email })
+        .select([
+          'user._id._id',
+          'user._email._email',
+          'user._password',
+          'user._role',
+        ]).getOneOrFail();
+    } catch (err) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+  }
+
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    let updatingUser = new User(updateUserDto);
+
+    if (updateUserDto.email)
+      updatingUser.email = new Email(updateUserDto.email as string);
+
+    try {
+      await this.userRepository.update(id, updatingUser);
+      let user = await this.findOneById(id);
+      return user;
+    } catch (err) {
+      throw new InternalServerErrorException(err?.message);
+    }
+  }
+
+  async updateFirstLogin(id: string) {
+    try {
+      let user = await this.findOneById(id);
+      user.firstLogin = false;
+      await this.userRepository.update(id, user);
+    }
+    catch (err) {
+      throw new InternalServerErrorException(err?.message);
+    }
+  }
+  async remove(id: string): Promise<any> {
+    return await this.userRepository.delete(id);
+  }
+
+  async updatePassword(email: string, changePasswordDto: ChangePassworDto) {
+    try {
+      const user = await this.findOneByEmail(email);
+      const id = user.id.id;
+      const passwordValid = await bcrypt.compare(
+        changePasswordDto._password,
+        user.password
+      );
+      if (!passwordValid) {
+        throw new BadRequestException('Senha antiga incorreta');
+      }
+      const isNewPasswordEqualOldPassword = await bcrypt.compare(
+        changePasswordDto._newPassword,
+        user.password
+      );
+      if (isNewPasswordEqualOldPassword) {
+        throw new BadRequestException(
+          'Senha Nova não deve ser igual a anterior'
+        );
+      }
+      const hashedPassword = await bcrypt.hash(
+        changePasswordDto._newPassword,
+        bcrypt_salt
+      );
+
+      user.password = hashedPassword;
+      this.userRepository.update(id, user);
+    } catch (err) {
+      throw new InternalServerErrorException(err?.message);
+    }
+  }
+
+  async confirmUser(email: string) {
+
+    const user = await this.findOneByEmail(email)
+      .catch(() => {
+        throw new BadRequestException('Usuário não encontrado');
+      });
+    const id = user.id.id;
+    user.active = true;
+    this.userRepository.update(id, user);
+  }
+
+  async changePasswordByToken(email: string, forgotPasswordDto: ForgotPasswordDto) {
+    const isPasswordmatch = forgotPasswordDto.newPassword === forgotPasswordDto.confirmNewPassword;
+    if (!isPasswordmatch) {
+      throw new BadRequestException('As senhas não conferem');
+    }
+
+    const user = await this.findOneByEmail(email);
+    const id = user.id.id;
+
+    const isNewPasswordEqualOldPassword = await bcrypt.compare(
+      forgotPasswordDto.newPassword,
+      user.password
+    );
+    if (isNewPasswordEqualOldPassword) {
+      throw new BadRequestException(
+        'Senha Nova não deve ser igual a anterior'
+      );
+    }
+    const hashedPassword = await bcrypt.hash(
+      forgotPasswordDto.newPassword,
+      bcrypt_salt
+    );
+
+    user.password = hashedPassword;
+    this.userRepository.update(id, user);
+  }
+}
