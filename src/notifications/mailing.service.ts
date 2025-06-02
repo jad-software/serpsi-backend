@@ -1,7 +1,7 @@
 import * as nodemailer from 'nodemailer';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { HandlebarsService } from './handlebars.service';
-import { mailingService } from 'src/constants';
+import { mailingService } from '../constants';
 
 @Injectable()
 export class MailingService {

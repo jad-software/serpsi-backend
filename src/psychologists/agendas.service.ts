@@ -14,7 +14,7 @@ import { data_providers } from '../constants';
 import { Day } from './vo/days.enum';
 import { PsychologistsService } from './psychologists.service';
 import { UpdatePsychologistDto } from './dto/update-psychologist.dto';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AgendasService {

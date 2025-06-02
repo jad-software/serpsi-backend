@@ -21,7 +21,7 @@ import { Times } from './interfaces/times.interface';
 import { formatDate } from '../helpers/format-date';
 import { Unusual } from './entities/unusual.entity';
 import { MailingService } from '../notifications/mailing.service';
-import { TokensService } from 'src/auth/tokens.service';
+import { TokensService } from '../auth/tokens.service';
 
 @Injectable()
 export class PsychologistsService {

@@ -44,6 +44,7 @@ export class MeetingsService {
     ]);
     meeting.patient = patient;
     meeting.psychologist = psychologist;
+    meeting.schedule = new Date(createMeetingDto.schedule);
     if (createMeetingDto.quantity === 1 || createMeetingDto.frequency === FrequencyEnum.AVULSO) {
       return await create(
         { meeting, amount: createMeetingDto.amount },

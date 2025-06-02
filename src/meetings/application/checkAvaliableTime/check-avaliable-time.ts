@@ -2,7 +2,7 @@ import { Meeting } from "../../domain/entities/meeting.entity";
 import { StatusType } from "../../domain/vo/statustype.enum";
 import { Times } from "../../../psychologists/interfaces/times.interface";
 import { Unusual } from "../../../psychologists/entities/unusual.entity";
-import { formatTime } from "src/helpers/format-time";
+import { formatTime } from "../../../helpers/format-time";
 
 export async function checkAvaliableTime(data: { date: Date, times: Times, schedule: Meeting[], unusuals: Unusual[] }) {
   data.schedule = data.schedule.filter((session) => session.status !== StatusType.CREDIT && session.status !== StatusType.CANCELED)

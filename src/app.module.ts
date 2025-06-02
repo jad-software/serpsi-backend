@@ -15,6 +15,8 @@ import { MeetingsModule } from './meetings/meetings.module';
 import { BillsModule } from './bills/bills.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { TokensModule } from './auth/tokens.module';
+import { LoggerModule } from './common/logger/logger.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -32,8 +34,10 @@ import { TokensModule } from './auth/tokens.module';
     BillsModule,
     NotificationsModule,
     TokensModule,
+    LoggerModule,
+    EventEmitterModule.forRoot()
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
