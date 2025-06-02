@@ -53,19 +53,6 @@ export class LoggerService {
         body: meta.body,
       };
     }
-    // cores diferentes para cada nível
-    let levelColor: string;
-    switch (level) {
-      case 'info':
-        levelColor = chalk.blue(level.toUpperCase());
-        break;
-      case 'warn':
-        levelColor = chalk.yellow(level.toUpperCase());
-        break;
-      case 'error':
-        levelColor = chalk.red(level.toUpperCase());
-        break;
-    }
 
     let metaString = '';
     try {
@@ -74,6 +61,6 @@ export class LoggerService {
       metaString = `[unserializable meta]`;
     }
 
-    return `[${levelColor}] [${timestamp}]  [${chalk.green(context)}] - ${message}\n${metaString}`;
+    return `[${level.toUpperCase()}] [${timestamp}]  [${context}] - ${message}\n${metaString}`;
   }
 }
