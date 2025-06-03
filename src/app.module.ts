@@ -17,7 +17,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { TokensModule } from './auth/tokens.module';
 import { LoggerModule } from './common/logger/logger.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -35,9 +35,33 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     NotificationsModule,
     TokensModule,
     LoggerModule,
-    EventEmitterModule.forRoot()
+    EventEmitterModule.forRoot(),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          name: 'short',
+          ttl: 1000,
+          limit: 3,
+        },
+        {
+          name: 'medium',
+          ttl: 10000,
+          limit: 20
+        },
+        {
+          name: 'long',
+          ttl: 60000,
+          limit: 100
+        }
+      ],
+    }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,
+    {
+      provide: "APP_GUARD",
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule { }

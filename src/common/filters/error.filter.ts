@@ -30,6 +30,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const meta = {
       path: request.url,
       method: request.method,
+      headers: this.sanitizeHeaders(request.headers),
       body: body,
       query: request.query,
       stack,
@@ -69,6 +70,18 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     if ('password' in sanitized) {
       sanitized.password = '[FILTERED]';
+    }
+
+    return sanitized;
+  }
+
+  private sanitizeHeaders(headers: Record<string, any>): Record<string, any> {
+    if (!headers || typeof headers !== 'object') return headers;
+
+    const sanitized = { ...headers };
+
+    if (sanitized.authorization) {
+      sanitized.authorization = '[FILTERED]';
     }
 
     return sanitized;
