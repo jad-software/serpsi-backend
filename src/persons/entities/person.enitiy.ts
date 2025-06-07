@@ -37,7 +37,7 @@ export class Person extends EntityBase implements IPerson {
   @Column(() => Phone, {
     prefix: false,
   })
-  private _phone: Phone;
+  private _phone?: Phone;
 
   @Column(() => Cpf, {
     prefix: false,

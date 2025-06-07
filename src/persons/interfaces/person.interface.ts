@@ -9,7 +9,7 @@ export interface IPerson {
   rg: string;
   profilePicture?: string;
   birthdate: Date;
-  phone: Phone;
+  phone?: Phone;
   cpf: Cpf;
   address: CreateAddressDto | UpdateAddressDto | Address;
 }

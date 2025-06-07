@@ -49,7 +49,8 @@ export class CreatePersonDto implements IPerson {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({
+  @IsOptional()
+  @ApiPropertyOptional({
     type: Phone,
     description: 'Telefone da pessoa',
     example: {
@@ -59,7 +60,7 @@ export class CreatePersonDto implements IPerson {
     },
   })
   @IsNotEmpty()
-  phone: Phone;
+  phone?: Phone;
 
   @ApiProperty({
     type: Cpf,

@@ -4,14 +4,14 @@ export class Phone {
   constructor(partial: Partial<Phone>) {
     Object.assign(this, partial);
   }
-  @Column({ default: () => '+55', name: 'ddi' })
-  private _ddi: string;
+  @Column({ default: '+55', name: 'ddi', nullable: true })
+  private _ddi?: string;
 
-  @Column({ name: 'ddd' })
-  private _ddd: string;
+  @Column({ name: 'ddd', nullable: true })
+  private _ddd?: string;
 
-  @Column({ name: 'number' })
-  private _number: string;
+  @Column({ name: 'number', nullable: true })
+  private _number?: string;
 
   get ddi(): string {
     return this._ddi;
