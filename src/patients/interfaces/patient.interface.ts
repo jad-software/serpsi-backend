@@ -11,9 +11,9 @@ import { CreateParentsDto } from '../../persons/dto/createParents.dto';
 
 export interface IPatient {
   paymentPlan: PaymentPlan;
-  school: CreateSchoolDto | School;
+  school?: CreateSchoolDto | School;
   comorbidities: CreateComorbidityDto[] | Comorbidity[];
   medicines: CreateMedicamentInfoDto[] | MedicamentInfo[];
   person: CreatePersonDto | Person;
-  parents: CreateParentsDto[] | Person[];
+  parents?: CreateParentsDto[] | Person[];
 }

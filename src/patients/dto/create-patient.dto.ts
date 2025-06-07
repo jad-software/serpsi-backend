@@ -1,4 +1,4 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, OmitType } from '@nestjs/swagger';
 import { PaymentPlan } from '../vo/PaymentPlan.enum';
 import { IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { IPatient } from '../interfaces/patient.interface';
@@ -35,22 +35,23 @@ export class CreatePatientDto implements IPatient {
   @Type(() => OmitType(CreatePersonDto, ['user'] as const))
   person: CreatePersonDto;
 
-  @ApiProperty({
+  @IsOptional()
+  @ApiPropertyOptional({
     type: [CreateParentsDto],
     description: 'Dados dos responsáveis do paciente',
   })
   @ValidateNested()
   @Type(() => CreateParentsDto)
-  parents: CreatePersonDto[];
+  parents?: CreatePersonDto[];
 
   @IsOptional()
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: CreateSchoolDto,
     description: 'Dados da escola do paciente',
   })
   @ValidateNested()
   @Type(() => CreateSchoolDto)
-  school: CreateSchoolDto;
+  school?: CreateSchoolDto;
 
   @ApiProperty({
     type: [CreateComorbidityDto],

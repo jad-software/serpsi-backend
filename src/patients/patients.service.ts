@@ -61,6 +61,7 @@ export class PatientsService {
         new Patient({ ...createPatientDto, medicines: [], parents: [] })
       );
       if (
+        createPatientDto.parents &&
         createPatientDto.parents
           .map((parent) => parent.cpf.cpf)
           .includes(createPatientDto.person.cpf.cpf)
@@ -347,8 +348,8 @@ export class PatientsService {
           );
 
           const updatedPatient = await this.patientRepository.createQueryBuilder("patient")
-          .where("patient.id = :id", { id: patient.id.id })
-          .getOneOrFail();
+            .where("patient.id = :id", { id: patient.id.id })
+            .getOneOrFail();
 
           updatedPatient.school = newSchool;
           await this.patientRepository.save(updatedPatient);

@@ -28,7 +28,7 @@ export class Person extends EntityBase implements IPerson {
   @Column({ name: 'rg', unique: true })
   private _rg: string;
 
-  @Column({ name: 'profilePicture' })
+  @Column({ name: 'profilePicture', nullable: true })
   private _profilePicture: string;
 
   @Column({ name: 'birthdate' })
