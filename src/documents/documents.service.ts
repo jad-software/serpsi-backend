@@ -3,6 +3,8 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { data_providers } from '../constants';
@@ -10,7 +12,7 @@ import { Repository } from 'typeorm';
 import { Document } from './entities/document.entity';
 import { PatientsService } from '../patients/patients.service';
 import { MeetingsService } from '../meetings/infra/meetings.service';
-import mdToPdf from 'md-to-pdf';
+import { mdToPdf } from 'md-to-pdf';
 
 @Injectable()
 export class DocumentsService {
@@ -119,22 +121,22 @@ export class DocumentsService {
   async findAllByPsychologist(psychologistId: string) {
     try {
       const documents = await this.documentRepository
-      .createQueryBuilder('document')
-      .leftJoin('document.meeting', 'meeting')
-      .leftJoin('meeting._patient', 'meetingPatient')
-      .leftJoin('meetingPatient._person', 'meetingPerson')
-      .leftJoin('document._patient', 'docPatient')
-      .leftJoin('docPatient._person', 'docPerson')
-      .select('document._id._id', 'id')
-      .addSelect('document._title', 'title')
-      .addSelect('document._docLink', 'docLink')
-      .addSelect('COALESCE(meetingPerson._name, docPerson._name)', 'name') // 🔥 Aqui tá a mágica
-      .addSelect('meeting.schedule', 'createDate')
-      .addSelect('meeting._psychologist', 'psychologist')
-      .where('meeting._psychologist = :psychologistId', { psychologistId })
-      .orWhere('docPatient._psychologist = :psychologistId', { psychologistId })
-      .getRawMany();
-      
+        .createQueryBuilder('document')
+        .leftJoin('document.meeting', 'meeting')
+        .leftJoin('meeting._patient', 'meetingPatient')
+        .leftJoin('meetingPatient._person', 'meetingPerson')
+        .leftJoin('document._patient', 'docPatient')
+        .leftJoin('docPatient._person', 'docPerson')
+        .select('document._id._id', 'id')
+        .addSelect('document._title', 'title')
+        .addSelect('document._docLink', 'docLink')
+        .addSelect('COALESCE(meetingPerson._name, docPerson._name)', 'name') // 🔥 Aqui tá a mágica
+        .addSelect('meeting.schedule', 'createDate')
+        .addSelect('meeting._psychologist', 'psychologist')
+        .where('meeting._psychologist = :psychologistId', { psychologistId })
+        .orWhere('docPatient._psychologist = :psychologistId', { psychologistId })
+        .getRawMany();
+
       return documents;
     } catch (err) {
       throw new BadRequestException(err?.message);
@@ -197,25 +199,34 @@ export class DocumentsService {
       throw new BadRequestException(err?.message);
     }
   }
-  async trasnformMdToPdf(mdUrl: string){
+
+  async transformMdToPdf(mdUrl: string): Promise<{ pdf: Buffer, filename: string }> {
     if (!mdUrl) {
-      throw new BadRequestException('Url é requerida');
+      throw new BadRequestException('URL é requerida');
     }
+
     try {
       const mdResponse = await fetch(mdUrl);
       if (!mdResponse.ok) {
-        throw new BadRequestException('Failed to fetch markdown file');
+        throw new NotFoundException('Falha ao buscar o arquivo Markdown');
       }
+
       const markdown = await mdResponse.text();
-      const pdf = await mdToPdf({ content: markdown });
+      const pdf = await mdToPdf(
+        { content: markdown },
+        {
+          launch_options: {
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
+          },
+        });
 
       if (!pdf?.content) {
-        throw new BadRequestException('Failed to convert markdown to PDF');
+        throw new InternalServerErrorException('Falha ao converter Markdown em PDF');
       }
-      
-      return pdf.content;
-    } catch (error) {
-      throw new BadRequestException('Erro ao gerar PDF:',error.message);
+
+      return { pdf: pdf.content, filename: pdf.filename };
+    } catch (error: any) {
+      throw new InternalServerErrorException(`Erro ao gerar PDF: ${error.message}`);
     }
   }
 }

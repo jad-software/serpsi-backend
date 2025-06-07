@@ -14,6 +14,7 @@ import {
   Put,
   UploadedFiles,
   Res,
+  StreamableFile,
 } from '@nestjs/common';
 import { DocumentsService } from './documents.service';
 import { CreateDocumentDto } from './dto/create-document.dto';
@@ -246,11 +247,25 @@ export class DocumentsController {
   }
 
   @Post('/generate-pdf')
-  async transformToPdf(@Body('mdUrl') mdUrl: string, @Res() res: Response){
-    const pdf = await this.documentsService.trasnformMdToPdf(mdUrl);
+  @ApiOperation({
+    summary: 'Transforma um documento markdown em pdf',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        mdUrl: {
+          type: 'string',
+          example: 'url do arquivo',
+        },
+      },
+    },
+  })
+  async transformToPdf(@Body('mdUrl') mdUrl: string, @Res({ passthrough: true }) res: Response) {
+    const { pdf, filename } = await this.documentsService.transformMdToPdf(mdUrl);
     res.set({
       'Content-Type': 'application/pdf',
-      'Content-Disposition': 'attachment; filename=document.pdf',
+      'Content-Disposition': `attachment; filename=${filename}.pdf`,
     });
 
     res.send(Buffer.from(pdf));
